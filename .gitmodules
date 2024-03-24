@@ -1,0 +1,3 @@
+[submodule "jdlengine/vendor/spdlog"]
+	path = jdlengine/vendor/spdlog
+	url = https://github.com/gabime/spdlog.git
