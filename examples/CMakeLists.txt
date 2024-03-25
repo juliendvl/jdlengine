@@ -3,6 +3,7 @@
 # -----------------------------------------------------------------------------
 include_directories(${ENGINE_DIR}/include)
 include_directories(${VENDOR_DIR}/spdlog/include)
+include_directories(${VENDOR_DIR}/glfw/include)
 
 file(GLOB CHILDREN RELATIVE ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/*)
 foreach (CHILD ${CHILDREN})
