@@ -4,6 +4,8 @@
 
 #include "Application.hpp"
 
+#include "utils/Logger.hpp"
+
 
 using namespace jdl;
 
@@ -14,6 +16,8 @@ int main(int argc, char** argv)
 {
     try
     {
+        utils::Logger::Init();
+
         auto application = CreateApplication("JDLEngine", 800, 600);
         application->run();
 

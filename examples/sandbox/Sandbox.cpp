@@ -1,3 +1,5 @@
+#include <JDLEngine.hpp>
+
 #include <core/Application.hpp>
 #include <core/EntryPoint.hpp>
 
@@ -10,7 +12,13 @@ public:
     Sandbox(const char* name, int width, int height)
         : core::Application(name, width, height)
     {
-        std::cout << "Hello World!" << std::endl;
+        utils::Logger::SetLevel(utils::LogLevel::kTrace);
+
+        JDL_TRACE("TRACE Message");
+        JDL_DEBUG("DEBUG Message");
+        JDL_INFO("INFO Message");
+        JDL_WARN("WARN Message");
+        JDL_ERROR("ERROR Message");
     }
 };
 
