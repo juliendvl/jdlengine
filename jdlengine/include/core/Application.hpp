@@ -72,6 +72,9 @@ private:
     std::unique_ptr<Window> m_window;
     // Application renderer
     std::unique_ptr<Renderer> m_renderer;
+
+    // Setups the OpenGL debug context
+    void setupDebugContext();
 };
 
 /**
