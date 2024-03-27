@@ -21,10 +21,16 @@ Application::Application(const char* name, int width, int height)
 
     JDL_INFO("Application - Create window");
     m_window = std::make_unique<Window>(name, width, height);
+
+    JDL_INFO("Application - Create renderer");
+    m_renderer = std::make_unique<Renderer>();
 }
 
 Application::~Application()
 {
+    JDL_INFO("Application - Destroy renderer");
+    m_renderer.reset();
+
     JDL_INFO("Application - Destroy window");
     m_window.reset();
 }
@@ -35,8 +41,7 @@ void Application::run()
     {
         m_window->swapBuffers();
         m_window->pollEvents();
-        
-        glClear(GL_COLOR_BUFFER_BIT);
+        m_renderer->renderFrame();
     }
 }
 
