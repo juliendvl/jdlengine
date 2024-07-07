@@ -8,7 +8,11 @@ public:
     Sandbox(const char* name)
         : jdl::core::Application(name)
     {
-        std::cout << "Hello World!" << std::endl;
+        JDL_TRACE("TRACE Message");
+        JDL_DEBUG("DEBUG Message");
+        JDL_INFO("INFO Message");
+        JDL_WARN("WARN Message");
+        JDL_ERROR("ERROR Message");
     }
 };
 
