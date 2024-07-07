@@ -1,8 +1,18 @@
-#include <iostream>
+#include <JDLEngine.hpp>
+#include <core/EntryPoint.hpp>
 
 
-int main(int argc, char** argv)
+class Sandbox : public jdl::core::Application
 {
-    std::cout << "Hello World!" << std::endl;
-    return EXIT_SUCCESS;
+public:
+    Sandbox(const char* name)
+        : jdl::core::Application(name)
+    {
+        std::cout << "Hello World!" << std::endl;
+    }
+};
+
+std::unique_ptr<jdl::core::Application> CreateApplication(const char* name)
+{
+    return std::make_unique<Sandbox>(name);
 }
