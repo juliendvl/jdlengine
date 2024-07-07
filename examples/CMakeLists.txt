@@ -2,6 +2,7 @@
 # JDLEngine - Examples CMakeLists
 # -----------------------------------------------------------------------------
 include_directories(${ENGINE_DIR}/include)
+include_directories(${VENDOR_DIR}/spdlog/include)
 
 file(GLOB CHILDREN RELATIVE ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/*)
 foreach (CHILD ${CHILDREN})
