@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.hpp"
+#include "Window.hpp"
 
 #include "utils/NonCopyable.hpp"
 
@@ -20,6 +21,11 @@ public:
     Application(const char* name);
 
     /**
+     * @brief Destroys the application.
+     */
+    ~Application();
+
+    /**
      * @brief Returns the application instance.
      */
     static Application& Get() {
@@ -34,6 +40,13 @@ public:
     }
 
     /**
+     * @brief Returns the application window.
+     */
+    static Window& GetWindow() {
+        return *IApplication->m_window;
+    }
+
+    /**
      * @brief Runs the application.
      */
     void run();
@@ -43,6 +56,8 @@ private:
     static Application* IApplication;
     // Application name
     const char* m_name;
+    // Application window
+    std::unique_ptr<Window> m_window;
 };
 
 std::unique_ptr<Application> CreateApplication(const char* name);

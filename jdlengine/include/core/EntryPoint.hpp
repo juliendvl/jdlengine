@@ -12,7 +12,9 @@ int main(int argc, char** argv)
     try
     {
         jdl::utils::Logger::Init();
+
         auto application = CreateApplication("JDLEngine");
+        application->run();
 
         return EXIT_SUCCESS;
     }
