@@ -1,5 +1,7 @@
 #include "core/Window.hpp"
 
+#include "core/Application.hpp"
+
 #include "utils/Logger.hpp"
 
 
@@ -133,7 +135,10 @@ void Window::setupCallbacks()
         m_window,
         [](GLFWwindow* window, int width, int height)
         {
-            glViewport(0, 0, width, height);
+            ResizeEvent event(width, height);
+
+            auto& application = Application::Get();
+            application.resizeEvent(event);
         }
     );
 }

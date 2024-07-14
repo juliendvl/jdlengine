@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Core.hpp"
+#include "Events.hpp"
+#include "Renderer.hpp"
 #include "Window.hpp"
 
 #include "utils/NonCopyable.hpp"
@@ -47,9 +49,22 @@ public:
     }
 
     /**
+     * @brief Returns the renderer object.
+     */
+    static Renderer& GetRenderer() {
+        return *IApplication->m_renderer;
+    }
+
+    /**
      * @brief Runs the application.
      */
     void run();
+
+    /**
+     * @brief Resize event.
+     * @param event Event data.
+     */
+    void resizeEvent(const ResizeEvent& event);
 
 private:
     // Application unique instance
@@ -58,6 +73,8 @@ private:
     const char* m_name;
     // Application window
     std::unique_ptr<Window> m_window;
+    // Renderer
+    std::unique_ptr<Renderer> m_renderer;
 };
 
 std::unique_ptr<Application> CreateApplication(const char* name);
