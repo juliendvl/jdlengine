@@ -38,3 +38,6 @@ target_link_libraries(${ENGINE_NAME} glfw)
 
 # glad
 include_directories(${VENDOR_DIR}/glad/include)
+
+# glm
+include_directories(${VENDOR_DIR}/glm)
