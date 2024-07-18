@@ -2,4 +2,8 @@
 
 #include "core/Application.hpp"
 
+#include "resource/Resource.hpp"
+#include "resource/ResourceManager.hpp"
+#include "resource/ShaderProgram.hpp"
+
 #include "utils/Logger.hpp"
