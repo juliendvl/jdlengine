@@ -75,6 +75,9 @@ private:
     std::unique_ptr<Window> m_window;
     // Renderer
     std::unique_ptr<Renderer> m_renderer;
+
+    // Creates the default resources
+    void createDefaultResources();
 };
 
 std::unique_ptr<Application> CreateApplication(const char* name);

@@ -1,5 +1,7 @@
 #include "core/Application.hpp"
 
+#include "resource/ShaderProgram.hpp"
+
 #include "utils/Logger.hpp"
 
 
@@ -23,6 +25,8 @@ Application::Application(const char* name)
 
     m_renderer = std::make_unique<Renderer>();
     m_renderer->setBackgroundColor(0.2f, 0.2f, 0.2f);
+
+    createDefaultResources();
 }
 
 Application::~Application()
@@ -44,6 +48,16 @@ void Application::run()
 void Application::resizeEvent(const ResizeEvent& event)
 {
     m_renderer->resizeEvent(event);
+}
+
+void Application::createDefaultResources()
+{
+    auto shader = resource::ResourceManager::Create<resource::ShaderProgram>(
+        "default_shader",
+        "resources/shaders/default.vert",
+        "resources/shaders/default.frag"
+    );
+    shader->use();
 }
 
 } // namespace core
