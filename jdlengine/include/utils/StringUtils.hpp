@@ -35,9 +35,7 @@ std::string Join(Iter start, Iter end, const std::string& sep)
  * @param sep Separator
  * @return Resulting string
  */
-std::string Join(const std::vector<std::string>& seq, const std::string& sep) {
-    return Join(seq.cbegin(), seq.cend(), sep);
-}
+JDL_API std::string Join(const std::vector<std::string>& seq, const std::string& sep);
 
 /**
  * @brief Splits the input string according to the given separator.

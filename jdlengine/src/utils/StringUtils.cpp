@@ -8,6 +8,11 @@ namespace utils
 namespace StringUtils
 {
 
+std::string Join(const std::vector<std::string>& seq, const std::string& sep)
+{
+    return Join(seq.cbegin(), seq.cend(), sep);
+}
+
 std::vector<std::string> Split(const std::string& str, const std::string& sep)
 {
     std::vector<std::string> result;

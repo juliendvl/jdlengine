@@ -7,6 +7,7 @@ set(SRC_DIR ${ENGINE_DIR}/src)
 file(GLOB CORE_SRC ${INC_DIR}/core/*.hpp ${SRC_DIR}/core/*.cpp)
 file(GLOB MATH_SRC ${INC_DIR}/math/*.hpp ${SRC_DIR}/math/*.cpp)
 file(GLOB RESOURCE_SRC ${INC_DIR}/resource/*.hpp ${SRC_DIR}/resource/*.cpp)
+file(GLOB SCENE_SRC ${INC_DIR}/scene/*.hpp ${SRC_DIR}/scene/*.cpp)
 file(GLOB UTILS_SRC ${INC_DIR}/utils/*.hpp ${SRC_DIR}/utils/*.cpp)
 
 if (MSVC)
@@ -22,6 +23,7 @@ add_library(
 	${CORE_SRC}
 	${MATH_SRC}
 	${RESOURCE_SRC}
+	${SCENE_SRC}
 	${UTILS_SRC}
 )
 include_directories(${INC_DIR})
