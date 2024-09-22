@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Object.hpp"
+#include "core/RenderContext.hpp"
 
 #include <unordered_map>
 
@@ -113,8 +114,9 @@ public:
 
     /**
      * @brief Renders the node.
+     * @param context Render context
      */
-    void render();
+    void render(const core::RenderContext& context);
 
     /**
      * @brief Node path separator.
@@ -125,7 +127,7 @@ protected:
     /**
      * @brief Renders the node content. Must be reimplemented if necessary.
      */
-    virtual void doRender() {}
+    virtual void doRender(const core::RenderContext& context) {}
 
 private:
     // Children nodes

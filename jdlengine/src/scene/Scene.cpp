@@ -11,11 +11,11 @@ Scene::Scene(const std::string& name)
     , m_rootNode(nullptr)
 {}
 
-void Scene::render()
+void Scene::render(const core::RenderContext& context)
 {
     if (m_rootNode)
     {
-        m_rootNode->render();
+        m_rootNode->render(context);
     }
 }
 

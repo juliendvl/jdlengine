@@ -57,7 +57,7 @@ size_t Mesh::getNbPrimitives() const
     }
 }
 
-void Mesh::render()
+void Mesh::render(const core::RenderContext& context)
 {
     glBindVertexArray(m_vao);
     {

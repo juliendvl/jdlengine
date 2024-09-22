@@ -2,6 +2,9 @@
 
 #include "Core.hpp"
 #include "Events.hpp"
+#include "RenderContext.hpp"
+
+#include "scene/Scene.hpp"
 
 #include "utils/NonCopyable.hpp"
 
@@ -33,6 +36,21 @@ public:
     }
 
     /**
+     * @brief Returns the rendered scene.
+     */
+    const scene::ScenePtr& getScene() const {
+        return m_scene;
+    }
+
+    /**
+     * @brief Sets the rendered scene.
+     * @param scene The new scene.
+     */
+    void setScene(const scene::ScenePtr& scene) {
+        m_scene = scene;
+    }
+
+    /**
      * @brief Renders a frame.
      */
     void renderFrame();
@@ -42,6 +60,12 @@ public:
      * @param event Event data.
      */
     void resizeEvent(const ResizeEvent& event);
+
+private:
+    // Render context
+    RenderContext m_context;
+    // Rendered scene
+    scene::ScenePtr m_scene;
 };
 
 } // namespace core

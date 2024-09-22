@@ -10,4 +10,8 @@
 #include "resource/ResourceManager.hpp"
 #include "resource/ShaderProgram.hpp"
 
+#include "scene/RenderableNode.hpp"
+#include "scene/Scene.hpp"
+#include "scene/SceneNode.hpp"
+
 #include "utils/Logger.hpp"

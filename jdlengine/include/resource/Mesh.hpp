@@ -2,6 +2,7 @@
 
 #include "Resource.hpp"
 
+#include "core/RenderContext.hpp"
 #include "core/Vertex.hpp"
 
 
@@ -110,8 +111,9 @@ public:
 
     /**
      * @brief Renders the mesh content.
+     * @param context Render context
      */
-    void render();
+    void render(const core::RenderContext& context);
 
     /**
      * @brief Clears the mesh data (vertices and indices).

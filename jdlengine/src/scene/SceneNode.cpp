@@ -148,14 +148,14 @@ void SceneNode::setParentTransform(const math::SRTMatrix& transform)
     setWorldTransformDirty();
 }
 
-void SceneNode::render()
+void SceneNode::render(const core::RenderContext& context)
 {
     if (m_visible)
     {
-        doRender();
+        doRender(context);
         for (const auto& [name, child] : m_children)
         {
-            child->render();
+            child->render(context);
         }
     }
 }

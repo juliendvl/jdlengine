@@ -23,10 +23,10 @@ Application::Application(const char* name)
 
     m_window = std::make_unique<Window>(name, 800, 600);
 
+    createDefaultResources();
+
     m_renderer = std::make_unique<Renderer>();
     m_renderer->setBackgroundColor(0.2f, 0.2f, 0.2f);
-
-    createDefaultResources();
 }
 
 Application::~Application()

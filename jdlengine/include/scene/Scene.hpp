@@ -5,6 +5,7 @@
 #include "SceneNode.hpp"
 
 #include "core/Events.hpp"
+#include "core/RenderContext.hpp"
 
 
 namespace jdl
@@ -38,8 +39,9 @@ public:
 
     /**
      * @brief Renders the scene content.
+     * @param context Render context
      */
-    void render();
+    void render(const core::RenderContext& context);
 
     /**
      * @brief Resize event.
@@ -50,6 +52,8 @@ public:
 private:
     SceneNodePtr m_rootNode;
 };
+
+using ScenePtr = std::shared_ptr<Scene>;
 
 } // namespace scene
 } // namespace jdl

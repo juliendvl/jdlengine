@@ -1,8 +1,6 @@
 #include "core/Renderer.hpp"
 
-// TODO - To be removed!
-#include "core/Vertex.hpp"
-#include "resource/Mesh.hpp"
+#include "resource/ShaderProgram.hpp"
 
 
 namespace jdl
@@ -10,18 +8,11 @@ namespace jdl
 namespace core
 {
 
-static resource::Mesh* sMesh = nullptr;
-
 Renderer::Renderer()
+    : m_context()
 {
-    sMesh = resource::ResourceManager::Create<resource::Mesh>("Mesh");
-    sMesh->addVertices({
-        core::Vertex(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
-        core::Vertex(glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
-        core::Vertex(glm::vec3( 0.5f,  0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-        core::Vertex(glm::vec3(-0.5f,  0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f))
-    });
-    sMesh->addIndices({0, 1, 2, 0, 2, 3});
+    // Init the context
+    m_context.shaderProgram = resource::ResourceManager::As<resource::ShaderProgram>("default_shader");
 }
 
 Renderer::~Renderer() {}
@@ -29,7 +20,11 @@ Renderer::~Renderer() {}
 void Renderer::renderFrame()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    sMesh->render();
+
+    if (m_scene)
+    {
+        m_scene->render(m_context);
+    }
 }
 
 void Renderer::resizeEvent(const ResizeEvent& event)
