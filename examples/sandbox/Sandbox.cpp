@@ -19,10 +19,16 @@ public:
         });
         mesh->addIndices({0, 1, 2, 0, 2, 3});
 
+        core::Size windowSize = GetWindow().getFramebufferSize();
+
+        resource::OrbitCamera* camera = resource::ResourceManager::Create<resource::OrbitCamera>("Camera");
+        camera->setAspectRatio(static_cast<float>(windowSize.width) / windowSize.height);
+
         auto node = scene::CreateNode<scene::RenderableNode>("node", nullptr);
         node->addMesh(mesh);
 
         auto scene = std::make_shared<scene::Scene>("scene");
+        scene->setCamera(camera);
         scene->setRootNode(node);
 
         GetRenderer().setScene(scene);

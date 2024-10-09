@@ -5,6 +5,7 @@
 
 #include "math/SRTMatrix.hpp"
 
+#include "resource/Camera.hpp"
 #include "resource/Mesh.hpp"
 #include "resource/Resource.hpp"
 #include "resource/ResourceManager.hpp"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.hpp"
+#include "Events.hpp"
 #include "Size.hpp"
 
 #include "utils/NonCopyable.hpp"
@@ -72,6 +73,8 @@ private:
 
     // Internal window handle
     GLFWwindow* m_window;
+    // Internal event data
+    MouseButton m_pressButton;
 
     void setupCallbacks();
 };
