@@ -10,14 +10,22 @@ public:
     Sandbox(const char* name)
         : core::Application(name)
     {
+        resource::Texture* texture = resource::ResourceManager::Create<resource::Texture>(
+            "Texture", "resources/images/container.jpg"
+        );
+
+        resource::Material* material = resource::ResourceManager::Create<resource::Material>("Material");
+        material->setAlbedoTexture(texture);
+
         resource::Mesh* mesh = resource::ResourceManager::Create<resource::Mesh>("Mesh");
         mesh->addVertices({
             core::Vertex(glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
             core::Vertex(glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
             core::Vertex(glm::vec3(0.5f,  0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-            core::Vertex(glm::vec3(-0.5f,  0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f))
+            core::Vertex(glm::vec3(-0.5f,  0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f))
         });
         mesh->addIndices({0, 1, 2, 0, 2, 3});
+        mesh->setMaterial(material);
 
         core::Size windowSize = GetWindow().getFramebufferSize();
 

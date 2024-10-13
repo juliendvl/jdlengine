@@ -16,6 +16,7 @@ Mesh::Mesh(const std::string& name, PrimitiveType primitiveType)
     , m_vao(0)
     , m_vbo(0)
     , m_ibo(0)
+    , m_material(nullptr)
 {
     setupBuffers();
 }
@@ -59,6 +60,11 @@ size_t Mesh::getNbPrimitives() const
 
 void Mesh::render(const core::RenderContext& context)
 {
+    if (m_material)
+    {
+        m_material->bind(context);
+    }
+
     glBindVertexArray(m_vao);
     {
         updateBuffers();

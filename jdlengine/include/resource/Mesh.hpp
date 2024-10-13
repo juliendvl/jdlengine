@@ -5,6 +5,8 @@
 #include "core/RenderContext.hpp"
 #include "core/Vertex.hpp"
 
+#include "Material.hpp"
+
 
 namespace jdl
 {
@@ -110,6 +112,20 @@ public:
     size_t getNbPrimitives() const;
 
     /**
+     * @brief Returns the mesh material.
+     */
+    Material* getMaterial() const {
+        return m_material;
+    }
+
+    /**
+     * @brief Sets the mesh material.
+     */
+    void setMaterial(Material* material) {
+        m_material = material;
+    }
+
+    /**
      * @brief Renders the mesh content.
      * @param context Render context
      */
@@ -132,6 +148,8 @@ private:
     GLuint m_vao;
     GLuint m_vbo;
     GLuint m_ibo;
+
+    Material* m_material;
 
     // Creates and setups the OpenGL buffers
     void setupBuffers();
