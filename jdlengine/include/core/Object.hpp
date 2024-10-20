@@ -10,7 +10,7 @@ namespace jdl
 namespace core
 {
 
-class JDL_API Object : private NonCopyable<Object>, private std::enable_shared_from_this<Object>
+class JDL_API Object : public std::enable_shared_from_this<Object>, private NonCopyable<Object>
 {
 public:
     /**

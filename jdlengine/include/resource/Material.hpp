@@ -21,17 +21,31 @@ public:
     Material(const std::string& name);
 
     /**
-     * @brief Returns the albedo texture.
+     * @brief Returns the base color factor.
      */
-    Texture* getAlbedoTexture() const {
-        return m_albedoTexture;
+    const glm::vec4& getBaseColorFactor() const {
+        return m_baseColorFactor;
     }
 
     /**
-     * @brief Sets the albedo texture.
+     * @brief Sets the base color factor.
      */
-    void setAlbedoTexture(Texture* albedo) {
-        m_albedoTexture = albedo;
+    void setBaseColorFactor(const glm::vec4& factor) {
+        m_baseColorFactor = factor;
+    }
+
+    /**
+     * @brief Returns the base color texture.
+     */
+    Texture* getBaseColorTexture() const {
+        return m_baseColorTexture;
+    }
+
+    /**
+     * @brief Sets the base color texture.
+     */
+    void setBaseColorTexture(Texture* texture) {
+        m_baseColorTexture = texture;
     }
 
     /**
@@ -41,7 +55,8 @@ public:
     void bind(const core::RenderContext& context);
 
 private:
-    Texture* m_albedoTexture;
+    glm::vec4 m_baseColorFactor;
+    Texture*  m_baseColorTexture;
 };
 
 } // namespace resource

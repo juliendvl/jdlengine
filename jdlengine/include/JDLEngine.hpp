@@ -3,6 +3,8 @@
 #include "core/Application.hpp"
 #include "core/Vertex.hpp"
 
+#include "io/ModelImporter.hpp"
+
 #include "math/SRTMatrix.hpp"
 
 #include "resource/Camera.hpp"

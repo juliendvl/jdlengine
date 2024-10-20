@@ -8,15 +8,17 @@ namespace resource
 
 Material::Material(const std::string& name)
     : Resource(name)
-    , m_albedoTexture(nullptr)
+    , m_baseColorFactor(1.0f)
+    , m_baseColorTexture(nullptr)
 {}
 
 void Material::bind(const core::RenderContext& context)
-{
-    if (m_albedoTexture)
+{   
+    context.shaderProgram->setUniform("material.baseColorFactor", m_baseColorFactor);
+    if (m_baseColorTexture)
     {
-        m_albedoTexture->bind(0);
-        context.shaderProgram->setUniform("material.albedo", 0);
+        m_baseColorTexture->bind(0);
+        context.shaderProgram->setUniform("material.baseColorTexture", 0);
     }
 }
 

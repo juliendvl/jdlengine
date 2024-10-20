@@ -1,5 +1,7 @@
 #include "utils/StringUtils.hpp"
 
+#include <algorithm>
+
 
 namespace jdl
 {
@@ -30,6 +32,24 @@ std::vector<std::string> Split(const std::string& str, const std::string& sep)
     result.push_back(str.substr(start, end));
 
     return result;
+}
+
+std::string ToLower(std::string str)
+{
+    std::transform(
+        str.begin(), str.end(), str.begin(),
+        [](unsigned char c) { return std::tolower(c); }
+    );
+    return str;
+}
+
+std::string ToUpper(std::string str)
+{
+    std::transform(
+        str.begin(), str.end(), str.begin(),
+        [](unsigned char c) { return std::toupper(c); }
+    );
+    return str;
 }
 
 } // namespace StringUtils

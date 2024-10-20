@@ -38,8 +38,6 @@ Texture::Texture(const std::string& name, const std::string& path)
     createTexture();
 
     // Read the texture
-    stbi_set_flip_vertically_on_load(true);
-
     unsigned char* texels = stbi_load(path.c_str(), &m_width, &m_height, &m_channels, 0);
     if (texels == 0)
     {

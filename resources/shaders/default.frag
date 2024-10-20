@@ -2,7 +2,8 @@
 
 struct Material
 {
-	sampler2D albedo;
+	vec4	  baseColorFactor;
+	sampler2D baseColorTexture;
 };
 uniform Material material;
 
@@ -13,5 +14,5 @@ layout(location = 0) out vec4 outColor;
 
 void main()
 {
-	outColor = texture(material.albedo, fragUV);
+	outColor = material.baseColorFactor * texture(material.baseColorTexture, fragUV);
 }

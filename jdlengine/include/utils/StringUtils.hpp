@@ -45,6 +45,20 @@ JDL_API std::string Join(const std::vector<std::string>& seq, const std::string&
  */
 JDL_API std::vector<std::string> Split(const std::string& str, const std::string& sep);
 
+/**
+ * @brief Converts the input string to lowercase.
+ * @param str Input string to be converted
+ * @return The converted lowercase string.
+ */
+JDL_API std::string ToLower(std::string str);
+
+/**
+ * @brief Converts the input string to uppercase.
+ * @param str Input string to be converted
+ * @return The converted uppercase string.
+ */
+JDL_API std::string ToUpper(std::string str);
+
 } // namespace StringUtils
 } // namespace utils
 } // namespace jdl
