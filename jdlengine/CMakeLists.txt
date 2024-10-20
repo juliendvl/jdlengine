@@ -48,3 +48,6 @@ include_directories(${VENDOR_DIR}/glm)
 
 # stb
 include_directories(${VENDOR_DIR}/stb)
+
+# tinygltf
+include_directories(${VENDOR_DIR}/tinygltf)
