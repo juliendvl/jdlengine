@@ -43,6 +43,19 @@ void RenderableNode::removeMesh(size_t index)
     }
 }
 
+math::BoundingBox RenderableNode::getNodeBoundingBox() const
+{
+    math::BoundingBox bbox;
+    
+    // Add meshes bounding boxes
+    for (resource::Mesh* mesh : m_meshes)
+    {
+        bbox.extend(mesh->getBoundingBox());
+    }
+
+    return bbox;
+}
+
 void RenderableNode::doRender(const core::RenderContext& context)
 {
     context.shaderProgram->setUniform("M", getWorldTransform().toMatrix());

@@ -24,6 +24,7 @@ Mesh::Mesh(const std::string& name, PrimitiveType primitiveType)
 void Mesh::addVertex(const core::Vertex& vertex)
 {
     m_vertices.push_back(vertex);
+    m_bbox.extend(vertex.position);
     m_verticesDirty = true;
 }
 
@@ -90,6 +91,8 @@ void Mesh::clear()
 {
     m_vertices.clear();
     m_indices.clear();
+
+    m_bbox = math::BoundingBox();
 
     m_verticesDirty = true;
     m_indicesDirty = true;

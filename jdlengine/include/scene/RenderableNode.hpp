@@ -2,6 +2,8 @@
 
 #include "SceneNode.hpp"
 
+#include "math/BoundingBox.hpp"
+
 #include "resource/Mesh.hpp"
 
 
@@ -51,6 +53,7 @@ private:
     // Rendered meshes
     std::vector<resource::Mesh*> m_meshes;
 
+    math::BoundingBox getNodeBoundingBox() const;
     void doRender(const core::RenderContext& context);
 };
 

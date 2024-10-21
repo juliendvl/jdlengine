@@ -5,6 +5,7 @@
 
 #include "io/ModelImporter.hpp"
 
+#include "math/BoundingBox.hpp"
 #include "math/SRTMatrix.hpp"
 
 #include "resource/Camera.hpp"

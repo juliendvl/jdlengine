@@ -19,6 +19,7 @@
 #endif
 
 // --- COMMON INCLUDES ---
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <string>

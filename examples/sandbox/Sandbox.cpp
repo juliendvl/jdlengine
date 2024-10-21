@@ -13,10 +13,13 @@ public:
 
         core::Size windowSize = GetWindow().getFramebufferSize();
 
+        auto node = io::ModelImporter::Import("resources/models/BoxTextured/BoxTextured.gltf");
+        auto bbox = node->getBoundingBox();
+
         resource::OrbitCamera* camera = resource::ResourceManager::Create<resource::OrbitCamera>("Camera");
         camera->setAspectRatio(static_cast<float>(windowSize.width) / windowSize.height);
-
-        auto node = io::ModelImporter::Import("resources/models/BoxTextured/BoxTextured.gltf");
+        camera->setCenter(bbox.getCenter());
+        camera->setRadius(2.0f * glm::max(bbox.getWidth(), bbox.getHeight(), bbox.getDepth()));
 
         auto scene = std::make_shared<scene::Scene>("scene");
         scene->setCamera(camera);

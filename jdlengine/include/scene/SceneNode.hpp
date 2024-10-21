@@ -5,6 +5,7 @@
 
 #include <unordered_map>
 
+#include "math/BoundingBox.hpp"
 #include "math/SRTMatrix.hpp"
 
 
@@ -113,6 +114,11 @@ public:
     }
 
     /**
+     * @brief Computes and returns the node bounding box.
+     */
+    math::BoundingBox getBoundingBox() const;
+
+    /**
      * @brief Renders the node.
      * @param context Render context
      */
@@ -124,6 +130,11 @@ public:
     static const std::string kPathSeparator;
 
 protected:
+    /**
+     * @brief Computes and returns the node bounding box (excluding children). Must be reimplemented if necessary.
+     */
+    virtual math::BoundingBox getNodeBoundingBox() const { return math::BoundingBox(); }
+
     /**
      * @brief Renders the node content. Must be reimplemented if necessary.
      */

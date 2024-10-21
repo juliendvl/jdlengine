@@ -148,6 +148,19 @@ void SceneNode::setParentTransform(const math::SRTMatrix& transform)
     setWorldTransformDirty();
 }
 
+math::BoundingBox SceneNode::getBoundingBox() const
+{
+    math::BoundingBox bbox = getNodeBoundingBox();
+
+    // Add children bounding boxes
+    for (const auto& [name, child] : m_children)
+    {
+        bbox.extend(child->getBoundingBox());
+    }
+
+    return bbox;
+}
+
 void SceneNode::render(const core::RenderContext& context)
 {
     if (m_visible)

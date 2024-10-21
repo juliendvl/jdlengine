@@ -5,6 +5,8 @@
 #include "core/RenderContext.hpp"
 #include "core/Vertex.hpp"
 
+#include "math/BoundingBox.hpp"
+
 #include "Material.hpp"
 
 
@@ -55,7 +57,11 @@ public:
     template<typename Iter>
     void addVertices(Iter start, Iter end)
     {
-        m_vertices.insert(m_vertices.cbegin(), start, end);
+        for (auto it = start; it != end; ++it)
+        {
+            m_vertices.push_back(*it);
+            m_bbox.extend(it->position);
+        }
         m_verticesDirty = true;
     }
 
@@ -119,6 +125,13 @@ public:
     }
 
     /**
+     * @brief Returns the mesh bounding box.
+     */
+    const math::BoundingBox& getBoundingBox() const {
+        return m_bbox;
+    }
+
+    /**
      * @brief Sets the mesh material.
      */
     void setMaterial(Material* material) {
@@ -148,6 +161,8 @@ private:
     GLuint m_vao;
     GLuint m_vbo;
     GLuint m_ibo;
+
+    math::BoundingBox m_bbox;
 
     Material* m_material;
 
