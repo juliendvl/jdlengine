@@ -13,6 +13,9 @@ add_definitions(-DJDL_BUILD_DLL)
 
 add_library(
 	${ENGINE_NAME} SHARED
+	# GLAD OpenGL loader
+	${VENDOR_DIR}/glad/src/glad.c
+	# Engine sources
 	${CORE_SRC}
 	${UTILS_SRC}
 )
@@ -30,3 +33,5 @@ add_subdirectory(${VENDOR_DIR}/glfw)
 include_directories(${VENDOR_DIR}/glfw/include)
 target_link_libraries(jdlengine glfw)
 
+# GLAD
+include_directories(${VENDOR_DIR}/glad/include)
