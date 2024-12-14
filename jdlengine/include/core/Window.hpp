@@ -4,7 +4,6 @@
 #include "utils/NonCopyable.hpp"
 
 // GLAD must be included before GLFW
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "Size.hpp"

@@ -20,10 +20,13 @@ Application::Application(const char* name, int width, int height)
     IApplication = this;
 
     m_window = std::make_unique<Window>(name, width, height);
+    m_renderer = std::make_unique<Renderer>();
+    m_renderer->setBackgroundColor(0.2f, 0.2f, 0.2f);
 }
 
 Application::~Application()
 {
+    m_renderer.reset();
     m_window.reset();
 }
 
@@ -32,9 +35,14 @@ void Application::run()
     while (m_window->isRunning())
     {
         m_window->pollEvents();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        m_renderer->renderFrame();
         m_window->swapBuffers();
     }
+}
+
+void Application::resizeEvent(const ResizeEvent& event)
+{
+    m_renderer->resizeEvent(event);
 }
 
 } // namespace core

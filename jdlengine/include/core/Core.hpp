@@ -29,6 +29,8 @@
 #include <string>
 #include <vector>
 
+#include <glad/glad.h>
+
 
 // Warnings
 #pragma warning(disable : 4251)

@@ -1,5 +1,8 @@
 #include "core/Window.hpp"
 
+#include "core/Application.hpp"
+#include "core/Events.hpp"
+
 #include "utils/Logger.hpp"
 
 
@@ -123,7 +126,8 @@ void Window::setupCallbacks()
         m_window,
         [](GLFWwindow* window, int width, int height)
         {
-            glViewport(0, 0, width, height);
+            ResizeEvent event(width, height);
+            Application::Get().resizeEvent(event);
         }
     );
 }
