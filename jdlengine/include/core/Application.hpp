@@ -3,6 +3,8 @@
 #include "Core.hpp"
 #include "utils/NonCopyable.hpp"
 
+#include "Window.hpp"
+
 
 namespace jdl
 {
@@ -33,6 +35,13 @@ public:
     }
 
     /**
+     * @brief Returns the application window.
+     */
+    static Window& GetWindow() {
+        return *IApplication->m_window;
+    }
+
+    /**
      * @brief Runs the application.
      */
     void run();
@@ -43,6 +52,8 @@ private:
 
     // Application name
     const char* m_name;
+    // Application window
+    std::unique_ptr<Window> m_window;
 };
 
 std::unique_ptr<Application> CreateApplication(const char* name, int width, int height);
