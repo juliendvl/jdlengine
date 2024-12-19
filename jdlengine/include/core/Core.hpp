@@ -31,6 +31,12 @@
 
 #include <glad/glad.h>
 
+#ifndef GLM_ENABLE_EXPERIMENTAL
+    #define GLM_ENABLE_EXPERIMENTAL
+    #define GLM_FORCE_RADIANS
+#endif // !GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+
 
 // Warnings
 #pragma warning(disable : 4251)

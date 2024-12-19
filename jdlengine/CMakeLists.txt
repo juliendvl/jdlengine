@@ -37,3 +37,6 @@ target_link_libraries(jdlengine glfw)
 
 # GLAD
 include_directories(${VENDOR_DIR}/glad/include)
+
+# glm
+include_directories(${VENDOR_DIR}/glm)
