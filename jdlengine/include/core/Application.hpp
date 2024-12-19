@@ -76,6 +76,9 @@ private:
     std::unique_ptr<Window> m_window;
     // Application renderer
     std::unique_ptr<Renderer> m_renderer;
+
+    // Creates the application default resources (shaders, camera...)
+    void createDefaultResources();
 };
 
 std::unique_ptr<Application> CreateApplication(const char* name, int width, int height);

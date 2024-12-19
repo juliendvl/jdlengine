@@ -1,4 +1,7 @@
 #include "core/Application.hpp"
+
+#include "resource/ShaderProgram.hpp"
+
 #include "utils/Logger.hpp"
 
 
@@ -22,6 +25,8 @@ Application::Application(const char* name, int width, int height)
     m_window = std::make_unique<Window>(name, width, height);
     m_renderer = std::make_unique<Renderer>();
     m_renderer->setBackgroundColor(0.2f, 0.2f, 0.2f);
+
+    createDefaultResources();
 }
 
 Application::~Application()
@@ -43,6 +48,15 @@ void Application::run()
 void Application::resizeEvent(const ResizeEvent& event)
 {
     m_renderer->resizeEvent(event);
+}
+
+void Application::createDefaultResources()
+{
+    resource::ResourceManager::Create<resource::ShaderProgram>(
+        "DefaultShader",
+        "shaders/pbr.vert",
+        "shaders/pbr.frag"
+    );
 }
 
 } // namespace core
