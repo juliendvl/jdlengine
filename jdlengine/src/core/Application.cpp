@@ -52,11 +52,12 @@ void Application::resizeEvent(const ResizeEvent& event)
 
 void Application::createDefaultResources()
 {
-    resource::ResourceManager::Create<resource::ShaderProgram>(
+    auto shader = resource::ResourceManager::Create<resource::ShaderProgram>(
         "DefaultShader",
         "shaders/pbr.vert",
         "shaders/pbr.frag"
     );
+    shader->use();
 }
 
 } // namespace core
