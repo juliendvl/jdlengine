@@ -7,6 +7,7 @@ set(INC_DIR include)
 set(SRC_DIR src)
 
 file(GLOB CORE_SRC ${INC_DIR}/core/*.hpp ${SRC_DIR}/core/*.cpp)
+file(GLOB MATH_SRC ${INC_DIR}/math/*.hpp ${SRC_DIR}/math/*.cpp)
 file(GLOB RESOURCE_SRC ${INC_DIR}/resource/*.hpp ${SRC_DIR}/resource/*.cpp)
 file(GLOB UTILS_SRC ${INC_DIR}/utils/*.hpp ${SRC_DIR}/utils/*.cpp)
 
@@ -18,6 +19,7 @@ add_library(
 	${VENDOR_DIR}/glad/src/glad.c
 	# Engine sources
 	${CORE_SRC}
+	${MATH_SRC}
 	${RESOURCE_SRC}
 	${UTILS_SRC}
 )
