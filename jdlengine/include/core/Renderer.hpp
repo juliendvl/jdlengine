@@ -2,6 +2,9 @@
 
 #include "Core.hpp"
 #include "Events.hpp"
+#include "RenderContext.hpp"
+
+#include "scene/Scene.hpp"
 
 #include "utils/NonCopyable.hpp"
 
@@ -33,6 +36,11 @@ public:
     }
 
     /**
+     * @brief Sets the active scene.
+     */
+    void setScene(const std::shared_ptr<scene::Scene>& scene) { m_scene = scene; }
+
+    /**
      * @brief Renders a new frame.
      */
     void renderFrame();
@@ -42,6 +50,12 @@ public:
      * @param event Event data
      */
     void resizeEvent(const ResizeEvent& event);
+
+private:
+    // Active scene
+    std::shared_ptr<scene::Scene> m_scene;
+    // Active render context
+    RenderContext m_context;
 };
 
 } // namespace core
