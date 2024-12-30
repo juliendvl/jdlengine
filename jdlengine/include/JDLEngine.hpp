@@ -2,5 +2,13 @@
 
 #include "core/Application.hpp"
 #include "core/Events.hpp"
+#include "core/Vertex.hpp"
+
+#include "resource/Mesh.hpp"
+#include "resource/ShaderProgram.hpp"
+
+#include "scene/MeshNode.hpp"
+#include "scene/Scene.hpp"
+#include "scene/SceneNode.hpp"
 
 #include "utils/Logger.hpp"
