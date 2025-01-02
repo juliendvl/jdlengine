@@ -44,3 +44,6 @@ include_directories(${VENDOR_DIR}/glad/include)
 
 # glm
 include_directories(${VENDOR_DIR}/glm)
+
+# stb
+include_directories(${VENDOR_DIR}/stb)
