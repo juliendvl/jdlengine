@@ -4,6 +4,7 @@
 #include "core/Events.hpp"
 #include "core/Vertex.hpp"
 
+#include "resource/Cameras.hpp"
 #include "resource/Mesh.hpp"
 #include "resource/ShaderProgram.hpp"
 

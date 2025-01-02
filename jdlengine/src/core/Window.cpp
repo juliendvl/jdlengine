@@ -1,7 +1,6 @@
 #include "core/Window.hpp"
 
 #include "core/Application.hpp"
-#include "core/Events.hpp"
 
 #include "utils/Logger.hpp"
 
@@ -33,12 +32,54 @@ static void APIENTRY s_DebugCallback(GLenum source, GLenum type, unsigned int id
     }
 }
 
+static Modifiers s_GetModifiers(GLFWwindow* window)
+{
+    Modifiers modifiers = Modifiers::kNone;
+
+    // ALT
+    auto left  = glfwGetKey(window, GLFW_KEY_LEFT_ALT);
+    auto right = glfwGetKey(window, GLFW_KEY_RIGHT_ALT);
+    if (left == GLFW_PRESS || right == GLFW_PRESS)
+    {
+        modifiers |= Modifiers::kAlt;
+    }
+
+    // CONTROL
+    left  = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
+    right = glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL);
+    if (left == GLFW_PRESS || right == GLFW_PRESS)
+    {
+        modifiers |= Modifiers::kControl;
+    }
+
+    // SHIFT
+    left  = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT);
+    right = glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT);
+    if (left == GLFW_PRESS || right == GLFW_PRESS)
+    {
+        modifiers |= Modifiers::kShift;
+    }
+
+    return modifiers;
+}
+
+static std::pair<int, int> s_GetMousePosition(GLFWwindow* window)
+{
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+
+    return std::make_pair(static_cast<int>(xpos), static_cast<int>(ypos));
+}
+
 
 Window* Window::IWindow = nullptr;
 
 
 Window::Window(const char* title, int width, int height)
     : m_window(nullptr)
+    , m_pressedButton(MouseButton::kNone)
+    , m_mouseX(0)
+    , m_mouseY(0)
 {
     if (IWindow != nullptr)
     {
@@ -122,6 +163,100 @@ Size Window::getFramebufferSize() const
 
 void Window::setupCallbacks()
 {
+    glfwSetMouseButtonCallback(
+        m_window,
+        [](GLFWwindow* window, int button, int action, int mods)
+        {
+            auto appWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+
+            // Setup the mouse button
+            MouseButton mouseButton = MouseButton::kNone;
+            switch (button)
+            {
+                case GLFW_MOUSE_BUTTON_MIDDLE:
+                    mouseButton = MouseButton::kMiddle;
+                    break;
+                case GLFW_MOUSE_BUTTON_RIGHT:
+                    mouseButton = MouseButton::kRight;
+                    break;
+                default:
+                    mouseButton = MouseButton::kLeft;
+                    break;
+            }
+
+            // Setup the modifiers
+            Modifiers modifiers = Modifiers::kNone;
+            if (mods & GLFW_MOD_ALT)
+                modifiers |= Modifiers::kAlt;
+            if (mods & GLFW_MOD_CONTROL)
+                modifiers |= Modifiers::kControl;
+            if (mods & GLFW_MOD_SHIFT)
+                modifiers |= Modifiers::kShift;
+
+            auto mousePos = s_GetMousePosition(window);
+            appWindow->m_mouseX = mousePos.first;
+            appWindow->m_mouseY = mousePos.second;
+
+            if (action == GLFW_PRESS)
+            {
+                appWindow->m_pressedButton = mouseButton;
+                Application::Get().mousePressEvent(MousePressEvent(
+                    mousePos.first, mousePos.second,
+                    mouseButton,
+                    modifiers
+                ));
+            }
+            else
+            {
+                appWindow->m_pressedButton = MouseButton::kNone;
+                Application::Get().mouseReleaseEvent(MouseReleaseEvent(
+                    mousePos.first, mousePos.second,
+                    mouseButton,
+                    modifiers
+                ));
+            }
+        }
+    );
+
+    glfwSetCursorPosCallback(
+        m_window,
+        [](GLFWwindow* window, double xpos, double ypos)
+        {
+            auto appWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+
+            int mouseX = static_cast<int>(xpos);
+            int mouseY = static_cast<int>(ypos);
+            int deltaX = mouseX - appWindow->m_mouseX;
+            int deltaY = mouseY - appWindow->m_mouseY;
+
+            Application::Get().mouseMoveEvent(MouseMoveEvent(
+                mouseX, mouseY,
+                deltaX, deltaY,
+                appWindow->m_pressedButton,
+                s_GetModifiers(window)
+            ));
+
+            appWindow->m_mouseX = mouseX;
+            appWindow->m_mouseY = mouseY;
+        }
+    );
+
+    glfwSetScrollCallback(
+        m_window,
+        [](GLFWwindow* window, double xoffset, double yoffset)
+        {
+            auto mousePos  = s_GetMousePosition(window);
+            auto modifiers = s_GetModifiers(window);
+
+            WheelEvent event(
+                mousePos.first, mousePos.second,
+                static_cast<int>(xoffset), static_cast<int>(yoffset),
+                modifiers
+            );
+            Application::Get().wheelEvent(event);
+        }
+    );
+
     glfwSetWindowSizeCallback(
         m_window,
         [](GLFWwindow* window, int width, int height)

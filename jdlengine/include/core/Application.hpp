@@ -61,6 +61,30 @@ public:
     void run();
 
     /**
+     * @brief Mouse press event callback.
+     * @param event Event data
+     */
+    void mousePressEvent(const MousePressEvent& event);
+
+    /**
+     * @brief Mouse move event callback.
+     * @param event Event data
+     */
+    void mouseMoveEvent(const MouseMoveEvent& event);
+
+    /**
+     * @brief Mouse release event callback.
+     * @param event Event data
+     */
+    void mouseReleaseEvent(const MouseReleaseEvent& event);
+
+    /**
+     * @brief Wheel event callback.
+     * @param event Event data
+     */
+    void wheelEvent(const WheelEvent& event);
+
+    /**
      * @brief Resize event callback.
      * @param event Event data
      */

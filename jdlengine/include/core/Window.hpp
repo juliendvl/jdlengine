@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Core.hpp"
+#include "Events.hpp"
+
 #include "utils/NonCopyable.hpp"
 
 // GLAD must be included before GLFW
@@ -67,9 +69,12 @@ public:
 private:
     // Single Window instance
     static Window* IWindow;
-
     // Internal GLFW pointer
     GLFWwindow* m_window;
+    // Events data
+    MouseButton m_pressedButton;
+    int m_mouseX;
+    int m_mouseY;
 
     // Setups the window callbacks (mouse, keyboard, resize...)
     void setupCallbacks();
