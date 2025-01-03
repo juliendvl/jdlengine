@@ -12,6 +12,11 @@ public:
     {
         auto size = GetWindow().getFramebufferSize();
 
+        auto texture = resource::ResourceManager::Create<resource::Texture>("TEXTURE", "textures/container.png");
+
+        auto material = resource::ResourceManager::Create<resource::Material>("MATERIAL");
+        material->setBaseColorTexture(texture);
+
         auto camera = resource::ResourceManager::Create<resource::OrbitCamera>("CAMERA");
         camera->setAspectRatio(static_cast<float>(size.width) / size.height);
         camera->setAzimuth(glm::radians(90.0f));
@@ -25,7 +30,7 @@ public:
         });
         mesh->addIndices({0, 1, 2, 0, 2, 3});
 
-        auto meshNode = scene::CreateNode<scene::MeshNode>("MESH_NODE", nullptr, mesh);
+        auto meshNode = scene::CreateNode<scene::MeshNode>("MESH_NODE", nullptr, mesh, material);
 
         auto scene = std::make_shared<scene::Scene>("SCENE");
         scene->setRootNode(meshNode);

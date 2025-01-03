@@ -8,7 +8,7 @@ namespace core
 
 Renderer::Renderer()
 {
-    m_context.shaderProgram = resource::ResourceManager::As<resource::ShaderProgram>("DefaultShader");
+    m_context.shaderProgram = resource::ResourceManager::As<resource::ShaderProgram>("__DEFAULT_SHADER__");
 }
 
 Renderer::~Renderer() {}

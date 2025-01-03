@@ -1,6 +1,7 @@
 #include "core/Application.hpp"
 
 #include "resource/ShaderProgram.hpp"
+#include "resource/Texture.hpp"
 
 #include "utils/Logger.hpp"
 
@@ -74,11 +75,14 @@ void Application::resizeEvent(const ResizeEvent& event)
 void Application::createDefaultResources()
 {
     auto shader = resource::ResourceManager::Create<resource::ShaderProgram>(
-        "DefaultShader",
+        "__DEFAULT_SHADER__",
         "shaders/pbr.vert",
         "shaders/pbr.frag"
     );
     shader->use();
+
+    unsigned char texels[] = {255, 255, 255};
+    auto texture = resource::ResourceManager::Create<resource::Texture>("__WHITE_TEXTURE__", 1, 1, 3, texels);
 }
 
 } // namespace core
