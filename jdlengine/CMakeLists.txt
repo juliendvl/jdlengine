@@ -13,8 +13,11 @@ endif()
 
 add_library(
 	${ENGINE_NAME} SHARED
+	# Engine files
 	${CORE_SRC}
 	${UTILS_SRC}
+	# glad
+	${VENDOR_DIR}/glad/src/glad.c
 )
 include_directories(${INC_DIR})
 
@@ -29,3 +32,6 @@ add_subdirectory(${VENDOR_DIR}/glfw)
 
 include_directories(${VENDOR_DIR}/glfw/include)
 target_link_libraries(${ENGINE_NAME} glfw)
+
+# glad
+include_directories(${VENDOR_DIR}/glad/include)
