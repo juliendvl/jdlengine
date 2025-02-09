@@ -28,6 +28,8 @@
 #include <string>
 #include <vector>
 
+#include <glad/glad.h>
+
 
 /* --- PRAGMA WARNING --- */
 #ifdef JDL_WINDOWS
