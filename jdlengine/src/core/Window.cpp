@@ -1,4 +1,6 @@
 #include "core/Window.hpp"
+#include "core/Application.hpp"
+#include "core/Events.hpp"
 
 #include "utils/Logger.hpp"
 
@@ -100,6 +102,7 @@ void Window::init(const char* title, int width, int height)
         JDL_FATAL("Failed to create the GLFW window");
     }
     glfwMakeContextCurrent(m_window);
+    glfwSetWindowUserPointer(m_window, this);
 
     int gladStatus = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     if (!gladStatus)
@@ -137,7 +140,8 @@ void Window::setupCallbacks()
         m_window,
         [](GLFWwindow* window, int width, int height)
         {
-            glViewport(0, 0, width, height);
+            ResizeEvent event(width, height);
+            Application::Get()->resizeEvent(event);
         }
     );
 }
