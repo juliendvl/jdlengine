@@ -14,6 +14,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_CXX_STANDARD 17)
 
+if (MSVC)
+	# Necessary to compile with spdlog
+	add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+endif()
+
 add_subdirectory(${ENGINE_DIR})
 
 option(BUILD_SANDBOX "Build the Sandbox application" ON)
