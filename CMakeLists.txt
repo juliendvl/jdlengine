@@ -14,6 +14,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_CXX_STANDARD 17)
 
+add_subdirectory(${ENGINE_DIR})
+
 option(BUILD_SANDBOX "Build the Sandbox application" ON)
 if (BUILD_SANDBOX)
 	add_subdirectory(sandbox)
