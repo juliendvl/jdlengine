@@ -1,5 +1,7 @@
 #include "core/Application.hpp"
 
+#include "utils/Logger.hpp"
+
 
 namespace jdl
 {
@@ -13,14 +15,26 @@ Application::Application(const char* name, int width, int height)
 {
     if (IApplication != nullptr)
     {
-        // TODO - Raise a Fatal Error
+        JDL_FATAL("The application has already been created");
     }
     IApplication = this;
+
+    // Create the window
+    m_window = std::make_unique<Window>(name, width, height);
 }
 
-Application::~Application() {}
+Application::~Application()
+{
+    m_window.reset();
+}
 
-void Application::run() {}
+void Application::run()
+{
+    while (m_window->isRunning())
+    {
+        m_window->pollEvents();
+    }
+}
 
 } // namespace core
 } // namespace jdl
