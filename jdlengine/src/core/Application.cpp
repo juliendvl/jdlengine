@@ -1,4 +1,5 @@
 #include "core/Application.hpp"
+#include "core/VulkanContext.hpp"
 
 #include "utils/Logger.hpp"
 
@@ -21,10 +22,15 @@ Application::Application(const char* name, int width, int height)
 
     // Create the window
     m_window = std::make_unique<Window>(name, width, height);
+    // Init the Vulkan context
+    VulkanContext::Init();
 }
 
 Application::~Application()
 {
+    // Destroy the Vulkan context
+    VulkanContext::Destroy();
+    // Destroy the window
     m_window.reset();
 }
 

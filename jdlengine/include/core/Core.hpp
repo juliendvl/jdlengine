@@ -28,6 +28,16 @@
 #include <string>
 #include <vector>
 
+#include <vulkan/vulkan.h>
+
+
+/* --- MACROS --- */
+#ifndef NDEBUG
+    #define VK_CALL(f) { VkResult r = f; if (r != VK_SUCCESS) JDL_FATAL("{} failed with status {}", #f, (int)r); }
+#else
+    #define VK_CALL(f) f
+#endif
+
 
 /* --- PRAGMA WARNING --- */
 #ifdef JDL_WINDOWS

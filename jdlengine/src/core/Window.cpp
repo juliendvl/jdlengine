@@ -45,6 +45,14 @@ Size Window::getFramebufferSize() const
     return size;
 }
 
+std::vector<const char*> Window::GetInstanceExtensions()
+{
+    uint32_t nbExtensions = 0;
+    const char** extensions = glfwGetRequiredInstanceExtensions(&nbExtensions);
+
+    return std::vector<const char*>(extensions, extensions + nbExtensions);
+}
+
 void Window::init(const char* title, int width, int height)
 {
     // GLFW error callback

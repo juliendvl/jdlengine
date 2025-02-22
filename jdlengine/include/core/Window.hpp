@@ -54,6 +54,11 @@ public:
      */
     bool isRunning() const { return glfwWindowShouldClose(m_window) == GLFW_FALSE; }
 
+    /**
+     * @brief Returns the Vulkan instance extensions needed to interface with the window system.
+     */
+    static std::vector<const char*> GetInstanceExtensions();
+
 private:
     // Unique window instance
     static Window* IWindow;
