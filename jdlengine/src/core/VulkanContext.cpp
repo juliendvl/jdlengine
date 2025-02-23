@@ -129,6 +129,8 @@ VulkanContext VulkanContext::IContext;
 VulkanContext::VulkanContext()
     : m_instance(VK_NULL_HANDLE)
     , m_debugMessenger(VK_NULL_HANDLE)
+    , m_physicalDevice(VK_NULL_HANDLE)
+    , m_device(VK_NULL_HANDLE)
 {}
 
 void VulkanContext::init()
@@ -137,6 +139,8 @@ void VulkanContext::init()
     {
         createInstance();
         createDebugMessenger();
+        selectPhysicalDevice();
+        createDevice();
     }
 }
 
@@ -144,6 +148,7 @@ void VulkanContext::destroy()
 {
     if (m_instance != VK_NULL_HANDLE)
     {
+        vkDestroyDevice(m_device, nullptr);
         if (m_debugMessenger != VK_NULL_HANDLE)
         {
             s_DestroyDebugMessenger(m_instance, m_debugMessenger, nullptr);
@@ -204,6 +209,100 @@ void VulkanContext::createDebugMessenger()
         auto createInfo = s_DebugMessengerCreateInfo();
         VK_CALL(s_CreateDebugMessenger(m_instance, &createInfo, nullptr, &m_debugMessenger));
     }
+}
+
+void VulkanContext::selectPhysicalDevice()
+{
+    uint32_t nbDevices;
+    vkEnumeratePhysicalDevices(m_instance, &nbDevices, nullptr);
+    if (nbDevices == 0)
+    {
+        JDL_FATAL("Cannot find a physical device with Vulkan support");
+    }
+
+    std::vector<VkPhysicalDevice> devices(nbDevices);
+    vkEnumeratePhysicalDevices(m_instance, &nbDevices, devices.data());
+
+    // Find the compatible physical devices
+    std::vector<VkPhysicalDevice> validDevices;
+    std::vector<QueueFamilyIndices> validQueueFamilies;
+
+    for (VkPhysicalDevice device : devices)
+    {
+        QueueFamilyIndices queueFamilies;
+
+        uint32_t nbQueues;
+        vkGetPhysicalDeviceQueueFamilyProperties(device, &nbQueues, nullptr);
+
+        std::vector<VkQueueFamilyProperties> queues(nbQueues);
+        vkGetPhysicalDeviceQueueFamilyProperties(device, &nbQueues, queues.data());
+
+        for (auto i = 0; i < nbQueues; ++i)
+        {
+            VkQueueFamilyProperties queueProperties = queues[i];
+            if (queueProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+            {
+                queueFamilies.graphics = i;
+            }
+
+            if (queueFamilies.isComplete())
+            {
+                validDevices.push_back(device);
+                validQueueFamilies.push_back(queueFamilies);
+                break;
+            }
+        }
+    }
+    if (validDevices.empty())
+    {
+        JDL_FATAL("Cannot find a physical device compatible with the application");
+    }
+
+    // Multiple compatible devices -> use the dedicated GPU if existing
+    m_physicalDevice = validDevices[0];
+    m_queueFamilyIndices = validQueueFamilies[0];
+
+    for (auto i = 1; i < validDevices.size(); ++i)
+    {
+        VkPhysicalDeviceProperties deviceProperties;
+        vkGetPhysicalDeviceProperties(validDevices[i], &deviceProperties);
+
+        if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+        {
+            m_physicalDevice = validDevices[i];
+            m_queueFamilyIndices = validQueueFamilies[i];
+            break;
+        }
+    }
+}
+
+void VulkanContext::createDevice()
+{
+    float queuePriority = 1.0f;
+
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfo;
+    for (uint32_t queueIndex : m_queueFamilyIndices.getUniqueIndices())
+    {
+        VkDeviceQueueCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        createInfo.queueFamilyIndex = queueIndex;
+        createInfo.queueCount = 1;
+        createInfo.pQueuePriorities = &queuePriority;
+
+        queueCreateInfo.push_back(createInfo);
+    }
+
+    VkPhysicalDeviceFeatures deviceFeatures = {};
+
+    VkDeviceCreateInfo createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfo.size());
+    createInfo.pQueueCreateInfos = queueCreateInfo.data();
+    createInfo.pEnabledFeatures = &deviceFeatures;
+    createInfo.enabledExtensionCount = 0;
+    createInfo.enabledLayerCount = 0;
+
+    VK_CALL(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
 }
 
 } // namespace core
