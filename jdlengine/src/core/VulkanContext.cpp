@@ -129,6 +129,7 @@ VulkanContext VulkanContext::IContext;
 VulkanContext::VulkanContext()
     : m_instance(VK_NULL_HANDLE)
     , m_debugMessenger(VK_NULL_HANDLE)
+    , m_surface(VK_NULL_HANDLE)
     , m_physicalDevice(VK_NULL_HANDLE)
     , m_device(VK_NULL_HANDLE)
 {}
@@ -139,6 +140,7 @@ void VulkanContext::init()
     {
         createInstance();
         createDebugMessenger();
+        createWindowSurface();
         selectPhysicalDevice();
         createDevice();
     }
@@ -149,6 +151,7 @@ void VulkanContext::destroy()
     if (m_instance != VK_NULL_HANDLE)
     {
         vkDestroyDevice(m_device, nullptr);
+        vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
         if (m_debugMessenger != VK_NULL_HANDLE)
         {
             s_DestroyDebugMessenger(m_instance, m_debugMessenger, nullptr);
@@ -211,6 +214,11 @@ void VulkanContext::createDebugMessenger()
     }
 }
 
+void VulkanContext::createWindowSurface()
+{
+    m_surface = Application::GetWindow().createWindowSurface(m_instance);
+}
+
 void VulkanContext::selectPhysicalDevice()
 {
     uint32_t nbDevices;
@@ -240,9 +248,19 @@ void VulkanContext::selectPhysicalDevice()
         for (auto i = 0; i < nbQueues; ++i)
         {
             VkQueueFamilyProperties queueProperties = queues[i];
+
+            // Graphics queue family test
             if (queueProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)
             {
                 queueFamilies.graphics = i;
+            }
+
+            // Presentation queue family test
+            VkBool32 presentSupported = VK_FALSE;
+            VK_CALL(vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface, &presentSupported));
+            if (presentSupported)
+            {
+                queueFamilies.present = i;
             }
 
             if (queueFamilies.isComplete())

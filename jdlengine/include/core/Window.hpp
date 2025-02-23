@@ -55,6 +55,12 @@ public:
     bool isRunning() const { return glfwWindowShouldClose(m_window) == GLFW_FALSE; }
 
     /**
+     * @brief Creates and returns the window surface associated to the window.
+     * @param instance Vulkan instance
+     */
+    VkSurfaceKHR createWindowSurface(VkInstance instance) const;
+
+    /**
      * @brief Returns the Vulkan instance extensions needed to interface with the window system.
      */
     static std::vector<const char*> GetInstanceExtensions();

@@ -45,6 +45,14 @@ Size Window::getFramebufferSize() const
     return size;
 }
 
+VkSurfaceKHR Window::createWindowSurface(VkInstance instance) const
+{
+    VkSurfaceKHR surface;
+    VK_CALL(glfwCreateWindowSurface(instance, m_window, nullptr, &surface));
+
+    return surface;
+}
+
 std::vector<const char*> Window::GetInstanceExtensions()
 {
     uint32_t nbExtensions = 0;

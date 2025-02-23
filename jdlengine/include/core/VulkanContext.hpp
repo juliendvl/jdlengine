@@ -17,12 +17,14 @@ struct QueueFamilyIndices
 {
     // Graphic operations family
     std::optional<uint32_t> graphics;
+    // Presentation operations family
+    std::optional<uint32_t> present;
 
     /**
      * @brief Returns whether all the required families have been set or not.
      */
     bool isComplete() const {
-        return graphics.has_value();
+        return graphics.has_value() && present.has_value();
     }
 
     /**
@@ -34,6 +36,7 @@ struct QueueFamilyIndices
         if (isComplete())
         {
             indices.insert(*graphics);
+            indices.insert(*present);
         }
         return indices;
     }
@@ -80,6 +83,8 @@ private:
     VkInstance m_instance;
     // Debug messenger
     VkDebugUtilsMessengerEXT m_debugMessenger;
+    // Window surface
+    VkSurfaceKHR m_surface;
     // Physical device
     VkPhysicalDevice m_physicalDevice;
     // Device queue families
@@ -98,6 +103,8 @@ private:
     void createInstance();
     // Creates the debug messenger object
     void createDebugMessenger();
+    // Creates the window surface
+    void createWindowSurface();
     // Selects a physical device
     void selectPhysicalDevice();
     // Creates the logical device
