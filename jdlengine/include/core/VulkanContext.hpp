@@ -5,6 +5,8 @@
 #include <optional>
 #include <set>
 
+#include "SwapChain.hpp"
+
 #include "utils/NonCopyable.hpp"
 
 
@@ -62,6 +64,11 @@ public:
     static VkInstance GetInstance() { return IContext.m_instance; }
 
     /**
+     * @brief Returns the window surface handle.
+     */
+    static VkSurfaceKHR GetWindowSurface() { return IContext.m_surface; }
+
+    /**
      * @brief Returns the selected physical device handle.
      */
     static VkPhysicalDevice GetPhysicalDevice() { return IContext.m_physicalDevice; }
@@ -75,6 +82,11 @@ public:
      * @brief Returns the logical device handle.
      */
     static VkDevice GetDevice() { return IContext.m_device; }
+
+    /**
+     * @brief Returns the current swap chain.
+     */
+    static SwapChain& GetSwapChain() { return *IContext.m_swapChain; }
 
 private:
     static VulkanContext IContext;
@@ -91,6 +103,8 @@ private:
     QueueFamilyIndices m_queueFamilyIndices;
     // Logical device
     VkDevice m_device;
+    // SwapChain
+    std::unique_ptr<SwapChain> m_swapChain;
 
     VulkanContext();
 
@@ -109,6 +123,8 @@ private:
     void selectPhysicalDevice();
     // Creates the logical device
     void createDevice();
+    // Creates the swapchain
+    void createSwapChain();
 };
 
 } // namespace core
