@@ -1,6 +1,8 @@
 #include "core/Application.hpp"
 #include "core/VulkanContext.hpp"
 
+#include "resource/ResourceManager.hpp"
+
 #include "utils/Logger.hpp"
 
 
@@ -28,6 +30,8 @@ Application::Application(const char* name, int width, int height)
 
 Application::~Application()
 {
+    // All the resources must be destroyed before destroying the VulkanContext!
+    resource::ResourceManager::Clear();
     // Destroy the Vulkan context
     VulkanContext::Destroy();
     // Destroy the window
