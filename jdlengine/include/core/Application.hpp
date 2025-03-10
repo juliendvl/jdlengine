@@ -55,9 +55,6 @@ private:
 
     // Application window
     std::unique_ptr<Window> m_window;
-
-    // Creates the application default resources
-    void createDefaultResources();
 };
 
 /**

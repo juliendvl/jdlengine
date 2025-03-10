@@ -5,6 +5,7 @@
 #include <optional>
 #include <set>
 
+#include "Pipeline.hpp"
 #include "SwapChain.hpp"
 
 #include "utils/NonCopyable.hpp"
@@ -105,6 +106,8 @@ private:
     VkDevice m_device;
     // SwapChain
     std::unique_ptr<SwapChain> m_swapChain;
+    // Pipeline
+    std::unique_ptr<Pipeline> m_pipeline;
 
     VulkanContext();
 
@@ -123,8 +126,12 @@ private:
     void selectPhysicalDevice();
     // Creates the logical device
     void createDevice();
+    // Creates the default resources
+    void createDefaultResources();
     // Creates the swapchain
     void createSwapChain();
+    // Creates the graphics pipeline
+    void createPipeline();
 };
 
 } // namespace core

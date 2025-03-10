@@ -2,7 +2,6 @@
 #include "core/VulkanContext.hpp"
 
 #include "resource/ResourceManager.hpp"
-#include "resource/Shader.hpp"
 
 #include "utils/Logger.hpp"
 
@@ -27,8 +26,6 @@ Application::Application(const char* name, int width, int height)
     m_window = std::make_unique<Window>(name, width, height);
     // Init the Vulkan context
     VulkanContext::Init();
-
-    createDefaultResources();
 }
 
 Application::~Application()
@@ -47,13 +44,6 @@ void Application::run()
     {
         m_window->pollEvents();
     }
-}
-
-void Application::createDefaultResources()
-{
-    // Default PBR shaders
-    resource::ResourceManager::Create<resource::Shader>("PBR_VERT", "shaders/pbr_vert.spv");
-    resource::ResourceManager::Create<resource::Shader>("PBR_FRAG", "shaders/pbr_frag.spv");
 }
 
 } // namespace core

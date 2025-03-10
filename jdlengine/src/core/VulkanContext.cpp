@@ -2,6 +2,9 @@
 #include "core/Application.hpp"
 #include "core/Window.hpp"
 
+#include "resource/ResourceManager.hpp"
+#include "resource/Shader.hpp"
+
 #include "utils/Logger.hpp"
 
 
@@ -167,7 +170,9 @@ void VulkanContext::init()
         createWindowSurface();
         selectPhysicalDevice();
         createDevice();
+        createDefaultResources();
         createSwapChain();
+        createPipeline();
     }
 }
 
@@ -175,6 +180,7 @@ void VulkanContext::destroy()
 {
     if (m_instance != VK_NULL_HANDLE)
     {
+        m_pipeline.reset();
         m_swapChain.reset();
 
         vkDestroyDevice(m_device, nullptr);
@@ -357,9 +363,24 @@ void VulkanContext::createDevice()
     VK_CALL(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
 }
 
+void VulkanContext::createDefaultResources()
+{
+    // Default PBR shaders
+    resource::ResourceManager::Create<resource::Shader>("PBR_VERT", "shaders/pbr_vert.spv");
+    resource::ResourceManager::Create<resource::Shader>("PBR_FRAG", "shaders/pbr_frag.spv");
+}
+
 void VulkanContext::createSwapChain()
 {
     m_swapChain = std::make_unique<SwapChain>();
+}
+
+void VulkanContext::createPipeline()
+{
+    m_pipeline = std::make_unique<Pipeline>();
+    m_pipeline->setShader(ShaderStage::kVertex, resource::ResourceManager::GetAs<resource::Shader>("PBR_VERT"));
+    m_pipeline->setShader(ShaderStage::kFragment, resource::ResourceManager::GetAs<resource::Shader>("PBR_FRAG"));
+    m_pipeline->create();
 }
 
 } // namespace core
