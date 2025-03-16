@@ -89,6 +89,11 @@ public:
      */
     static SwapChain& GetSwapChain() { return *IContext.m_swapChain; }
 
+    /**
+     * @brief Returns the current graphics pipeline.
+     */
+    static Pipeline& GetPipeline() { return *IContext.m_pipeline; }
+
 private:
     static VulkanContext IContext;
 

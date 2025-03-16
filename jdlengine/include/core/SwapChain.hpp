@@ -78,6 +78,26 @@ public:
         return index < getNbImages() ? m_views[index] : VK_NULL_HANDLE;
     }
 
+    /**
+     * @brief Creates the swap chain framebuffers.
+     */
+    void createFramebuffers();
+
+    /**
+     * @brief Returns the number of frameuffers.
+     * If the framebuffers have been created, this should be equal to getNbImages().
+     */
+    size_t getNbFramebuffers() const { return m_framebuffers.size(); }
+
+    /**
+     * @brief  Returns a swap chain framebuffer.
+     * @param  index Framebuffer index. Must be less than the number of framebuffers.
+     * @return Swap chain framebuffer, or a null object if the index is invalid.
+     */
+    VkFramebuffer getFramebuffer(size_t index) const {
+        return index < getNbImages() ? m_framebuffers[index] : VK_NULL_HANDLE;
+    }
+
 private:
     // Selected surface format
     VkSurfaceFormatKHR m_surfaceFormat;
@@ -91,6 +111,7 @@ private:
     // Images & Views
     std::vector<VkImage> m_images;
     std::vector<VkImageView> m_views;
+    std::vector<VkFramebuffer> m_framebuffers;
 
     // Creates the swap chain
     void createSwapChain(VkDevice device);

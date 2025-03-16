@@ -81,6 +81,11 @@ public:
      */
     VkPipeline getObject() const { return m_pipeline; }
 
+    /**
+     * @brief Returns the render pass object.
+     */
+    VkRenderPass getRenderPass() const { return m_renderPass; }
+
 private:
     // Shaders
     std::unordered_map<ShaderStage, resource::Shader*> m_shaders;

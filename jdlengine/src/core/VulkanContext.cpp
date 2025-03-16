@@ -381,6 +381,9 @@ void VulkanContext::createPipeline()
     m_pipeline->setShader(ShaderStage::kVertex, resource::ResourceManager::GetAs<resource::Shader>("PBR_VERT"));
     m_pipeline->setShader(ShaderStage::kFragment, resource::ResourceManager::GetAs<resource::Shader>("PBR_FRAG"));
     m_pipeline->create();
+
+    // The framebuffers can now be created
+    m_swapChain->createFramebuffers();
 }
 
 } // namespace core
