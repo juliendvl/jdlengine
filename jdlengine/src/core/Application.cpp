@@ -26,12 +26,16 @@ Application::Application(const char* name, int width, int height)
     m_window = std::make_unique<Window>(name, width, height);
     // Init the Vulkan context
     VulkanContext::Init();
+    // Create the renderer
+    m_renderer = std::make_unique<Renderer>();
 }
 
 Application::~Application()
 {
     // All the resources must be destroyed before destroying the VulkanContext!
     resource::ResourceManager::Clear();
+    // Destroy the renderer
+    m_renderer.reset();
     // Destroy the Vulkan context
     VulkanContext::Destroy();
     // Destroy the window
@@ -43,6 +47,7 @@ void Application::run()
     while (m_window->isRunning())
     {
         m_window->pollEvents();
+        m_renderer->renderFrame();
     }
 }
 

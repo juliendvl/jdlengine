@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.hpp"
+#include "Renderer.hpp"
 #include "Window.hpp"
 
 #include "utils/NonCopyable.hpp"
@@ -43,6 +44,11 @@ public:
     static Window& GetWindow() { return *IApplication->m_window; }
 
     /**
+     * @brief Returns the application renderer.
+     */
+    static Renderer& GetRenderer() { return *IApplication->m_renderer; }
+
+    /**
      * @brief Runs the application.
      */
     void run();
@@ -55,6 +61,8 @@ private:
 
     // Application window
     std::unique_ptr<Window> m_window;
+    // Application renderer
+    std::unique_ptr<Renderer> m_renderer;
 };
 
 /**

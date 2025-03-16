@@ -2,6 +2,7 @@
 
 #include "Core.hpp"
 
+#include <map>
 #include <optional>
 #include <set>
 
@@ -46,6 +47,17 @@ struct QueueFamilyIndices
 };
 
 
+struct Queue
+{
+    // Queue index
+    uint32_t index = 0;
+    // Vulkan object
+    VkQueue object = VK_NULL_HANDLE;
+    // Command pool
+    VkCommandPool commandPool = VK_NULL_HANDLE;
+};
+
+
 class JDL_API VulkanContext : private NonCopyable<VulkanContext>
 {
 public:
@@ -85,6 +97,22 @@ public:
     static VkDevice GetDevice() { return IContext.m_device; }
 
     /**
+     * @brief Returns the queue associated to the input family index.
+     * @param index Queue family index
+     */
+    static const Queue& GetQueue(uint32_t index) { return IContext.m_queues.at(index); }
+
+    /**
+     * @brief Returns the graphics queue.
+     */
+    static const Queue& GetGraphicsQueue() { return GetQueue(*IContext.m_queueFamilyIndices.graphics); }
+
+    /**
+     * @brief Returns the present queue.
+     */
+    static const Queue& GetPresentQueue() { return GetQueue(*IContext.m_queueFamilyIndices.present); }
+
+    /**
      * @brief Returns the current swap chain.
      */
     static SwapChain& GetSwapChain() { return *IContext.m_swapChain; }
@@ -107,6 +135,8 @@ private:
     VkPhysicalDevice m_physicalDevice;
     // Device queue families
     QueueFamilyIndices m_queueFamilyIndices;
+    // Queues
+    std::map<uint32_t, Queue> m_queues;
     // Logical device
     VkDevice m_device;
     // SwapChain
@@ -131,6 +161,8 @@ private:
     void selectPhysicalDevice();
     // Creates the logical device
     void createDevice();
+    // Retrieves the queues and creates the associated command pools
+    void setupQueues();
     // Creates the default resources
     void createDefaultResources();
     // Creates the swapchain

@@ -170,6 +170,7 @@ void VulkanContext::init()
         createWindowSurface();
         selectPhysicalDevice();
         createDevice();
+        setupQueues();
         createDefaultResources();
         createSwapChain();
         createPipeline();
@@ -182,6 +183,11 @@ void VulkanContext::destroy()
     {
         m_pipeline.reset();
         m_swapChain.reset();
+
+        for (const auto& [index, queue] : m_queues)
+        {
+            vkDestroyCommandPool(m_device, queue.commandPool, nullptr);
+        }
 
         vkDestroyDevice(m_device, nullptr);
         vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
@@ -361,6 +367,26 @@ void VulkanContext::createDevice()
     createInfo.enabledLayerCount = 0;
 
     VK_CALL(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
+}
+
+void VulkanContext::setupQueues()
+{
+    for (uint32_t index : m_queueFamilyIndices.getUniqueIndices())
+    {
+        Queue queue;
+
+        queue.index = index;
+        vkGetDeviceQueue(m_device, index, 0, &queue.object);
+
+        VkCommandPoolCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        createInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        createInfo.queueFamilyIndex = index;
+
+        VK_CALL(vkCreateCommandPool(m_device, &createInfo, nullptr, &queue.commandPool));
+
+        m_queues[index] = std::move(queue);
+    }
 }
 
 void VulkanContext::createDefaultResources()
