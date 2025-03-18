@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.hpp"
+#include "Events.hpp"
 
 #include "utils/NonCopyable.hpp"
 
@@ -38,17 +39,29 @@ public:
      */
     void renderFrame();
 
+    /**
+     * @brief Resize event callback.
+     * @param event Event data
+     */
+    void resizeEvent(const ResizeEvent& event);
+
 private:
     // Command buffers
     std::vector<VkCommandBuffer> m_commandBuffers;
+    
     // Synchronization objects
     std::vector<VkSemaphore> m_imageAvailable;
     std::vector<VkSemaphore> m_renderFinished;
     std::vector<VkFence>     m_inFlightFrame;
+    
     // Index of the currently rendered frame
     uint32_t m_frameIndex;
+    
     // Clear color
     VkClearValue m_clearColor;
+
+    // Indicates whether a resize has been triggered or not, meaning that the swap chain must be recreated
+    bool m_resizeTriggered;
 
     // Allocates the command buffers
     void allocateCommandBuffers(VkDevice device);

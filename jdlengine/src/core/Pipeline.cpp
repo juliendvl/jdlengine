@@ -66,7 +66,7 @@ void Pipeline::create()
     }
 
     // Dynamic state
-    std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT};
+    std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
     VkPipelineDynamicStateCreateInfo dynamicState = {};
     dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
@@ -86,15 +86,10 @@ void Pipeline::create()
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
     // Viewports and Scissors
-    VkRect2D scissor{};
-    scissor.offset = {0, 0};
-    scissor.extent = swapChain.getExtent();
-
     VkPipelineViewportStateCreateInfo viewportState = {};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     viewportState.viewportCount = 1;
     viewportState.scissorCount = 1;
-    viewportState.pScissors = &scissor;
 
     // Rasterizer
     VkPipelineRasterizationStateCreateInfo rasterizer = {};

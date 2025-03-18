@@ -13,6 +13,7 @@ const uint32_t Renderer::kMaxFramesInFlight = 2;
 
 Renderer::Renderer()
     : m_frameIndex(0)
+    , m_resizeTriggered(false)
 {
     VkDevice device = VulkanContext::GetDevice();
 
@@ -47,11 +48,22 @@ void Renderer::renderFrame()
     VkFence         inFlightFence = m_inFlightFrame[m_frameIndex];
 
     VK_CALL(vkWaitForFences(device, 1, &inFlightFence, VK_TRUE, UINT64_MAX));
-    VK_CALL(vkResetFences(device, 1, &inFlightFence));
 
     // Retrieve an image from the swap chain
     uint32_t imageIndex;
-    VK_CALL(vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailable, VK_NULL_HANDLE, &imageIndex));
+    auto result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailable, VK_NULL_HANDLE, &imageIndex);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        VulkanContext::RecreateSwapChain();
+        return;
+    }
+    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+    {
+        JDL_FATAL("Failed to acquire a swap chain image");
+    }
+
+    // The fence reset must be done after retrieving the swap chain image, to avoid deadlocks
+    VK_CALL(vkResetFences(device, 1, &inFlightFence));
 
     // Record the command buffer
     vkResetCommandBuffer(commandBuffer, 0);
@@ -83,9 +95,19 @@ void Renderer::renderFrame()
     presentInfo.pImageIndices = &imageIndex;
 
     VkQueue presentQueue = VulkanContext::GetPresentQueue().object;
-    VK_CALL(vkQueuePresentKHR(presentQueue, &presentInfo));
+    result = vkQueuePresentKHR(presentQueue, &presentInfo);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_resizeTriggered)
+    {
+        VulkanContext::RecreateSwapChain();
+        m_resizeTriggered = false;
+    }
 
     m_frameIndex = (m_frameIndex + 1) % kMaxFramesInFlight;
+}
+
+void Renderer::resizeEvent(const ResizeEvent& event)
+{
+    m_resizeTriggered = true;
 }
 
 void Renderer::allocateCommandBuffers(VkDevice device)
@@ -155,12 +177,17 @@ void Renderer::recordCommands(VkCommandBuffer commandBuffer, uint32_t imageIndex
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
 
+        VkRect2D scissor{};
+        scissor.offset = {0, 0};
+        scissor.extent = extent;
+
         // Start the render pass
         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         // Bind the pipeline
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getObject());
-        // Set the viewport
+        // Set the viewport and scissor
         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+        vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
         // Draw
         vkCmdDraw(commandBuffer, 3, 1, 0, 0);
         // End the render pass

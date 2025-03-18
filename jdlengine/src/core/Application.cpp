@@ -51,5 +51,18 @@ void Application::run()
     }
 }
 
+void Application::resizeEvent(const ResizeEvent& event)
+{
+    Size currentSize = event.getSize();
+    while (currentSize.width == 0 || currentSize.height == 0)
+    {
+        m_window->waitEvents();
+        currentSize = m_window->getFramebufferSize();
+    }
+
+    ResizeEvent newEvent(currentSize.width, currentSize.height);
+    m_renderer->resizeEvent(newEvent);
+}
+
 } // namespace core
 } // namespace jdl

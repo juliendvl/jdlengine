@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.hpp"
+#include "Events.hpp"
 #include "Renderer.hpp"
 #include "Window.hpp"
 
@@ -52,6 +53,12 @@ public:
      * @brief Runs the application.
      */
     void run();
+
+    /**
+     * @brief Resize event callback.
+     * @param event Event data
+     */
+    void resizeEvent(const ResizeEvent& event);
 
 private:
     // Unique application instance

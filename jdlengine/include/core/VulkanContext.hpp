@@ -122,6 +122,11 @@ public:
      */
     static Pipeline& GetPipeline() { return *IContext.m_pipeline; }
 
+    /**
+     * @brief Recreates the swap chain.
+     */
+    static void RecreateSwapChain();
+
 private:
     static VulkanContext IContext;
 

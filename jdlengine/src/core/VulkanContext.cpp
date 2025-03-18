@@ -161,6 +161,17 @@ VulkanContext::VulkanContext()
     , m_device(VK_NULL_HANDLE)
 {}
 
+void VulkanContext::RecreateSwapChain()
+{
+    VK_CALL(vkDeviceWaitIdle(IContext.m_device));
+
+    // Delete the old swap chain
+    IContext.m_swapChain.reset();
+    // Recreate the swap chain
+    IContext.m_swapChain = std::make_unique<SwapChain>();
+    IContext.m_swapChain->createFramebuffers();
+}
+
 void VulkanContext::init()
 {
     if (m_instance == VK_NULL_HANDLE)

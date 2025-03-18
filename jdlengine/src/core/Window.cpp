@@ -1,5 +1,7 @@
 #include "core/Window.hpp"
+
 #include "core/Application.hpp"
+#include "core/Events.hpp"
 
 #include "utils/Logger.hpp"
 
@@ -75,7 +77,6 @@ void Window::init(const char* title, int width, int height)
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     m_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (m_window == nullptr)
@@ -87,7 +88,17 @@ void Window::init(const char* title, int width, int height)
     setupCallbacks();
 }
 
-void Window::setupCallbacks() {}
+void Window::setupCallbacks()
+{
+    glfwSetWindowSizeCallback(
+        m_window,
+        [](GLFWwindow* window, int width, int height)
+        {
+            ResizeEvent event(width, height);
+            Application::Get()->resizeEvent(event);
+        }
+    );
+}
 
 } // namespace core
 } // namespace jdl
