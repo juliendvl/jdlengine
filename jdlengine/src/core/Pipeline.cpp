@@ -1,5 +1,6 @@
 #include "core/Pipeline.hpp"
 #include "core/SwapChain.hpp"
+#include "core/Vertex.hpp"
 #include "core/VulkanContext.hpp"
 
 #include "utils/Logger.hpp"
@@ -74,10 +75,15 @@ void Pipeline::create()
     dynamicState.pDynamicStates = dynamicStates.data();
 
     // Vertex input
+    auto bindingDescriptions = Vertex::GetBindingDescriptions();
+    auto attributeDescriptions = Vertex::GetAttributeDescriptions();
+
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
+    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+    vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
     // Input assembly
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};

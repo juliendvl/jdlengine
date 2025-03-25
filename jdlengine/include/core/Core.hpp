@@ -30,6 +30,16 @@
 
 #include <vulkan/vulkan.h>
 
+#ifndef GLM_ENABLE_EXPERIMENTAL
+    #define GLM_ENABLE_EXPERIMENTAL
+#endif // GLM_ENABLE_EXPERIMENTAL
+
+#ifndef GLM_FORCE_RADIANS
+    #define GLM_FORCE_RADIANS
+#endif // GLM_FORCE_RADIANS
+
+#include <glm/glm.hpp>
+
 
 /* --- MACROS --- */
 #ifndef NDEBUG
