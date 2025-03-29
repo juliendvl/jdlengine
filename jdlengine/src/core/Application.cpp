@@ -32,10 +32,10 @@ Application::Application(const char* name, int width, int height)
 
 Application::~Application()
 {
-    // All the resources must be destroyed before destroying the VulkanContext!
-    resource::ResourceManager::Clear();
     // Destroy the renderer
     m_renderer.reset();
+    // All the resources must be destroyed before destroying the VulkanContext!
+    resource::ResourceManager::Clear();
     // Destroy the Vulkan context
     VulkanContext::Destroy();
     // Destroy the window
