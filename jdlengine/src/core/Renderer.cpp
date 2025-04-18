@@ -1,11 +1,6 @@
 #include "core/Renderer.hpp"
 #include "core/VulkanContext.hpp"
 
-// TODO - TO BE REMOVED
-#include "core/Vertex.hpp"
-#include "resource/RenderMesh.hpp"
-#include "resource/ResourceManager.hpp"
-
 #include "utils/Logger.hpp"
 
 
@@ -13,8 +8,6 @@ namespace jdl
 {
 namespace core
 {
-
-static resource::RenderMesh* s_Mesh = nullptr;
 
 const uint32_t Renderer::kMaxFramesInFlight = 2;
 
@@ -28,15 +21,6 @@ Renderer::Renderer()
     createSyncObjects(device);
 
     setBackgroundColor(0.01f, 0.01f, 0.01f);
-
-    s_Mesh = resource::ResourceManager::Create<resource::RenderMesh>("MESH");
-    s_Mesh->addVertices({
-        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
-        {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}
-    });
-    s_Mesh->addIndices({0, 1, 2, 0, 2, 3});
 }
 
 Renderer::~Renderer()
@@ -222,7 +206,6 @@ void Renderer::recordCommands(VkCommandBuffer commandBuffer, uint32_t imageIndex
         {
             m_scene->render(context);
         }
-        s_Mesh->render(context);
         // End the render pass
         vkCmdEndRenderPass(commandBuffer);
     }
