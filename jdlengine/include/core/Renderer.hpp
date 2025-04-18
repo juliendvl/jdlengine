@@ -3,6 +3,8 @@
 #include "Core.hpp"
 #include "Events.hpp"
 
+#include "scene/Scene.hpp"
+
 #include "utils/NonCopyable.hpp"
 
 
@@ -35,6 +37,19 @@ public:
     void setBackgroundColor(float r, float g, float b, float a = 1.0f) { m_clearColor.color = {r, g, b, a}; }
 
     /**
+     * @brief Returns the active scene.
+     */
+    const std::shared_ptr<scene::Scene>& getScene() const {
+        return m_scene;
+    }
+
+    /**
+     * @brief Sets the active scene.
+     * @param scene The new scene
+     */
+    void setScene(const std::shared_ptr<scene::Scene>& scene);
+
+    /**
      * @brief Renders a frame.
      */
     void renderFrame();
@@ -59,6 +74,9 @@ private:
     
     // Clear color
     VkClearValue m_clearColor;
+
+    // Active scene
+    std::shared_ptr<scene::Scene> m_scene;
 
     // Indicates whether a resize has been triggered or not, meaning that the swap chain must be recreated
     bool m_resizeTriggered;

@@ -52,6 +52,11 @@ Renderer::~Renderer()
     }
 }
 
+void Renderer::setScene(const std::shared_ptr<scene::Scene>& scene)
+{
+    m_scene = scene;
+}
+
 void Renderer::renderFrame()
 {
     VkDevice device = VulkanContext::GetDevice();
@@ -124,6 +129,11 @@ void Renderer::renderFrame()
 void Renderer::resizeEvent(const ResizeEvent& event)
 {
     m_resizeTriggered = true;
+
+    if (m_scene)
+    {
+        m_scene->resizeEvent(event);
+    }
 }
 
 void Renderer::allocateCommandBuffers(VkDevice device)
@@ -208,6 +218,10 @@ void Renderer::recordCommands(VkCommandBuffer commandBuffer, uint32_t imageIndex
         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
         // Draw
+        if (m_scene)
+        {
+            m_scene->render(context);
+        }
         s_Mesh->render(context);
         // End the render pass
         vkCmdEndRenderPass(commandBuffer);
