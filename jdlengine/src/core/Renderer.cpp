@@ -1,6 +1,8 @@
 #include "core/Renderer.hpp"
 #include "core/VulkanContext.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "utils/Logger.hpp"
 
 
@@ -8,6 +10,31 @@ namespace jdl
 {
 namespace core
 {
+
+/* --- RenderContext STRUCT --- */
+
+RenderContext::RenderContext(VkCommandBuffer _commandBuffer)
+    : commandBuffer(_commandBuffer)
+    , m_device(VK_NULL_HANDLE)
+    , m_pipelineLayout(VK_NULL_HANDLE)
+{
+    m_device = VulkanContext::GetDevice();
+    m_pipelineLayout = VulkanContext::GetPipeline().getPipelineLayout();
+}
+
+void RenderContext::updateModelMatrix(const glm::mat4& matrix)
+{
+    vkCmdPushConstants(
+        commandBuffer,
+        m_pipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0, sizeof(glm::mat4),
+        glm::value_ptr(matrix)
+    );
+}
+
+
+/* --- Renderer CLASS --- */
 
 const uint32_t Renderer::kMaxFramesInFlight = 2;
 
@@ -163,8 +190,7 @@ void Renderer::recordCommands(VkCommandBuffer commandBuffer, uint32_t imageIndex
     auto& swapChain = VulkanContext::GetSwapChain();
     auto& pipeline = VulkanContext::GetPipeline();
 
-    RenderContext context;
-    context.commandBuffer = commandBuffer;
+    RenderContext context(commandBuffer);
 
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;

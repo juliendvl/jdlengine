@@ -2,6 +2,8 @@
 #include <core/EntryPoint.hpp>
 #include <core/Vertex.hpp>
 
+#include <math/SRTMatrix.hpp>
+
 #include <resource/RenderMesh.hpp>
 #include <resource/ResourceManager.hpp>
 
@@ -25,10 +27,16 @@ public:
             {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
             {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
             {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}}
-                            });
+        });
         mesh->addIndices({0, 1, 2, 0, 2, 3});
 
+        auto transform = math::SRTMatrix();
+        //transform.translation = glm::vec3(1.0f, 1.0f, 0.0f);
+        transform.scale = glm::vec3(0.5f);
+        transform.setRotation(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
+
         auto node = scene::CreateNode<scene::MeshNode>("NODE", nullptr, mesh);
+        node->setParentTransform(transform);
 
         auto scene = std::make_shared<scene::Scene>("SCENE");
         scene->setRootNode(node);

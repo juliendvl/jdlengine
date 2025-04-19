@@ -17,6 +17,23 @@ struct RenderContext
 {
     // Current command buffer (on which commands must be registered)
     VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
+
+    /**
+     * @brief Inits the render context.
+     * @param commandBuffer Current command buffer
+     */
+    RenderContext(VkCommandBuffer _commandBuffer);
+
+    /**
+     * @brief Updates the model matrix.
+     * @param matrix The new model matrix
+     */
+    void updateModelMatrix(const glm::mat4& matrix);
+
+private:
+    // For internal usage only
+    VkDevice m_device;
+    VkPipelineLayout m_pipelineLayout;
 };
 
 class JDL_API Renderer : private NonCopyable<Renderer>

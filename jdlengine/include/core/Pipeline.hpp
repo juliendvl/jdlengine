@@ -86,6 +86,11 @@ public:
      */
     VkRenderPass getRenderPass() const { return m_renderPass; }
 
+    /**
+     * @brief Returns the pipeline layout object.
+     */
+    VkPipelineLayout getPipelineLayout() const { return m_pipelineLayout; }
+
 private:
     // Shaders
     std::unordered_map<ShaderStage, resource::Shader*> m_shaders;

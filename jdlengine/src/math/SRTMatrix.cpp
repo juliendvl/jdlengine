@@ -42,10 +42,11 @@ void SRTMatrix::setRotation(const glm::vec3& angles)
 
 glm::mat4 SRTMatrix::toMatrix() const
 {
-    glm::vec3 skew = glm::vec3(0.0f);
-    glm::vec4 perspective = glm::vec4(0.0f);
+    glm::mat4 S = glm::scale(glm::mat4(1.0f), scale);
+    glm::mat4 R = glm::toMat4(rotation);
+    glm::mat4 T = glm::translate(glm::mat4(1.0f), translation);
 
-    return glm::recompose(scale, rotation, translation, skew, perspective);
+    return T * R * S;
 }
 
 void SRTMatrix::fromMatrix(const glm::mat4& matrix)

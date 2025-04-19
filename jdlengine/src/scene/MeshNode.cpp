@@ -15,6 +15,7 @@ void MeshNode::doRender(core::RenderContext& context)
 {
     if (m_mesh != nullptr)
     {
+        context.updateModelMatrix(getWorldTransform().toMatrix());
         m_mesh->render(context);
     }
 }
