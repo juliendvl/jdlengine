@@ -9,15 +9,7 @@ class Sandbox : public core::Application
 public:
     Sandbox(const char* name, int width, int height)
         : core::Application(name, width, height)
-    {
-        utils::Logger::SetLevel(utils::LogLevel::eTrace);
-
-        JDL_TRACE("TRACE Message");
-        JDL_DEBUG("DEBUG Message");
-        JDL_INFO("INFO Message");
-        JDL_WARN("WARN Message");
-        JDL_ERROR("ERROR Message");
-    }
+    {}
 };
 
 std::unique_ptr<core::Application> CreateApplication(const char* name, int width, int height)
