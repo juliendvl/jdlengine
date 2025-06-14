@@ -14,6 +14,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_CXX_STANDARD 17)
 
+if (MSVC)
+	add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+endif()
+
 # Engine
 add_subdirectory(${ENGINE_DIR})
 # Sandbox
