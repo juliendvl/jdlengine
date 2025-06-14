@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+#include <vulkan/vulkan.h>
+
 // --- Disabled Warnings ---
 #ifdef JDL_WINDOWS
     #pragma warning(disable: 4251)

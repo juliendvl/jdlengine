@@ -32,3 +32,7 @@ set(GLFW_INSTALL OFF CACHE BOOL "Generate installation target")
 add_subdirectory(${VENDOR_DIR}/glfw)
 include_directories(${VENDOR_DIR}/glfw/include)
 target_link_libraries(${ENGINE_NAME} glfw)
+
+# Vulkan
+find_package(Vulkan REQUIRED)
+target_link_libraries(${ENGINE_NAME} Vulkan::Vulkan)
