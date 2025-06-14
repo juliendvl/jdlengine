@@ -20,3 +20,6 @@ add_library(
 	${UTILS_SRC}
 )
 include_directories(${INC_DIR})
+
+# spdlog
+include_directories(${VENDOR_DIR}/spdlog/include)
