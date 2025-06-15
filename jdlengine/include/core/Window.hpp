@@ -58,6 +58,11 @@ public:
         return glfwWaitEvents();
     }
 
+    /**
+     * @brief Returns the window required Vulkan instance extensions.
+     */
+    static std::vector<const char*> GetRequiredInstanceExtensions();
+
 private:
     // Unique Window instance
     static Window* IWindow;

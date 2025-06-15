@@ -57,4 +57,12 @@ Size Window::getFramebufferSize() const
     return size;
 }
 
+std::vector<const char*> Window::GetRequiredInstanceExtensions()
+{
+    uint32_t nbExtensions;
+    const char** extensions = glfwGetRequiredInstanceExtensions(&nbExtensions);
+
+    return std::vector<const char*>(extensions, extensions + nbExtensions);
+}
+
 } // namespace core

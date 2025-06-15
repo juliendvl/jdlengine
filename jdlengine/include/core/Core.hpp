@@ -25,6 +25,13 @@
 
 #include <vulkan/vulkan.h>
 
+// --- Macros ---
+#define VK_CALL(func)   {                                                               \
+                            VkResult r = func;                                          \
+                            if (r != VK_SUCCESS)                                        \
+                                JDL_FATAL("{} failed with status {}", #func, (int)r);   \
+                        }
+
 // --- Disabled Warnings ---
 #ifdef JDL_WINDOWS
     #pragma warning(disable: 4251)
