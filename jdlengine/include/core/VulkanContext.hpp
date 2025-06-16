@@ -2,11 +2,40 @@
 
 #include "Core.hpp"
 
+#include <optional>
+#include <set>
+
 #include "utils/NonCopyable.hpp"
 
 
 namespace core
 {
+
+struct QueueFamilyIndices
+{
+    std::optional<uint32_t> graphics;
+
+    /**
+     * @brief Returns whether all the required queue family indices have been set or not.
+     */
+    bool isComplete() const {
+        return graphics.has_value();
+    }
+
+    /**
+     * @brief Returns the queue family unique indices.
+     */
+    std::set<uint32_t> getUniqueIndices() const
+    {
+        std::set<uint32_t> indices;
+        if (isComplete())
+        {
+            indices.insert(*graphics);
+        }
+        return indices;
+    }
+};
+
 
 class JDL_API VulkanContext : private NonCopyable<VulkanContext>
 {
@@ -25,17 +54,54 @@ public:
         CONTEXT.doDestroy();
     }
 
+    /**
+     * @brief Returns the selected physical device.
+     */
+    static VkPhysicalDevice GetPhysicalDevice() {
+        return CONTEXT.m_physicalDevice;
+    }
+
+    /**
+     * @brief Returns the current logical device.
+     */
+    static VkDevice GetDevice() {
+        return CONTEXT.m_device;
+    }
+
+    /**
+     * @brief Returns the graphics queue handle.
+     */
+    static VkQueue GetGraphicsQueue() {
+        return CONTEXT.m_graphicsQueue;
+    }
+
+    /**
+     * @brief Returns the selected queue family indices.
+     */
+    static const QueueFamilyIndices& GetQueueFamilyIndices() {
+        return CONTEXT.m_queueFamilyIndices;
+    }
+
 private:
     static VulkanContext CONTEXT;
 
     VkInstance m_instance = VK_NULL_HANDLE;
     VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
 
+    VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+    VkDevice m_device = VK_NULL_HANDLE;
+
+    VkQueue m_graphicsQueue = VK_NULL_HANDLE;
+
+    QueueFamilyIndices m_queueFamilyIndices;
+
     void doInit();
     void doDestroy();
 
     void createInstance();
     void createDebugMessenger();
+    void selectPhysicalDevice();
+    void createDevice();
 };
 
 } // namespace core
