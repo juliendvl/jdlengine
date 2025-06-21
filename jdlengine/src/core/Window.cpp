@@ -1,4 +1,5 @@
 #include "core/Window.hpp"
+#include "core/VulkanContext.hpp"
 
 #include "utils/Logger.hpp"
 
@@ -63,6 +64,16 @@ std::vector<const char*> Window::GetRequiredInstanceExtensions()
     const char** extensions = glfwGetRequiredInstanceExtensions(&nbExtensions);
 
     return std::vector<const char*>(extensions, extensions + nbExtensions);
+}
+
+VkSurfaceKHR Window::createWindowSurface()
+{
+    VkInstance instance = VulkanContext::GetInstance();
+
+    VkSurfaceKHR surface;
+    VK_CALL(glfwCreateWindowSurface(instance, m_window, nullptr, &surface));
+
+    return surface;
 }
 
 } // namespace core

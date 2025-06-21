@@ -28,6 +28,13 @@ public:
     ~Window();
 
     /**
+     * @brief Returns the window instance.
+     */
+    static Window& Get() {
+        return *IWindow;
+    }
+
+    /**
      * @brief Returns the window screen size.
      */
     Size getScreenSize() const;
@@ -62,6 +69,12 @@ public:
      * @brief Returns the window required Vulkan instance extensions.
      */
     static std::vector<const char*> GetRequiredInstanceExtensions();
+
+    /**
+     * @brief Creates and returns the Vulkan window surface object associated to the window.
+     * The object management is up to the caller.
+     */
+    VkSurfaceKHR createWindowSurface();
 
 private:
     // Unique Window instance
