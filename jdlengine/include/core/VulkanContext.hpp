@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.hpp"
+#include "SwapChain.hpp"
 
 #include <optional>
 #include <set>
@@ -105,6 +106,13 @@ public:
         return CONTEXT.m_queueFamilyIndices;
     }
 
+    /**
+     * @brief Returns the current swap chain.
+     */
+    static SwapChain& GetSwapChain() {
+        return *CONTEXT.m_swapChain;
+    }
+
 private:
     static VulkanContext CONTEXT;
 
@@ -120,6 +128,8 @@ private:
 
     QueueFamilyIndices m_queueFamilyIndices;
 
+    std::unique_ptr<SwapChain> m_swapChain;
+
     void doInit();
     void doDestroy();
 
@@ -128,6 +138,7 @@ private:
     void createWindowSurface();
     void selectPhysicalDevice();
     void createDevice();
+    void createSwapChain();
 };
 
 } // namespace core

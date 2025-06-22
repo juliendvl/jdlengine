@@ -111,6 +111,28 @@ static void s_DestroyDebugMessenger(VkInstance instance,
 }
 
 
+// --- Device Extensions ---
+static const std::vector<const char*> kDeviceExtensions {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
+static bool s_DeviceExtensionsSupported(VkPhysicalDevice device)
+{
+    uint32_t nbExtensions;
+    VK_CALL(vkEnumerateDeviceExtensionProperties(device, nullptr, &nbExtensions, nullptr));
+
+    std::vector<VkExtensionProperties> extensions(nbExtensions);
+    VK_CALL(vkEnumerateDeviceExtensionProperties(device, nullptr, &nbExtensions, extensions.data()));
+
+    std::set<std::string> requiredExtensions(kDeviceExtensions.begin(), kDeviceExtensions.end());
+    for (const auto& extension : extensions) {
+        requiredExtensions.erase(extension.extensionName);
+    }
+
+    return requiredExtensions.empty();
+}
+
+
 // --- VulkanContext Class ---
 VulkanContext VulkanContext::CONTEXT;
 
@@ -127,6 +149,7 @@ void VulkanContext::doInit()
         createWindowSurface();
         selectPhysicalDevice();
         createDevice();
+        createSwapChain();
     }
 }
 
@@ -134,6 +157,8 @@ void VulkanContext::doDestroy()
 {
     if (m_instance != VK_NULL_HANDLE)
     {
+        m_swapChain.reset();
+
         vkDestroyDevice(m_device, nullptr);
         vkDestroySurfaceKHR(m_instance, m_windowSurface, nullptr);
 
@@ -211,6 +236,10 @@ void VulkanContext::selectPhysicalDevice()
     std::vector<QueueFamilyIndices> compatibleQueueFamilyIndices;
     for (VkPhysicalDevice device : devices)
     {
+        if (!s_DeviceExtensionsSupported(device)) {
+            continue;
+        }
+
         QueueFamilyIndices queueFamilyIndices;
 
         uint32_t nbQueues;
@@ -284,7 +313,8 @@ void VulkanContext::createDevice()
     createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.pEnabledFeatures = &deviceFeatures;
-    createInfo.enabledExtensionCount = 0;
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(kDeviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = kDeviceExtensions.data();
     createInfo.enabledLayerCount = 0;
 
     VK_CALL(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
@@ -292,6 +322,11 @@ void VulkanContext::createDevice()
     // Retrieve the queues
     vkGetDeviceQueue(m_device, *m_queueFamilyIndices.graphics, 0, &m_graphicsQueue);
     vkGetDeviceQueue(m_device, *m_queueFamilyIndices.present, 0, &m_presentQueue);
+}
+
+void VulkanContext::createSwapChain()
+{
+    m_swapChain = std::make_unique<SwapChain>();
 }
 
 } // namespace core
