@@ -23,6 +23,7 @@ VulkanDevice::~VulkanDevice()
 void VulkanDevice::selectPhysicalDevice()
 {
     VkInstance instance = VulkanContext::GetInstance();
+    VkSurfaceKHR surface = VulkanContext::GetWindowSurface();
 
     uint32_t nbDevices = 0;
     VK_CALL(vkEnumeratePhysicalDevices(instance, &nbDevices, nullptr));
@@ -53,8 +54,16 @@ void VulkanDevice::selectPhysicalDevice()
         QueueFamilyIndices queueFamilies;
         for (uint32_t i = 0; i < nbQueues; ++i)
         {
+            // Graphics
             if (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 queueFamilies.graphics = i;
+            }
+
+            // Present
+            VkBool32 presentSupported = VK_FALSE;
+            VK_CALL(vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface, &presentSupported));
+            if (presentSupported) {
+                queueFamilies.present = i;
             }
 
             if (queueFamilies.isComplete())

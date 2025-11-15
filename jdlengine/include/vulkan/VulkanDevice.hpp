@@ -15,19 +15,20 @@ namespace vk
 struct QueueFamilyIndices
 {
     uint32_t graphics = UINT32_MAX;
+    uint32_t present = UINT32_MAX;
 
     /**
      * @brief Returns whether all the required queue families have been found or not.
      */
     bool isComplete() const {
-        return graphics != UINT32_MAX;
+        return graphics != UINT32_MAX && present != UINT32_MAX;
     }
 
     /**
      * @brief Returns the unique queue family indices.
      */
     std::set<uint32_t> getUniqueIndices() const{
-        return {graphics};
+        return {graphics, present};
     }
 };
 

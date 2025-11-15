@@ -130,6 +130,7 @@ void VulkanContext::doInit()
 
     createInstance();
     createDebugMessenger();
+    createWindowSurface();
     createDevice();
 }
 
@@ -140,6 +141,8 @@ void VulkanContext::doDestroy()
     }
 
     m_device.reset();
+
+    vkDestroySurfaceKHR(m_instance, m_windowSurface, nullptr);
 
     if (m_debugMessenger != VK_NULL_HANDLE) {
         s_DestroyDebugMessenger(m_instance, m_debugMessenger, nullptr);
@@ -196,6 +199,12 @@ void VulkanContext::createDebugMessenger()
 
     auto createInfo = s_DebugMessengerCreateInfo();
     VK_CALL(s_CreateDebugMessenger(m_instance, &createInfo, nullptr, &m_debugMessenger));
+}
+
+void VulkanContext::createWindowSurface()
+{
+    GLFWwindow* window = core::Window::Get().getHandle();
+    VK_CALL(glfwCreateWindowSurface(m_instance, window, nullptr, &m_windowSurface));
 }
 
 void VulkanContext::createDevice()

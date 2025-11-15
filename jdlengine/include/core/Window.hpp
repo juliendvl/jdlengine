@@ -38,6 +38,13 @@ public:
     }
 
     /**
+     * @brief Returns the GLFW window handle.
+     */
+    GLFWwindow* getHandle() const {
+        return m_window;
+    }
+
+    /**
      * @brief Returns the window size, in screen coordinates.
      */
     Size getSize() const;

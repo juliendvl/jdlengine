@@ -43,6 +43,13 @@ public:
         return *CONTEXT.m_device;
     }
 
+    /**
+     * @brief Returns the window surface handle.
+     */
+    static VkSurfaceKHR GetWindowSurface() {
+        return CONTEXT.m_windowSurface;
+    }
+
 private:
     static VulkanContext CONTEXT;
 
@@ -50,6 +57,8 @@ private:
     VkInstance m_instance = VK_NULL_HANDLE;
     // Debug Messenger
     VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
+    // Window surface
+    VkSurfaceKHR m_windowSurface = VK_NULL_HANDLE;
 
     // Device
     std::unique_ptr<VulkanDevice> m_device;
@@ -59,6 +68,7 @@ private:
 
     void createInstance();
     void createDebugMessenger();
+    void createWindowSurface();
     void createDevice();
 };
 
