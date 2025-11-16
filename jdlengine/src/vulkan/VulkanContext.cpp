@@ -132,6 +132,7 @@ void VulkanContext::doInit()
     createDebugMessenger();
     createWindowSurface();
     createDevice();
+    createSwapChain();
 }
 
 void VulkanContext::doDestroy()
@@ -140,6 +141,7 @@ void VulkanContext::doDestroy()
         return;
     }
 
+    m_swapChain.reset();
     m_device.reset();
 
     vkDestroySurfaceKHR(m_instance, m_windowSurface, nullptr);
@@ -210,6 +212,11 @@ void VulkanContext::createWindowSurface()
 void VulkanContext::createDevice()
 {
     m_device = std::make_unique<VulkanDevice>();
+}
+
+void VulkanContext::createSwapChain()
+{
+    m_swapChain = std::make_unique<VulkanSwapChain>();
 }
 
 } // namespace vk

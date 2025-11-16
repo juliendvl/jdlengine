@@ -5,6 +5,7 @@
 #include "utils/NonCopyable.hpp"
 
 #include "VulkanDevice.hpp"
+#include "VulkanSwapChain.hpp"
 
 
 namespace jdl
@@ -50,6 +51,13 @@ public:
         return CONTEXT.m_windowSurface;
     }
 
+    /**
+     * @brief Returns the Vulkan swap chain object.
+     */
+    static VulkanSwapChain& GetSwapChain() {
+        return *CONTEXT.m_swapChain;
+    }
+
 private:
     static VulkanContext CONTEXT;
 
@@ -62,6 +70,8 @@ private:
 
     // Device
     std::unique_ptr<VulkanDevice> m_device;
+    // Swap Chain
+    std::unique_ptr<VulkanSwapChain> m_swapChain;
 
     void doInit();
     void doDestroy();
@@ -70,6 +80,7 @@ private:
     void createDebugMessenger();
     void createWindowSurface();
     void createDevice();
+    void createSwapChain();
 };
 
 } // namespace vk

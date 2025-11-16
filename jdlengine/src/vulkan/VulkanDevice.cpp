@@ -9,6 +9,31 @@ namespace jdl
 namespace vk
 {
 
+// --- Device Extensions ---
+
+static const std::vector<const char*> sDeviceExtensions {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
+static bool s_DeviceExtensionsSupported(VkPhysicalDevice device)
+{
+    uint32_t nbExtensions = 0;
+    VK_CALL(vkEnumerateDeviceExtensionProperties(device, nullptr, &nbExtensions, nullptr));
+
+    std::vector<VkExtensionProperties> extensions(nbExtensions);
+    VK_CALL(vkEnumerateDeviceExtensionProperties(device, nullptr, &nbExtensions, extensions.data()));
+
+    std::set<std::string> requiredExtensions(sDeviceExtensions.begin(), sDeviceExtensions.end());
+    for (const auto& extension : extensions) {
+        requiredExtensions.erase(extension.extensionName);
+    }
+
+    return requiredExtensions.empty();
+}
+
+
+// --- VulkanDevice Class ---
+
 VulkanDevice::VulkanDevice()
 {
     selectPhysicalDevice();
@@ -41,6 +66,11 @@ void VulkanDevice::selectPhysicalDevice()
 
     for (VkPhysicalDevice physicalDevice : physicalDevices)
     {
+        // Check device extensions support
+        if (!s_DeviceExtensionsSupported(physicalDevice)) {
+            continue;
+        }
+
         // Check queue families support
         uint32_t nbQueues = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &nbQueues, nullptr);
@@ -121,7 +151,8 @@ void VulkanDevice::createDevice()
     createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.pEnabledFeatures = &deviceFeatures;
-    createInfo.enabledExtensionCount = 0;
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(sDeviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = sDeviceExtensions.data();
     createInfo.enabledLayerCount = 0;
 
     VK_CALL(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
