@@ -1,5 +1,7 @@
 #include "core/Application.hpp"
 
+#include "resource/ResourceManager.hpp"
+
 #include "utils/Logger.hpp"
 
 
@@ -26,6 +28,8 @@ Application::Application(const std::string& name, size_t width, size_t height)
 
 Application::~Application()
 {
+    // First clear all the resources
+    resource::ResourceManager::Clear();
     // Destroy the renderer
     m_renderer.reset();
     // Destroy the application window
