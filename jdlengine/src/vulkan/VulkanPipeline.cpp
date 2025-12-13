@@ -1,0 +1,194 @@
+#include "vulkan/VulkanPipeline.hpp"
+#include "vulkan/VulkanContext.hpp"
+
+#include "utils/Logger.hpp"
+
+
+namespace jdl
+{
+namespace vk
+{
+
+VulkanPipeline::VulkanPipeline()
+{
+	m_device = VulkanContext::GetDevice().get();
+}
+
+VulkanPipeline::~VulkanPipeline()
+{
+	if (m_pipeline)
+	{
+		vkDestroyRenderPass(m_device, m_renderPass, nullptr);
+		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+		vkDestroyPipeline(m_device, m_pipeline, nullptr);
+	}
+}
+
+void VulkanPipeline::addShader(ShaderStage stage, resource::Shader* shader)
+{
+	if (m_pipeline)
+	{
+		JDL_ERROR("Cannot add shader on built pipeline.");
+		return;
+	}
+	m_shaders[stage] = shader;
+}
+
+void VulkanPipeline::setPrimitiveType(PrimitiveType type)
+{
+	if (m_pipeline)
+	{
+		JDL_ERROR("Cannot set primitive type on built pipeline.");
+		return;
+	}
+	m_primitiveType = type;
+}
+
+void VulkanPipeline::create()
+{
+	// Dynamic states
+	std::vector<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+
+	VkPipelineDynamicStateCreateInfo dynamicState {};
+	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+	dynamicState.pDynamicStates = dynamicStates.data();
+
+	// Shaders
+	if (m_shaders.find(ShaderStage::eVertex) == m_shaders.end())
+	{
+		JDL_ERROR("Cannot create pipeline: Missing Vertex shader");
+		return;
+	}
+	if (m_shaders.find(ShaderStage::eFragment) == m_shaders.end())
+	{
+		JDL_ERROR("Cannot create pipeline: Missing Fragment shader");
+		return;
+	}
+
+	std::vector<VkPipelineShaderStageCreateInfo> shaderInfos;
+	for (const auto& [stage, shader] : m_shaders)
+	{
+		VkPipelineShaderStageCreateInfo shaderInfo {};
+		shaderInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		shaderInfo.stage = static_cast<VkShaderStageFlagBits>(stage);
+		shaderInfo.module = shader->getModule();
+		shaderInfo.pName = "main";
+
+		shaderInfos.push_back(shaderInfo);
+	}
+
+	// Vertex input
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo {};
+	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	vertexInputInfo.vertexBindingDescriptionCount = 0;
+	vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+	// Input assembly
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly {};
+	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	inputAssembly.topology = static_cast<VkPrimitiveTopology>(m_primitiveType);
+
+	// Viewport and Scissor
+	VkPipelineViewportStateCreateInfo viewportState {};
+	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	viewportState.viewportCount = 1;
+	viewportState.scissorCount = 1;
+
+	// Rasterizer
+	VkPipelineRasterizationStateCreateInfo rasterizer {};
+	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizer.depthClampEnable = VK_FALSE;
+	rasterizer.rasterizerDiscardEnable = VK_FALSE;
+	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+	rasterizer.lineWidth = 1.0f;
+	rasterizer.cullMode = VK_CULL_MODE_NONE;
+	rasterizer.depthBiasEnable = VK_FALSE;
+
+	// Multisampling
+	VkPipelineMultisampleStateCreateInfo multisampling {};
+	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisampling.sampleShadingEnable = VK_FALSE;
+	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+	// Color blending
+	VkPipelineColorBlendAttachmentState colorBlendAttachment {};
+	colorBlendAttachment.blendEnable = VK_FALSE;
+
+	VkPipelineColorBlendStateCreateInfo colorBlending {};
+	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	colorBlending.logicOpEnable = VK_FALSE;
+	colorBlending.attachmentCount = 1;
+	colorBlending.pAttachments = &colorBlendAttachment;
+
+	// Pipeline layout
+	createPipelineLayout();
+	// Render pass
+	createRenderPass();
+
+	VkGraphicsPipelineCreateInfo pipelineInfo {};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipelineInfo.stageCount = static_cast<uint32_t>(shaderInfos.size());
+	pipelineInfo.pStages = shaderInfos.data();
+	pipelineInfo.pVertexInputState = &vertexInputInfo;
+	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pViewportState = &viewportState;
+	pipelineInfo.pRasterizationState = &rasterizer;
+	pipelineInfo.pMultisampleState = &multisampling;
+	pipelineInfo.pDepthStencilState = nullptr;
+	pipelineInfo.pColorBlendState = &colorBlending;
+	pipelineInfo.pDynamicState = &dynamicState;
+	pipelineInfo.layout = m_pipelineLayout;
+	pipelineInfo.renderPass = m_renderPass;
+	pipelineInfo.subpass = 0;
+
+	VK_CALL(vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_pipeline));
+}
+
+void VulkanPipeline::createPipelineLayout()
+{
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo {};
+	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+
+	VK_CALL(vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout));
+}
+
+void VulkanPipeline::createRenderPass()
+{
+	auto& swapChain = VulkanContext::GetSwapChain();
+
+	// Attachments
+	VkAttachmentDescription colorAttachment {};
+	colorAttachment.format = swapChain.getSurfaceFormat().format;
+	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+	std::vector<VkAttachmentDescription> attachments { colorAttachment };
+
+	// Subpasses
+	VkAttachmentReference colorAttachmentRef {};
+	colorAttachmentRef.attachment = 0;
+	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	VkSubpassDescription subpass {};
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.colorAttachmentCount = 1;
+	subpass.pColorAttachments = &colorAttachmentRef;
+
+	VkRenderPassCreateInfo renderPassInfo {};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+	renderPassInfo.pAttachments = attachments.data();
+	renderPassInfo.subpassCount = 1;
+	renderPassInfo.pSubpasses = &subpass;
+
+	VK_CALL(vkCreateRenderPass(m_device, &renderPassInfo, nullptr, &m_renderPass));
+}
+
+} // namespace vk
+} // namespace jdl

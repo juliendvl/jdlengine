@@ -3,6 +3,9 @@
 #include "core/Application.hpp"
 #include "core/Window.hpp"
 
+#include "resource/ResourceManager.hpp"
+#include "resource/Shader.hpp"
+
 #include "utils/Logger.hpp"
 
 
@@ -133,6 +136,8 @@ void VulkanContext::doInit()
     createWindowSurface();
     createDevice();
     createSwapChain();
+    createDefaultResources();
+    createPipeline();
 }
 
 void VulkanContext::doDestroy()
@@ -141,6 +146,7 @@ void VulkanContext::doDestroy()
         return;
     }
 
+    m_pipeline.reset();
     m_swapChain.reset();
     m_device.reset();
 
@@ -217,6 +223,20 @@ void VulkanContext::createDevice()
 void VulkanContext::createSwapChain()
 {
     m_swapChain = std::make_unique<VulkanSwapChain>();
+}
+
+void VulkanContext::createDefaultResources()
+{
+    resource::ResourceManager::Create<resource::Shader>("default_vert", "shaders/default_vert.spv");
+    resource::ResourceManager::Create<resource::Shader>("default_frag", "shaders/default_frag.spv");
+}
+
+void VulkanContext::createPipeline()
+{
+    m_pipeline = std::make_unique<VulkanPipeline>();
+    m_pipeline->addShader(ShaderStage::eVertex, resource::ResourceManager::GetAs<resource::Shader>("default_vert"));
+    m_pipeline->addShader(ShaderStage::eFragment, resource::ResourceManager::GetAs<resource::Shader>("default_frag"));
+    m_pipeline->create();
 }
 
 } // namespace vk

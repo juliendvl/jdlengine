@@ -5,6 +5,7 @@
 #include "utils/NonCopyable.hpp"
 
 #include "VulkanDevice.hpp"
+#include "VulkanPipeline.hpp"
 #include "VulkanSwapChain.hpp"
 
 
@@ -58,6 +59,13 @@ public:
         return *CONTEXT.m_swapChain;
     }
 
+    /**
+     * @brief Returns the Vulkan graphics pipeline object.
+     */
+    static VulkanPipeline& GetPipeline() {
+        return *CONTEXT.m_pipeline;
+    }
+
 private:
     static VulkanContext CONTEXT;
 
@@ -72,6 +80,8 @@ private:
     std::unique_ptr<VulkanDevice> m_device;
     // Swap Chain
     std::unique_ptr<VulkanSwapChain> m_swapChain;
+    // Graphics pipeline
+    std::unique_ptr<VulkanPipeline> m_pipeline;
 
     void doInit();
     void doDestroy();
@@ -81,6 +91,8 @@ private:
     void createWindowSurface();
     void createDevice();
     void createSwapChain();
+    void createDefaultResources();
+    void createPipeline();
 };
 
 } // namespace vk
