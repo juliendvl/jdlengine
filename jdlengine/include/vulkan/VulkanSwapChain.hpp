@@ -69,6 +69,12 @@ public:
 		return m_views[index];
 	}
 
+	/**
+	 * @brief Creates the framebuffers for the swap chain images.
+	 * @param renderPass The render pass on which the framebuffers must be bound.
+	 */
+	void createFramebuffers(VkRenderPass renderPass);
+
 private:
 	// Source device
 	VkDevice m_device = VK_NULL_HANDLE;
@@ -84,6 +90,9 @@ private:
 	// Images and Views
 	std::vector<VkImage> m_images;
 	std::vector<VkImageView> m_views;
+
+	// Framebuffers
+	std::vector<VkFramebuffer> m_framebuffers;
 
 	void createSwapChain();
 	void createImageViews();

@@ -237,6 +237,9 @@ void VulkanContext::createPipeline()
     m_pipeline->addShader(ShaderStage::eVertex, resource::ResourceManager::GetAs<resource::Shader>("default_vert"));
     m_pipeline->addShader(ShaderStage::eFragment, resource::ResourceManager::GetAs<resource::Shader>("default_frag"));
     m_pipeline->create();
+
+    // Create the swap chain framebuffers
+    m_swapChain->createFramebuffers(m_pipeline->getRenderPass());
 }
 
 } // namespace vk

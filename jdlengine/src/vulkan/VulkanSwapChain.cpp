@@ -22,10 +22,37 @@ VulkanSwapChain::VulkanSwapChain()
 
 VulkanSwapChain::~VulkanSwapChain()
 {
+	for (VkFramebuffer framebuffer : m_framebuffers) {
+		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+	}
 	for (VkImageView view : m_views) {
 		vkDestroyImageView(m_device, view, nullptr);
 	}
 	vkDestroySwapchainKHR(m_device, m_swapChain, nullptr);
+}
+
+void VulkanSwapChain::createFramebuffers(VkRenderPass renderPass)
+{
+	if (!m_framebuffers.empty()) {
+		return;
+	}
+	m_framebuffers.resize(m_images.size());
+
+	for (auto i = 0; i < m_views.size(); ++i)
+	{
+		VkImageView attachments[] = { m_views[i] };
+
+		VkFramebufferCreateInfo framebufferInfo {};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = renderPass;
+		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.pAttachments = attachments;
+		framebufferInfo.width = m_extent.width;
+		framebufferInfo.height = m_extent.height;
+		framebufferInfo.layers = 1;
+
+		VK_CALL(vkCreateFramebuffer(m_device, &framebufferInfo, nullptr, &m_framebuffers[i]));
+	}
 }
 
 void VulkanSwapChain::createSwapChain()
