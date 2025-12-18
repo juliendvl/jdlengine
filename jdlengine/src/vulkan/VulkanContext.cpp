@@ -125,6 +125,25 @@ static void s_DestroyDebugMessenger(
 // --- VulkanContext ---
 VulkanContext VulkanContext::CONTEXT;
 
+void VulkanContext::RecreateSwapChain()
+{
+    auto& window = core::Window::Get();
+
+    vkDeviceWaitIdle(CONTEXT.m_device->get());
+
+    // Pause application as long as window is minimized.
+    auto windowSize = window.getFramebufferSize();
+    while (windowSize.width == 0 || windowSize.height == 0)
+    {
+        window.waitEvents();
+        windowSize = window.getFramebufferSize();
+    }
+
+    CONTEXT.m_swapChain.reset();
+    CONTEXT.m_swapChain = std::make_unique<VulkanSwapChain>();
+    CONTEXT.m_swapChain->createFramebuffers(CONTEXT.m_pipeline->getRenderPass());
+}
+
 void VulkanContext::doInit()
 {
     if (m_instance != VK_NULL_HANDLE) {

@@ -55,6 +55,28 @@ void VulkanSwapChain::createFramebuffers(VkRenderPass renderPass)
 	}
 }
 
+VkResult VulkanSwapChain::getImage(uint32_t& outImageIndex, VkSemaphore semaphore, VkFence fence)
+{
+	return vkAcquireNextImageKHR(m_device, m_swapChain, UINT64_MAX, semaphore, fence, &outImageIndex);
+}
+
+VkResult VulkanSwapChain::presentImage(
+	VkQueue queue,
+	uint32_t imageIndex,
+	const std::vector<VkSemaphore>& waitSemaphores
+)
+{
+	VkPresentInfoKHR presentInfo {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.waitSemaphoreCount = static_cast<uint32_t>(waitSemaphores.size());
+	presentInfo.pWaitSemaphores = waitSemaphores.data();
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = &m_swapChain;
+	presentInfo.pImageIndices = &imageIndex;
+
+	return vkQueuePresentKHR(queue, &presentInfo);
+}
+
 void VulkanSwapChain::createSwapChain()
 {
 	VkPhysicalDevice phyDevice = VulkanContext::GetDevice().getPhysicalDevice();

@@ -66,6 +66,11 @@ public:
         return *CONTEXT.m_pipeline;
     }
 
+    /**
+     * @brief Recreates the swap chain.
+     */
+    static void RecreateSwapChain();
+
 private:
     static VulkanContext CONTEXT;
 

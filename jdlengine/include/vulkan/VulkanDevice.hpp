@@ -73,6 +73,20 @@ public:
         return m_graphicsQueue;
     }
 
+    /**
+     * @brief Returns the present queue object.
+     */
+    VkQueue getPresentQueue() const {
+        return m_presentQueue;
+    }
+
+    /**
+     * @brief Returns the command pool associated to the graphics queue.
+     */
+    VkCommandPool getCommandPool() const {
+        return m_commandPool;
+    }
+
 private:
     // Selected physical device
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
@@ -82,9 +96,13 @@ private:
     VkDevice m_device = VK_NULL_HANDLE;
     // Queue handles
     VkQueue m_graphicsQueue = VK_NULL_HANDLE;
+    VkQueue m_presentQueue = VK_NULL_HANDLE;
+    // Command pool (graphics queue)
+    VkCommandPool m_commandPool = VK_NULL_HANDLE;
 
     void selectPhysicalDevice();
     void createDevice();
+    void createCommandPool();
 };
 
 } // namespace vk

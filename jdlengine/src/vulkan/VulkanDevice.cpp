@@ -38,10 +38,12 @@ VulkanDevice::VulkanDevice()
 {
     selectPhysicalDevice();
     createDevice();
+    createCommandPool();
 }
 
 VulkanDevice::~VulkanDevice()
 {
+    vkDestroyCommandPool(m_device, m_commandPool, nullptr);
     vkDestroyDevice(m_device, nullptr);
 }
 
@@ -159,6 +161,17 @@ void VulkanDevice::createDevice()
 
     // Retrieve the queue handles
     vkGetDeviceQueue(m_device, m_queueFamilyIndices.graphics, 0, &m_graphicsQueue);
+    vkGetDeviceQueue(m_device, m_queueFamilyIndices.present, 0, &m_presentQueue);
+}
+
+void VulkanDevice::createCommandPool()
+{
+    VkCommandPoolCreateInfo poolInfo {};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = m_queueFamilyIndices.graphics;
+
+    VK_CALL(vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool));
 }
 
 } // namespace vk

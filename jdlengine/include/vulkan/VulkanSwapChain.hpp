@@ -75,6 +75,45 @@ public:
 	 */
 	void createFramebuffers(VkRenderPass renderPass);
 
+	/**
+	 * @brief Returns the number of framebuffers.
+	 * If the framebuffers have been created, this should be equal to getNbImages().
+	 */
+	size_t getNbFramebuffers() const {
+		return m_framebuffers.size();
+	}
+
+	/**
+	 * @brief Returns a swap chain framebuffer.
+	 * @param index Framebuffer index. Must be < getNbFramebuffers().
+	 * @return The queried framebuffer.
+	 */
+	VkFramebuffer getFramebuffer(size_t index) const {
+		return m_framebuffers[index];
+	}
+
+	/**
+	 * @brief Retrieves and returns an available image from the swap chain.
+	 * @param outImageIndex Output image index.
+	 * @param semaphore Signal semaphore (optional).
+	 * @param fence Signal fence (optional);
+	 * @return Acquisition command result status.
+	 */
+	VkResult getImage(uint32_t& outImageIndex, VkSemaphore semaphore = VK_NULL_HANDLE, VkFence fence = VK_NULL_HANDLE);
+
+	/**
+	 * @brief Presents an image to the swap chain.
+	 * @param	queue			The present queue.
+	 * @param	imageIndex		The index of the image to be presented.
+	 * @param	waitSemaphores	The semaphores to wait.
+	 * @return	Presentation command result status.
+	 */
+	VkResult presentImage(
+		VkQueue queue,
+		uint32_t imageIndex,
+		const std::vector<VkSemaphore>& waitSemaphores = {}
+	);
+
 private:
 	// Source device
 	VkDevice m_device = VK_NULL_HANDLE;
