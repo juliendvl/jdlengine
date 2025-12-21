@@ -5,14 +5,20 @@ import subprocess
 
 def find_spirv_compiler() -> str:
     """Finds and returns the path of the glslc SPIR-V compiler."""
-    vulkan_sdk_path: str = os.environ.get("VK_SDK_PATH")
-    if not os.path.exists(vulkan_sdk_path):
-        vulkan_sdk_path: str = os.environ.get("VULKAN_SDK")
-    if not os.path.exists(vulkan_sdk_path):
-        raise RuntimeError("Cannot find the Vulkan SDK path.")
+    if os.name == "nt":
+        vulkan_sdk_path: str = os.environ.get("VK_SDK_PATH")
+        if not os.path.exists(vulkan_sdk_path):
+            vulkan_sdk_path: str = os.environ.get("VULKAN_SDK")
+        if not os.path.exists(vulkan_sdk_path):
+            raise RuntimeError("Cannot find the Vulkan SDK path.")
 
-    compiler_path: str = os.path.join(vulkan_sdk_path, "bin", "glslc.exe")
-    return os.path.normpath(compiler_path)
+        compiler_path: str = os.path.join(vulkan_sdk_path, "bin", "glslc.exe")
+        return os.path.normpath(compiler_path)
+    elif os.name == "posix":
+        result = subprocess.run(["which", "glslc"], stdout=subprocess.PIPE)
+        return result.stdout.decode("utf-8").rstrip("\n")
+    else:
+        raise RuntimeError(f"Unsupported platform: {os.name}")
 
 
 def syntax() -> argparse.ArgumentParser:

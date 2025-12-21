@@ -15,7 +15,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Use C++17 as standard
 set(CMAKE_CXX_STANDARD 17)
 # Setup compile options
-set(CMAKE_CXX_FLAGS "/utf-8 ${CMAKE_CXX_FLAGS}")
+if (MSVC)
+	set(CMAKE_CXX_FLAGS "/utf-8 ${CMAKE_CXX_FLAGS}")
+endif()
 
 # Engine library
 add_subdirectory(${ENGINE_DIR})
