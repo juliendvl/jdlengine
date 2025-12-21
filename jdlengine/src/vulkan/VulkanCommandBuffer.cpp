@@ -36,12 +36,24 @@ void VulkanCommandBuffer::allocate(VkCommandPool commandPool)
 	m_commandPool = commandPool;
 }
 
-void VulkanCommandBuffer::begin()
+void VulkanCommandBuffer::reset()
 {
 	if (m_commandBuffer == VK_NULL_HANDLE)
 	{
 		JDL_ERROR("The command buffer has not been allocated");
 		return;
+	}
+}
+
+void VulkanCommandBuffer::begin(bool reset)
+{
+	if (m_commandBuffer == VK_NULL_HANDLE)
+	{
+		JDL_ERROR("The command buffer has not been allocated");
+		return;
+	}
+	if (reset) {
+		this->reset();
 	}
 
 	VkCommandBufferBeginInfo beginInfo {};
@@ -85,6 +97,15 @@ void VulkanCommandBuffer::submit(
 	submitInfo.pSignalSemaphores = signalSemaphores.data();
 
 	VK_CALL(vkQueueSubmit(queue, 1, &submitInfo, fence));
+}
+
+void VulkanCommandBuffer::destroy()
+{
+	if (m_commandBuffer != VK_NULL_HANDLE)
+	{
+		vkFreeCommandBuffers(m_device, m_commandPool, 1, &m_commandBuffer);
+		m_commandBuffer = VK_NULL_HANDLE;
+	}
 }
 
 } // namespace vk

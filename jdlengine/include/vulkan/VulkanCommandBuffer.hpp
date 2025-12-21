@@ -36,9 +36,15 @@ public:
 	}
 
 	/**
-	 * @brief Begins the command buffer recording.
+	 * @brief Resets the allocated command buffer.
 	 */
-	void begin();
+	void reset();
+
+	/**
+	 * @brief Begins the command buffer recording.
+	 * @param reset Resets the command buffer before recording.
+	 */
+	void begin(bool reset = true);
 
 	/**
 	 * @brief Ends the command buffer recording.
@@ -60,6 +66,11 @@ public:
 		const std::vector<VkSemaphore>& signalSemaphores = {},
 		VkFence fence = VK_NULL_HANDLE
 	);
+
+	/**
+	 * @brief Destroys the allocated command buffer.
+	 */
+	void destroy();
 
 private:
 	VkDevice m_device = VK_NULL_HANDLE;
