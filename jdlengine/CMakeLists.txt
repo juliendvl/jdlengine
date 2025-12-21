@@ -39,3 +39,6 @@ target_link_libraries(${ENGINE_NAME} glfw)
 # Vulkan
 find_package(Vulkan REQUIRED)
 target_link_libraries(${ENGINE_NAME} Vulkan::Vulkan)
+
+# glm
+include_directories(${VENDOR_DIR}/glm)

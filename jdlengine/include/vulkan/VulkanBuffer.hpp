@@ -13,7 +13,7 @@ namespace vk
 enum BufferUsage
 {
     eTransferSrc = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-    eTransferDst = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+    eTransferDst = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
     eIndexBuffer = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
     eVertexBuffer = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 };
@@ -116,6 +116,13 @@ public:
      * @param usages    Buffer usages.
      */
     VulkanBuffer(uint64_t size, BufferUsage usages);
+
+    /**
+     * @brief Returns the buffer size in bytes.
+     */
+    uint64_t getSize() const {
+        return m_stagingBuffer.getSize();
+    }
 
     /**
      * @brief Returns the staging buffer object.

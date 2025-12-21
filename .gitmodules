@@ -4,3 +4,6 @@
 [submodule "jdlengine/vendor/glfw"]
 	path = jdlengine/vendor/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "jdlengine/vendor/glm"]
+	path = jdlengine/vendor/glm
+	url = https://github.com/g-truc/glm.git

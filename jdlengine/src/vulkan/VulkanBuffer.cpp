@@ -65,10 +65,10 @@ void VulkanBufferWrapper::allocateMemory(MemoryProperty memoryProperties)
     uint32_t memoryType = UINT32_MAX;
     for (uint32_t i = 0; i < deviceProperties.memoryTypeCount; ++i)
     {
-        if ((memRequirements.memoryTypeBits & (1 << i)) == 0) {
+        if (!(memRequirements.memoryTypeBits & (1 << i))) {
             continue;
         }
-        if (deviceProperties.memoryTypes[i].propertyFlags & memoryProperties != memoryProperties) {
+        else if ((deviceProperties.memoryTypes[i].propertyFlags & memoryProperties) != memoryProperties) {
             continue;
         }
 
@@ -93,7 +93,7 @@ void VulkanBufferWrapper::allocateMemory(MemoryProperty memoryProperties)
 
 VulkanBuffer::VulkanBuffer(uint64_t size, BufferUsage usages)
     : m_stagingBuffer(size, BufferUsage::eTransferSrc, MemoryProperty::eHostCoherent | MemoryProperty::eHostVisible)
-    , m_deviceBuffer(size, usages, MemoryProperty::eDeviceLocal)
+    , m_deviceBuffer(size, usages | BufferUsage::eTransferDst, MemoryProperty::eDeviceLocal)
 {}
 
 void VulkanBuffer::setData(void* data, uint64_t size, uint64_t offset)
@@ -109,7 +109,7 @@ void VulkanBuffer::setData(void* data, uint64_t size, uint64_t offset)
         VkBufferCopy copyRegion {};
         copyRegion.srcOffset = offset;
         copyRegion.dstOffset = offset;
-        copyRegion.size = size;
+        copyRegion.size = getSize();
 
         vkCmdCopyBuffer(commandBuffer.get(), m_stagingBuffer.get(), m_deviceBuffer.get(), 1, &copyRegion);
     }
