@@ -6,18 +6,14 @@
 
 #include "VulkanCommandBuffer.hpp"
 
+// TODO To be removed!
+#include "resource/Mesh.hpp"
+
 
 namespace jdl
 {
 namespace vk
 {
-
-struct RenderContext
-{
-    // Current command buffer
-    VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
-};
-
 
 class JDL_API VulkanRenderer : private NonCopyable<VulkanRenderer>
 {
@@ -36,6 +32,11 @@ public:
      * @brief Renders a new frame.
      */
     void renderFrame();
+
+    /**
+     * @brief Waits for the renderer to finish its work.
+     */
+    void wait();
 
 private:
     VkDevice m_device = VK_NULL_HANDLE;

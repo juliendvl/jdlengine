@@ -3,11 +3,18 @@
 
 #include "utils/Logger.hpp"
 
+// TODO To be removed
+#include "core/Vertex.hpp"
+#include "resource/Mesh.hpp"
+
 
 namespace jdl
 {
 namespace vk
 {
+
+// TODO To be removed
+static resource::Mesh* sMesh = nullptr;
 
 // Maximum number of frames in flight
 static const uint32_t sFramesInFlight = 2;
@@ -21,12 +28,18 @@ VulkanRenderer::VulkanRenderer()
 
     createCommandBuffers();
     createSynchronizationObjects();
+
+    sMesh = resource::ResourceManager::Create<resource::Mesh>("MESH");
+    sMesh->addVertices({
+        core::Vertex({0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
+        core::Vertex({0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}),
+        core::Vertex({-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f})
+    });
+    sMesh->addIndices({0, 1, 2});
 }
 
 VulkanRenderer::~VulkanRenderer()
 {
-    vkDeviceWaitIdle(m_device);
-
     for (auto i = 0; i < sFramesInFlight; ++i)
     {
         vkDestroySemaphore(m_device, m_imageAcquired[i], nullptr);
@@ -94,6 +107,11 @@ void VulkanRenderer::renderFrame()
     m_currentFrame = (m_currentFrame + 1) % sFramesInFlight;
 }
 
+void VulkanRenderer::wait()
+{
+    vkDeviceWaitIdle(m_device);
+}
+
 void VulkanRenderer::createCommandBuffers()
 {
     VkCommandPool commandPool = VulkanContext::GetDevice().getCommandPool();
@@ -132,6 +150,9 @@ void VulkanRenderer::recordCommandBuffer(VulkanCommandBuffer& commandBuffer, uin
 
     commandBuffer.begin();
     {
+        core::RenderContext context;
+        context.commandBuffer = bufferHandle;
+
         VulkanPipeline& pipeline = VulkanContext::GetPipeline();
         VulkanSwapChain& swapChain = VulkanContext::GetSwapChain();
 
@@ -169,7 +190,7 @@ void VulkanRenderer::recordCommandBuffer(VulkanCommandBuffer& commandBuffer, uin
         vkCmdSetScissor(bufferHandle, 0, 1, &scissor);
 
         // Draw the scene content
-        vkCmdDraw(bufferHandle, 3, 1, 0, 0);
+        sMesh->render(context);
 
         // Render pass end
         vkCmdEndRenderPass(bufferHandle);

@@ -1,6 +1,8 @@
 #include "vulkan/VulkanPipeline.hpp"
 #include "vulkan/VulkanContext.hpp"
 
+#include "core/Vertex.hpp"
+
 #include "utils/Logger.hpp"
 
 
@@ -8,6 +10,43 @@ namespace jdl
 {
 namespace vk
 {
+
+static std::vector<VkVertexInputBindingDescription> s_GetVertexBindings()
+{
+	VkVertexInputBindingDescription bindingDescription {};
+	bindingDescription.binding = 0;
+	bindingDescription.stride = sizeof(core::Vertex);
+	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+	return { bindingDescription };
+}
+
+static std::vector<VkVertexInputAttributeDescription> s_GetVertexAttributes()
+{
+	// Position
+	VkVertexInputAttributeDescription positionDescription {};
+	positionDescription.binding = 0;
+	positionDescription.location = 0;
+	positionDescription.format = VK_FORMAT_R32G32B32_SFLOAT;
+	positionDescription.offset = offsetof(core::Vertex, position);
+
+	// Position
+	VkVertexInputAttributeDescription normalDescription {};
+	normalDescription.binding = 0;
+	normalDescription.location = 1;
+	normalDescription.format = VK_FORMAT_R32G32B32_SFLOAT;
+	normalDescription.offset = offsetof(core::Vertex, normal);
+
+	// Position
+	VkVertexInputAttributeDescription uvDescription {};
+	uvDescription.binding = 0;
+	uvDescription.location = 2;
+	uvDescription.format = VK_FORMAT_R32G32_SFLOAT;
+	uvDescription.offset = offsetof(core::Vertex, uv);
+
+	return { positionDescription, normalDescription, uvDescription };
+}
+
 
 VulkanPipeline::VulkanPipeline()
 {
@@ -79,10 +118,15 @@ void VulkanPipeline::create()
 	}
 
 	// Vertex input
+	auto bindings = s_GetVertexBindings();
+	auto attributes = s_GetVertexAttributes();
+
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputInfo.vertexBindingDescriptionCount = 0;
-	vertexInputInfo.vertexAttributeDescriptionCount = 0;
+	vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindings.size());
+	vertexInputInfo.pVertexBindingDescriptions = bindings.data();
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributes.size());
+	vertexInputInfo.pVertexAttributeDescriptions = attributes.data();
 
 	// Input assembly
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly {};

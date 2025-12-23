@@ -28,7 +28,9 @@ Application::Application(const std::string& name, size_t width, size_t height)
 
 Application::~Application()
 {
-    // First clear all the resources
+    // Wait for the renderer to finish all the work before deleting anything
+    m_renderer->wait();
+    // Clear all the resources
     resource::ResourceManager::Clear();
     // Destroy the renderer
     m_renderer.reset();

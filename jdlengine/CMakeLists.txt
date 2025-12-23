@@ -23,6 +23,7 @@ add_library(
 	${VULKAN_SRC}
 )
 include_directories(${INC_DIR})
+target_precompile_headers(${ENGINE_NAME} PRIVATE ${INC_DIR}/core/Core.hpp)
 
 # spdlog
 include_directories(${VENDOR_DIR}/spdlog/include)
