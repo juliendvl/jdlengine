@@ -5,6 +5,7 @@ set(INC_DIR ${ENGINE_DIR}/include)
 set(SRC_DIR ${ENGINE_DIR}/src)
 
 file(GLOB CORE_SRC     ${INC_DIR}/core/*.hpp     ${SRC_DIR}/core/*.cpp)
+file(GLOB MATH_SRC     ${INC_DIR}/math/*.hpp     ${SRC_DIR}/math/*.cpp)
 file(GLOB RESOURCE_SRC ${INC_DIR}/resource/*.hpp ${SRC_DIR}/resource/*.cpp)
 file(GLOB UTILS_SRC    ${INC_DIR}/utils/*.hpp    ${SRC_DIR}/utils/*.cpp)
 file(GLOB VULKAN_SRC   ${INC_DIR}/vulkan/*.hpp   ${SRC_DIR}/vulkan/*.cpp)
@@ -18,6 +19,7 @@ add_library(
 	${ENGINE_NAME}
 	SHARED
 	${CORE_SRC}
+	${MATH_SRC}
 	${RESOURCE_SRC}
 	${UTILS_SRC}
 	${VULKAN_SRC}
