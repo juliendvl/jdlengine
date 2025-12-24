@@ -5,6 +5,8 @@
 
 #include "utils/Logger.hpp"
 
+#include <iostream>
+
 using namespace jdl;
 
 
