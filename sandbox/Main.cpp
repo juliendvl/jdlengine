@@ -1,8 +1,11 @@
 #include <core/Application.hpp>
 #include <core/EntryPoint.hpp>
 
+#include <resource/Mesh.hpp>
 #include <resource/ResourceManager.hpp>
-#include <resource/Shader.hpp>
+
+#include <scene/MeshNode.hpp>
+#include <scene/Scene.hpp>
 
 #include <utils/Logger.hpp>
 
@@ -15,8 +18,21 @@ public:
     Sandbox(const std::string& name, size_t width, size_t height)
         : core::Application(name, width, height)
     {
-        resource::ResourceManager::Create<resource::Shader>("default_vert", "shaders/default_vert.spv");
-        resource::ResourceManager::Create<resource::Shader>("default_frag", "shaders/default_frag.spv");
+        auto mesh = resource::ResourceManager::Create<resource::Mesh>("MESH");
+        mesh->addVertices({
+            core::Vertex({0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
+            core::Vertex({0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}),
+            core::Vertex({-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f})
+        });
+        mesh->addIndices({0, 1, 2});
+
+        auto node = scene::CreateNode<scene::MeshNode>("NODE", nullptr);
+        node->setMesh(mesh);
+
+        auto scene = std::make_shared<scene::Scene>("SCENE");
+        scene->setRootNode(node);
+
+        GetRenderer().setScene(scene);
     }
 };
 

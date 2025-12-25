@@ -59,6 +59,13 @@ public:
     }
 
     /**
+     * @brief Returns the application renderer.
+     */
+    static vk::VulkanRenderer& GetRenderer() {
+        return *IApplication->m_renderer;
+    }
+
+    /**
      * @brief Runs the application.
      */
     void run();

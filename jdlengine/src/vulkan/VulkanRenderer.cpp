@@ -3,18 +3,11 @@
 
 #include "utils/Logger.hpp"
 
-// TODO To be removed
-#include "core/Vertex.hpp"
-#include "resource/Mesh.hpp"
-
 
 namespace jdl
 {
 namespace vk
 {
-
-// TODO To be removed
-static resource::Mesh* sMesh = nullptr;
 
 // Maximum number of frames in flight
 static const uint32_t sFramesInFlight = 2;
@@ -28,14 +21,6 @@ VulkanRenderer::VulkanRenderer()
 
     createCommandBuffers();
     createSynchronizationObjects();
-
-    sMesh = resource::ResourceManager::Create<resource::Mesh>("MESH");
-    sMesh->addVertices({
-        core::Vertex({0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
-        core::Vertex({0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}),
-        core::Vertex({-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f})
-    });
-    sMesh->addIndices({0, 1, 2});
 }
 
 VulkanRenderer::~VulkanRenderer()
@@ -190,7 +175,9 @@ void VulkanRenderer::recordCommandBuffer(VulkanCommandBuffer& commandBuffer, uin
         vkCmdSetScissor(bufferHandle, 0, 1, &scissor);
 
         // Draw the scene content
-        sMesh->render(context);
+        if (m_scene) {
+            m_scene->render(context);
+        }
 
         // Render pass end
         vkCmdEndRenderPass(bufferHandle);

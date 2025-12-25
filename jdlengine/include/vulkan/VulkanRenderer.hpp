@@ -2,6 +2,8 @@
 
 #include "core/Core.hpp"
 
+#include "scene/Scene.hpp"
+
 #include "utils/NonCopyable.hpp"
 
 #include "VulkanCommandBuffer.hpp"
@@ -29,6 +31,13 @@ public:
     ~VulkanRenderer();
 
     /**
+     * @brief Sets the rendered scene.
+     */
+    void setScene(const std::shared_ptr<scene::Scene>& scene) {
+        m_scene = scene;
+    }
+
+    /**
      * @brief Renders a new frame.
      */
     void renderFrame();
@@ -53,6 +62,9 @@ private:
 
     // Background color
     VkClearValue m_backgroundColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+
+    // Rendered scene
+    std::shared_ptr<scene::Scene> m_scene = nullptr;
 
     void createCommandBuffers();
     void createSynchronizationObjects();
