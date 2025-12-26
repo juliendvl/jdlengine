@@ -137,6 +137,7 @@ void VulkanRenderer::recordCommandBuffer(VulkanCommandBuffer& commandBuffer, uin
     {
         core::RenderContext context;
         context.commandBuffer = bufferHandle;
+        context.pipelineLayout = VulkanContext::GetPipeline().getPipelineLayout();
 
         VulkanPipeline& pipeline = VulkanContext::GetPipeline();
         VulkanSwapChain& swapChain = VulkanContext::GetSwapChain();

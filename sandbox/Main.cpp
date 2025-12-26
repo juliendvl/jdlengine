@@ -1,6 +1,8 @@
 #include <core/Application.hpp>
 #include <core/EntryPoint.hpp>
 
+#include <math/SRTMatrix.hpp>
+
 #include <resource/Mesh.hpp>
 #include <resource/ResourceManager.hpp>
 
@@ -28,6 +30,12 @@ public:
 
         auto node = scene::CreateNode<scene::MeshNode>("NODE", nullptr);
         node->setMesh(mesh);
+
+        math::SRTMatrix transform;
+        transform.scale = glm::vec3(0.5f);
+        transform.translation = glm::vec3(0.5f, 0.5f, 0.0f);
+        transform.setRotation(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
+        node->setWorldTransform(transform);
 
         auto scene = std::make_shared<scene::Scene>("SCENE");
         scene->setRootNode(node);

@@ -12,6 +12,8 @@ struct RenderContext
 {
     // Current command buffer
     VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
+    // Current pipeline layout
+    VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 };
 
 } // namespace core

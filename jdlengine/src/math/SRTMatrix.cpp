@@ -35,6 +35,11 @@ void SRTMatrix::setRotation(const glm::vec3& axis, float angle)
     rotation = glm::angleAxis(angle, glm::normalize(axis));
 }
 
+void SRTMatrix::setRotation(const glm::vec3& angles)
+{
+    rotation = glm::quat(angles);
+}
+
 glm::mat4 SRTMatrix::toMatrix() const
 {
     glm::mat4 S = glm::scale(glm::mat4(1.0f), scale);
