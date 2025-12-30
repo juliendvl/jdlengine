@@ -86,6 +86,12 @@ private:
     static Window* IWindow;
     // Internal window pointer
     GLFWwindow* m_window = nullptr;
+
+    // Events internal data
+    int m_lastX = -1;
+    int m_lastY = -1;
+
+    void setupCallbacks();
 };
 
 } // namespace core

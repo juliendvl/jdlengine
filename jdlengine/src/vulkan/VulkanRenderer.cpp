@@ -87,8 +87,10 @@ void VulkanRenderer::renderFrame()
         imageIndex,
         { renderFinished }
     );
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_recreateSwapChain)
+    {
         VulkanContext::RecreateSwapChain();
+        m_recreateSwapChain = false;
     }
     else if (result != VK_SUCCESS) {
         JDL_FATAL("Failed to present an image to the swap chain");
@@ -100,6 +102,42 @@ void VulkanRenderer::renderFrame()
 void VulkanRenderer::wait()
 {
     vkDeviceWaitIdle(m_device);
+}
+
+void VulkanRenderer::mousePressEvent(const core::MousePressEvent& event)
+{
+    if (m_scene) {
+        m_scene->mousePressEvent(event);
+    }
+}
+
+void VulkanRenderer::mouseReleaseEvent(const core::MouseReleaseEvent& event)
+{
+    if (m_scene) {
+        m_scene->mouseReleaseEvent(event);
+    }
+}
+
+void VulkanRenderer::mouseMoveEvent(const core::MouseMoveEvent& event)
+{
+    if (m_scene) {
+        m_scene->mouseMoveEvent(event);
+    }
+}
+
+void VulkanRenderer::wheelEvent(const core::WheelEvent& event)
+{
+    if (m_scene) {
+        m_scene->wheelEvent(event);
+    }
+}
+
+void VulkanRenderer::resizeEvent(const core::ResizeEvent& event)
+{
+    m_recreateSwapChain = true;
+    if (m_scene) {
+        m_scene->resizeEvent(event);
+    }
 }
 
 void VulkanRenderer::createCommandBuffers()

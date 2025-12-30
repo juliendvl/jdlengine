@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.hpp"
+#include "Events.hpp"
 #include "Window.hpp"
 
 #include "utils/NonCopyable.hpp"
@@ -69,6 +70,36 @@ public:
      * @brief Runs the application.
      */
     void run();
+
+    /**
+     * @brief Mouse press event handler.
+     * @param event Event data.
+     */
+    void mousePressEvent(const MousePressEvent& event);
+
+    /**
+     * @brief Mouse release event handler.
+     * @param event Event data.
+     */
+    void mouseReleaseEvent(const MouseReleaseEvent& event);
+
+    /**
+     * @brief Mouse move event handler.
+     * @param event Event data.
+     */
+    void mouseMoveEvent(const MouseMoveEvent& event);
+
+    /**
+     * @brief Wheel event handler.
+     * @param event Event data.
+     */
+    void wheelEvent(const WheelEvent& event);
+
+    /**
+     * @brief Resize event handler.
+     * @param event Event data.
+     */
+    void resizeEvent(const ResizeEvent& event);
 
 private:
     // Single Application instance

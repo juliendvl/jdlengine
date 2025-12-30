@@ -46,5 +46,43 @@ void Scene::render(core::RenderContext& context)
     }
 }
 
+void Scene::mousePressEvent(const core::MousePressEvent& event) {}
+
+void Scene::mouseReleaseEvent(const core::MouseReleaseEvent& event) {}
+
+void Scene::mouseMoveEvent(const core::MouseMoveEvent& event)
+{
+    if (event.getButton() != core::MouseButton::eLeftButton) {
+        return;
+    }
+
+    auto camera = dynamic_cast<resource::OrbitCamera*>(m_camera);
+    if (camera)
+    {
+        camera->updateRotation(event.getDeltaX(), event.getDeltaY());
+        m_cameraDirty = true;
+    }
+}
+
+void Scene::wheelEvent(const core::WheelEvent& event)
+{
+    auto camera = dynamic_cast<resource::OrbitCamera*>(m_camera);
+    if (camera)
+    {
+        camera->setRadius(camera->getRadius() - event.getDeltaY());
+        m_cameraDirty = true;
+    }
+}
+
+void Scene::resizeEvent(const core::ResizeEvent& event)
+{
+    auto camera = dynamic_cast<resource::PerspectiveCamera*>(m_camera);
+    if (camera)
+    {
+        camera->setAspectRatio(static_cast<float>(event.getWidth()) / event.getHeight());
+        m_cameraDirty = true;
+    }
+}
+
 } // namespace scene
 } // namespace jdl

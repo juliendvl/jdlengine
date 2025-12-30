@@ -47,5 +47,30 @@ void Application::run()
     }
 }
 
+void Application::mousePressEvent(const MousePressEvent& event)
+{
+    m_renderer->mousePressEvent(event);
+}
+
+void Application::mouseReleaseEvent(const MouseReleaseEvent& event)
+{
+    m_renderer->mouseReleaseEvent(event);
+}
+
+void Application::mouseMoveEvent(const MouseMoveEvent& event)
+{
+    m_renderer->mouseMoveEvent(event);
+}
+
+void Application::wheelEvent(const WheelEvent& event)
+{
+    m_renderer->wheelEvent(event);
+}
+
+void Application::resizeEvent(const ResizeEvent& event)
+{
+    m_renderer->resizeEvent(event);
+}
+
 } // namespace core
 } // namespace jdl

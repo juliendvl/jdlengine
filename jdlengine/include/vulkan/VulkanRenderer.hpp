@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Core.hpp"
+#include "core/Events.hpp"
 
 #include "scene/Scene.hpp"
 
@@ -48,6 +49,36 @@ public:
      */
     void wait();
 
+    /**
+     * @brief Mouse press event handler.
+     * @param event Event data.
+     */
+    void mousePressEvent(const core::MousePressEvent& event);
+
+    /**
+     * @brief Mouse release event handler.
+     * @param event Event data.
+     */
+    void mouseReleaseEvent(const core::MouseReleaseEvent& event);
+
+    /**
+     * @brief Mouse move event handler.
+     * @param event Event data.
+     */
+    void mouseMoveEvent(const core::MouseMoveEvent& event);
+
+    /**
+     * @brief Wheel event handler.
+     * @param event Event data.
+     */
+    void wheelEvent(const core::WheelEvent& event);
+
+    /**
+     * @brief Resize event handler.
+     * @param event Event data.
+     */
+    void resizeEvent(const core::ResizeEvent& event);
+
 private:
     VkDevice m_device = VK_NULL_HANDLE;
 
@@ -69,6 +100,9 @@ private:
 
     // Rendered scene
     std::shared_ptr<scene::Scene> m_scene = nullptr;
+
+    // Indicates if the swap chain must be explicitly recreated
+    bool m_recreateSwapChain = false;
 
     void createCommandBuffers();
     void createSynchronizationObjects();

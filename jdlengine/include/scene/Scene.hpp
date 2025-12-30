@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Object.hpp"
+#include "core/Events.hpp"
 #include "core/GlobalUniformBuffer.hpp"
 #include "core/RenderContext.hpp"
 
@@ -54,6 +55,36 @@ public:
      * @param context Render context.
      */
     void render(core::RenderContext& context);
+
+    /**
+     * @brief Mouse press event handler.
+     * @param event Event data.
+     */
+    void mousePressEvent(const core::MousePressEvent& event);
+
+    /**
+     * @brief Mouse release event handler.
+     * @param event Event data.
+     */
+    void mouseReleaseEvent(const core::MouseReleaseEvent& event);
+
+    /**
+     * @brief Mouse move event handler.
+     * @param event Event data.
+     */
+    void mouseMoveEvent(const core::MouseMoveEvent& event);
+
+    /**
+     * @brief Wheel event handler.
+     * @param event Event data.
+     */
+    void wheelEvent(const core::WheelEvent& event);
+
+    /**
+     * @brief Resize event handler.
+     * @param event Event data.
+     */
+    void resizeEvent(const core::ResizeEvent& event);
 
 private:
     // Root node
