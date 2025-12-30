@@ -14,6 +14,7 @@ enum BufferUsage
 {
     eTransferSrc = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
     eTransferDst = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+    eUniformBuffer = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
     eIndexBuffer = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
     eVertexBuffer = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 };

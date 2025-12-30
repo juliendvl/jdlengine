@@ -11,6 +11,8 @@ namespace jdl
 namespace vk
 {
 
+static const uint32_t MAX_SETS = 50;
+
 static std::vector<VkVertexInputBindingDescription> s_GetVertexBindings()
 {
 	VkVertexInputBindingDescription bindingDescription {};
@@ -57,6 +59,16 @@ VulkanPipeline::~VulkanPipeline()
 {
 	if (m_pipeline)
 	{
+		for (const auto& pool : m_descriptorPools) {
+			vkDestroyDescriptorPool(m_device, pool, nullptr);
+		}
+		m_descriptorPools.clear();
+
+		for (const auto& [layout, handle] : m_descriptorSetLayouts) {
+			vkDestroyDescriptorSetLayout(m_device, handle, nullptr);
+		}
+		m_descriptorSetLayouts.clear();
+
 		vkDestroyRenderPass(m_device, m_renderPass, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
 		vkDestroyPipeline(m_device, m_pipeline, nullptr);
@@ -171,6 +183,8 @@ void VulkanPipeline::create()
 
 	// Pipeline layout
 	createPipelineLayout();
+	// Create a first descriptor pool
+	createDescriptorPool();
 	// Render pass
 	createRenderPass();
 
@@ -193,8 +207,54 @@ void VulkanPipeline::create()
 	VK_CALL(vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_pipeline));
 }
 
+void VulkanPipeline::bind(VkCommandBuffer commandBuffer) const
+{
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+}
+
+VkDescriptorSet VulkanPipeline::allocateDescriptorSet(DescriptorLayoutPreset layoutPreset)
+{
+	VkDescriptorSet set = VK_NULL_HANDLE;
+
+	VkDescriptorSetAllocateInfo allocateInfo {};
+	allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocateInfo.descriptorPool = m_descriptorPools.back();
+	allocateInfo.descriptorSetCount = 1;
+	allocateInfo.pSetLayouts = &m_descriptorSetLayouts[layoutPreset];
+
+	VkResult result = vkAllocateDescriptorSets(m_device, &allocateInfo, &set);
+	if (result == VK_ERROR_OUT_OF_POOL_MEMORY || result == VK_ERROR_FRAGMENTED_POOL)
+	{
+		// The descriptor pool is full; create a new one and retry
+		createDescriptorPool();
+		return allocateDescriptorSet(layoutPreset);
+	}
+	else if (result != VK_SUCCESS) {
+		JDL_FATAL("Failed to allocate the descriptor set");
+	}
+
+	return set;
+}
+
 void VulkanPipeline::createPipelineLayout()
 {
+	// Descriptor set layout (global)
+	VkDescriptorSetLayoutBinding uboLayoutBinding{};
+	uboLayoutBinding.binding = 0;
+	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	uboLayoutBinding.descriptorCount = 1;
+	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
+	VkDescriptorSetLayoutCreateInfo globalLayoutInfo{};
+	globalLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	globalLayoutInfo.bindingCount = 1;
+	globalLayoutInfo.pBindings = &uboLayoutBinding;
+
+	VkDescriptorSetLayout globalLayout;
+	VK_CALL(vkCreateDescriptorSetLayout(m_device, &globalLayoutInfo, nullptr, &globalLayout));
+	m_descriptorSetLayouts[DescriptorLayoutPreset::eGlobal] = globalLayout;
+
+	// Push constants (model matrix)
 	VkPushConstantRange pushConstantRange{};
 	pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 	pushConstantRange.offset = 0;
@@ -202,6 +262,8 @@ void VulkanPipeline::createPipelineLayout()
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &globalLayout;
 	pipelineLayoutInfo.pushConstantRangeCount = 1;
 	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
@@ -243,6 +305,23 @@ void VulkanPipeline::createRenderPass()
 	renderPassInfo.pSubpasses = &subpass;
 
 	VK_CALL(vkCreateRenderPass(m_device, &renderPassInfo, nullptr, &m_renderPass));
+}
+
+void VulkanPipeline::createDescriptorPool()
+{
+	VkDescriptorPoolSize poolSize {};
+	poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	poolSize.descriptorCount = MAX_SETS;
+
+	VkDescriptorPoolCreateInfo poolInfo {};
+	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.poolSizeCount = 1;
+	poolInfo.pPoolSizes = &poolSize;
+	poolInfo.maxSets = MAX_SETS;
+
+	VkDescriptorPool pool;
+	VK_CALL(vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &pool));
+	m_descriptorPools.push_back(pool);
 }
 
 } // namespace vk

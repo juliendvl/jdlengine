@@ -29,6 +29,13 @@ enum class PrimitiveType
 	eTriangleStrip = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
 };
 
+enum class DescriptorLayoutPreset
+{
+	eGlobal,
+	eMaterial
+};
+
+
 class JDL_API VulkanPipeline : private NonCopyable<VulkanPipeline>
 {
 public:
@@ -81,6 +88,19 @@ public:
 		return m_renderPass;
 	}
 
+	/**
+	 * @brief Allocates and returns a descriptor set.
+	 * @param layoutPreset Layout on which the descriptor set should be based on.
+	 * @return The allocated descriptor set.
+	 */
+	VkDescriptorSet allocateDescriptorSet(DescriptorLayoutPreset layoutPreset);
+
+	/**
+	 * @brief Binds the pipeline.
+	 * @param commandBuffer Command buffer with which the bind command must be recorded.
+	 */
+	void bind(VkCommandBuffer commandBuffer) const;
+
 private:
 	VkDevice m_device = VK_NULL_HANDLE;
 
@@ -94,8 +114,13 @@ private:
 	VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;
 	VkRenderPass m_renderPass = VK_NULL_HANDLE;
 
+	// Descriptor sets/layouts
+	std::vector<VkDescriptorPool> m_descriptorPools;
+	std::unordered_map<DescriptorLayoutPreset, VkDescriptorSetLayout> m_descriptorSetLayouts;
+
 	void createPipelineLayout();
 	void createRenderPass();
+	void createDescriptorPool();
 };
 
 } // namespace vk

@@ -1,6 +1,8 @@
 #include "vulkan/VulkanRenderer.hpp"
 #include "vulkan/VulkanContext.hpp"
 
+#include "core/GlobalUniformBuffer.hpp"
+
 #include "utils/Logger.hpp"
 
 
@@ -21,12 +23,15 @@ VulkanRenderer::VulkanRenderer()
 
     createCommandBuffers();
     createSynchronizationObjects();
+    createUniformBuffers();
 }
 
 VulkanRenderer::~VulkanRenderer()
 {
     for (auto i = 0; i < sFramesInFlight; ++i)
     {
+        m_globalUniformBuffers[i].reset();
+
         vkDestroySemaphore(m_device, m_imageAcquired[i], nullptr);
         vkDestroySemaphore(m_device, m_renderFinished[i], nullptr);
         vkDestroyFence(m_device, m_startFrame[i], nullptr);
@@ -128,6 +133,40 @@ void VulkanRenderer::createSynchronizationObjects()
     }
 }
 
+void VulkanRenderer::createUniformBuffers()
+{
+    VulkanPipeline& pipeline = VulkanContext::GetPipeline();
+
+    m_globalDescriptorSets.resize(sFramesInFlight);
+    m_globalUniformBuffers.resize(sFramesInFlight);
+
+    for (auto i = 0; i < sFramesInFlight; ++i)
+    {
+        m_globalDescriptorSets[i] = pipeline.allocateDescriptorSet(DescriptorLayoutPreset::eGlobal);
+        m_globalUniformBuffers[i] = std::make_shared<VulkanBufferWrapper>(
+            sizeof(core::GlobalUniformBuffer),
+            BufferUsage::eUniformBuffer,
+            MemoryProperty::eHostCoherent | MemoryProperty::eHostVisible
+        );
+
+        VkDescriptorBufferInfo bufferInfo {};
+        bufferInfo.buffer = m_globalUniformBuffers[i]->get();
+        bufferInfo.offset = 0;
+        bufferInfo.range = VK_WHOLE_SIZE;
+
+        VkWriteDescriptorSet descriptorWrite {};
+        descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrite.dstSet = m_globalDescriptorSets[i];
+        descriptorWrite.dstBinding = 0;
+        descriptorWrite.dstArrayElement = 0;
+        descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrite.descriptorCount = 1;
+        descriptorWrite.pBufferInfo = &bufferInfo;
+
+        vkUpdateDescriptorSets(m_device, 1, &descriptorWrite, 0, nullptr);
+    }
+}
+
 void VulkanRenderer::recordCommandBuffer(VulkanCommandBuffer& commandBuffer, uint32_t imageIndex)
 {
     VkCommandBuffer bufferHandle = commandBuffer.get();
@@ -138,6 +177,8 @@ void VulkanRenderer::recordCommandBuffer(VulkanCommandBuffer& commandBuffer, uin
         core::RenderContext context;
         context.commandBuffer = bufferHandle;
         context.pipelineLayout = VulkanContext::GetPipeline().getPipelineLayout();
+        context.globalDescriptorSet = m_globalDescriptorSets[m_currentFrame];
+        context.globalUniformBuffer = m_globalUniformBuffers[m_currentFrame];
 
         VulkanPipeline& pipeline = VulkanContext::GetPipeline();
         VulkanSwapChain& swapChain = VulkanContext::GetSwapChain();
@@ -157,7 +198,7 @@ void VulkanRenderer::recordCommandBuffer(VulkanCommandBuffer& commandBuffer, uin
         vkCmdBeginRenderPass(bufferHandle, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
         // Pipeline selection
-        vkCmdBindPipeline(bufferHandle, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getHandle());
+        pipeline.bind(bufferHandle);
 
         // Viewport/Scissor
         VkViewport viewport {};

@@ -1,7 +1,10 @@
 #pragma once
 
 #include "core/Object.hpp"
+#include "core/GlobalUniformBuffer.hpp"
 #include "core/RenderContext.hpp"
+
+#include "resource/Cameras.hpp"
 
 
 namespace jdl
@@ -36,13 +39,30 @@ public:
     }
 
     /**
+     * @brief Returns the current camera.
+     */
+    resource::Camera* getCamera() const { return m_camera; }
+
+    /**
+     * @brief Sets the scene camera.
+     * @param camera The new camera.
+     */
+    void setCamera(resource::Camera* camera);
+
+    /**
      * @brief Renders the scene.
      * @param context Render context.
      */
     void render(core::RenderContext& context);
 
 private:
+    // Root node
     std::shared_ptr<SceneNode> m_rootNode;
+    // Current camera
+    resource::Camera* m_camera = nullptr;
+    bool m_cameraDirty = true;
+    // Scene gloabl uniform buffer
+    core::GlobalUniformBuffer m_uniformBuffer;
 };
 
 } // namespace scene

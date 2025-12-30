@@ -6,6 +6,7 @@
 
 #include "utils/NonCopyable.hpp"
 
+#include "VulkanBuffer.hpp"
 #include "VulkanCommandBuffer.hpp"
 
 // TODO To be removed!
@@ -52,6 +53,9 @@ private:
 
     // Command buffers
     std::vector<VulkanCommandBuffer> m_commandBuffers;
+    // Uniform buffers data
+    std::vector<VkDescriptorSet> m_globalDescriptorSets;
+    std::vector<std::shared_ptr<VulkanBufferWrapper>> m_globalUniformBuffers;
     // Synchronization objects
     std::vector<VkSemaphore> m_imageAcquired;
     std::vector<VkSemaphore> m_renderFinished;
@@ -68,6 +72,7 @@ private:
 
     void createCommandBuffers();
     void createSynchronizationObjects();
+    void createUniformBuffers();
 
     void recordCommandBuffer(VulkanCommandBuffer& commandBuffer, uint32_t imageIndex);
 };
