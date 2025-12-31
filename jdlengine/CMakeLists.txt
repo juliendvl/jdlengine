@@ -47,3 +47,6 @@ target_link_libraries(${ENGINE_NAME} Vulkan::Vulkan)
 
 # glm
 include_directories(${VENDOR_DIR}/glm)
+
+# stb
+include_directories(${VENDOR_DIR}/stb/include)
