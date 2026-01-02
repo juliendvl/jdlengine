@@ -1,6 +1,7 @@
 #include "vulkan/VulkanSwapChain.hpp"
 #include "vulkan/VulkanContext.hpp"
 #include "vulkan/VulkanDevice.hpp"
+#include "vulkan/VulkanUtils.hpp"
 
 #include "core/Window.hpp"
 
@@ -152,26 +153,16 @@ void VulkanSwapChain::createSwapChain()
 void VulkanSwapChain::createImageViews()
 {
 	size_t nbImages = m_images.size();
-	m_views.resize(nbImages);
+	m_views.reserve(nbImages);
 
 	for (auto i = 0; i < nbImages; ++i)
 	{
-		VkImageViewCreateInfo createInfo {};
-		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-		createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-		createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-		createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-		createInfo.format = m_surfaceFormat.format;
-		createInfo.image = m_images[i];
-		createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		createInfo.subresourceRange.baseArrayLayer = 0;
-		createInfo.subresourceRange.baseMipLevel = 0;
-		createInfo.subresourceRange.layerCount = 1;
-		createInfo.subresourceRange.levelCount = 1;
-		createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-
-		VK_CALL(vkCreateImageView(m_device, &createInfo, nullptr, &m_views[i]));
+		m_views.push_back(VulkanUtils::CreateImageView(
+			m_device,
+			m_images[i],
+			m_surfaceFormat.format,
+			VK_IMAGE_ASPECT_COLOR_BIT
+		));
 	}
 }
 
