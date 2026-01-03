@@ -110,6 +110,8 @@ private:
     std::unique_ptr<Window> m_window;
     // Application renderer
     std::unique_ptr<vk::VulkanRenderer> m_renderer;
+
+    void createDefaultResources();
 };
 
 /**

@@ -94,7 +94,7 @@ public:
      * @param size      Data size. Set to 0 to update the whole buffer.
      * @param offset    Buffer offset.
      */
-    void setData(void* data, uint64_t size = 0, uint64_t offset = 0);
+    void setData(const void* data, uint64_t size = 0, uint64_t offset = 0);
 
 private:
     uint64_t m_size = 0;
@@ -145,7 +145,7 @@ public:
      * @param size      Data size. Set to 0 to update the whole buffer.
      * @param offset    Buffer offset.
      */
-    void setData(void* data, uint64_t size = 0, uint64_t offset = 0);
+    void setData(const void* data, uint64_t size = 0, uint64_t offset = 0);
 
 private:
     VulkanBufferWrapper m_stagingBuffer;

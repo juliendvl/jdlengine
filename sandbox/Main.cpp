@@ -4,8 +4,10 @@
 #include <math/SRTMatrix.hpp>
 
 #include <resource/Cameras.hpp>
+#include <resource/Material.hpp>
 #include <resource/Mesh.hpp>
 #include <resource/ResourceManager.hpp>
+#include <resource/Texture.hpp>
 
 #include <scene/MeshNode.hpp>
 #include <scene/Scene.hpp>
@@ -21,13 +23,21 @@ public:
     Sandbox(const std::string& name, size_t width, size_t height)
         : core::Application(name, width, height)
     {
+        auto texture = resource::ResourceManager::Create<resource::Texture>("TEXTURE");
+        texture->create("textures/container.png");
+
+        auto material = resource::ResourceManager::Create<resource::Material>("MATERIAL");
+        material->setBaseColorTexture(texture);
+
         auto mesh = resource::ResourceManager::Create<resource::Mesh>("MESH");
         mesh->addVertices({
-            core::Vertex({0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
-            core::Vertex({0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}),
-            core::Vertex({-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f})
+            core::Vertex({-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
+            core::Vertex({0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}),
+            core::Vertex({0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}),
+            core::Vertex({-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f})
         });
-        mesh->addIndices({0, 1, 2});
+        mesh->addIndices({0, 1, 2, 0, 2, 3});
+        mesh->setMaterial(material);
 
         auto node = scene::CreateNode<scene::MeshNode>("NODE", nullptr);
         node->setMesh(mesh);

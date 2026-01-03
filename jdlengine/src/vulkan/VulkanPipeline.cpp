@@ -238,21 +238,40 @@ VkDescriptorSet VulkanPipeline::allocateDescriptorSet(DescriptorLayoutPreset lay
 
 void VulkanPipeline::createPipelineLayout()
 {
-	// Descriptor set layout (global)
+	// Descriptor set layouts - Bindings
 	VkDescriptorSetLayoutBinding uboLayoutBinding{};
 	uboLayoutBinding.binding = 0;
 	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	uboLayoutBinding.descriptorCount = 1;
 	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
-	VkDescriptorSetLayoutCreateInfo globalLayoutInfo{};
-	globalLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	globalLayoutInfo.bindingCount = 1;
-	globalLayoutInfo.pBindings = &uboLayoutBinding;
+	VkDescriptorSetLayoutBinding albedoSamplerBinding{};
+	albedoSamplerBinding.binding = 1;
+	albedoSamplerBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	albedoSamplerBinding.descriptorCount = 1;
+	albedoSamplerBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
+	VkDescriptorSetLayoutCreateInfo layoutInfo{};
+	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	layoutInfo.bindingCount = 1;
+	layoutInfo.pBindings = &uboLayoutBinding;
+
+	// Descriptor set layout - Global
 	VkDescriptorSetLayout globalLayout;
-	VK_CALL(vkCreateDescriptorSetLayout(m_device, &globalLayoutInfo, nullptr, &globalLayout));
+	VK_CALL(vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &globalLayout));
 	m_descriptorSetLayouts[DescriptorLayoutPreset::eGlobal] = globalLayout;
+
+	// Descriptor set layout - Material
+	std::vector<VkDescriptorSetLayoutBinding> materialBindings { uboLayoutBinding, albedoSamplerBinding };
+
+	layoutInfo.bindingCount = static_cast<uint32_t>(materialBindings.size());
+	layoutInfo.pBindings = materialBindings.data();
+
+	VkDescriptorSetLayout materialLayout;
+	VK_CALL(vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &materialLayout));
+	m_descriptorSetLayouts[DescriptorLayoutPreset::eMaterial] = materialLayout;
+
+	std::vector<VkDescriptorSetLayout> layouts {globalLayout, materialLayout};
 
 	// Push constants (model matrix)
 	VkPushConstantRange pushConstantRange{};
@@ -262,8 +281,8 @@ void VulkanPipeline::createPipelineLayout()
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &globalLayout;
+	pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(layouts.size());
+	pipelineLayoutInfo.pSetLayouts = layouts.data();
 	pipelineLayoutInfo.pushConstantRangeCount = 1;
 	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
@@ -309,14 +328,18 @@ void VulkanPipeline::createRenderPass()
 
 void VulkanPipeline::createDescriptorPool()
 {
-	VkDescriptorPoolSize poolSize {};
-	poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSize.descriptorCount = MAX_SETS;
+	std::vector<VkDescriptorPoolSize> poolsSize(2);
+	// Uniform buffer (global + material)
+	poolsSize[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	poolsSize[0].descriptorCount = 2 * MAX_SETS;
+	// Combined sampler (material)
+	poolsSize[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	poolsSize[1].descriptorCount = MAX_SETS;
 
 	VkDescriptorPoolCreateInfo poolInfo {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.poolSizeCount = 1;
-	poolInfo.pPoolSizes = &poolSize;
+	poolInfo.poolSizeCount = 2;
+	poolInfo.pPoolSizes = poolsSize.data();
 	poolInfo.maxSets = MAX_SETS;
 
 	VkDescriptorPool pool;

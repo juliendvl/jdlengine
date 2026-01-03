@@ -28,7 +28,7 @@ VulkanBufferWrapper::~VulkanBufferWrapper()
     vkDestroyBuffer(m_device, m_buffer, nullptr);
 }
 
-void VulkanBufferWrapper::setData(void* data, uint64_t size, uint64_t offset)
+void VulkanBufferWrapper::setData(const void* data, uint64_t size, uint64_t offset)
 {
     size = size > 0 ? size : m_size;
 
@@ -96,7 +96,7 @@ VulkanBuffer::VulkanBuffer(uint64_t size, BufferUsage usages)
     , m_deviceBuffer(size, usages | BufferUsage::eTransferDst, MemoryProperty::eDeviceLocal)
 {}
 
-void VulkanBuffer::setData(void* data, uint64_t size, uint64_t offset)
+void VulkanBuffer::setData(const void* data, uint64_t size, uint64_t offset)
 {
     // Update the staging buffer
     m_stagingBuffer.setData(data, size, offset);

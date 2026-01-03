@@ -1,4 +1,5 @@
 #include "resource/Mesh.hpp"
+#include "resource/Material.hpp"
 
 
 namespace jdl
@@ -26,6 +27,10 @@ void Mesh::render(core::RenderContext& context)
         return;
     }
     updateBuffers();
+
+    if (m_material) {
+        m_material->bind(context);
+    }
 
     m_vertexBuffer->bind(context.commandBuffer);
     if (m_indices.empty()) {

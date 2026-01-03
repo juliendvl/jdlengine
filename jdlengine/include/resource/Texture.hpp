@@ -75,6 +75,14 @@ public:
     void create(const std::string& path);
 
     /**
+     * @brief Creates the texture.
+     * @param width     Texture width.
+     * @param height    Texture height.
+     * @param texels    Texture texels.
+     */
+    void create(int width, int height, const unsigned char* texels);
+
+    /**
      * @brief Returns the texture width.
      */
     int getWidth() const { return m_width; }
@@ -100,7 +108,7 @@ private:
     // Texture dimensions
     int m_width = -1;
     int m_height = -1;
-    int m_nbChannels = -1;
+    int m_nbChannels = 4;
 
     // Filtering/Wrapping
     std::unordered_map<FilteringParameter, FilteringValue> m_filtering {
@@ -119,6 +127,7 @@ private:
     VkDeviceMemory m_deviceMemory = VK_NULL_HANDLE;
     VkSampler m_sampler = VK_NULL_HANDLE;
 
+    void doCreate(const unsigned char* texels);
     void createImage();
     void copyBufferToImage(const vk::VulkanBufferWrapper& buffer);
     void createSampler();

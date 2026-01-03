@@ -13,6 +13,8 @@ namespace jdl
 namespace resource
 {
 
+class Material;
+
 class JDL_API Mesh : public Resource
 {
 public:
@@ -89,6 +91,17 @@ public:
     }
 
     /**
+     * @brief Returns the mesh material.
+     */
+    Material* getMaterial() const { return m_material; }
+
+    /**
+     * @brief Sets the mesh material.
+     * @param material The new material.
+     */
+    void setMaterial(Material* material) { m_material = material; }
+
+    /**
      * @brief Renders the mesh.
      * @param context Render context.
      */
@@ -106,6 +119,9 @@ private:
     // Buffers
     std::unique_ptr<vk::VulkanVertexBuffer> m_vertexBuffer = nullptr;
     std::unique_ptr<vk::VulkanIndexBuffer> m_indexBuffer = nullptr;
+
+    // Material
+    Material* m_material = nullptr;
 
     void updateBuffers();
     void clearResource();

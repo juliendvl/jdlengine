@@ -27,6 +27,21 @@ void Texture::create(const std::string& path)
     if (!texels) {
         JDL_FATAL("Failed to read texture image {}", path);
     }
+    doCreate(texels);
+
+    stbi_image_free(texels);
+}
+
+void Texture::create(int width, int height, const unsigned char* texels)
+{
+    m_width = width;
+    m_height = height;
+
+    doCreate(texels);
+}
+
+void Texture::doCreate(const unsigned char* texels)
+{
     VkDeviceSize size = 4 * m_width * m_height;
 
     // Create and fill the staging resource (buffer)
@@ -52,8 +67,6 @@ void Texture::create(const std::string& path)
 
     // Create the sampler
     createSampler();
-
-    stbi_image_free(texels);
 }
 
 void Texture::createImage()
