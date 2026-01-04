@@ -65,7 +65,9 @@ Window::Window(const std::string& title, size_t width, size_t height)
     glfwSetErrorCallback(
         [](int error, const char* description) { JDL_ERROR("[GLFW {}] {}", error, description); }
     );
+#ifndef _WIN32
     glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+#endif // _WIN32
 
     int status = glfwInit();
     if (status == GLFW_FALSE) {
