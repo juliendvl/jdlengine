@@ -3,6 +3,7 @@
 #include "Resource.hpp"
 
 #include "vulkan/VulkanBuffer.hpp"
+#include "vulkan/VulkanImage.hpp"
 
 #include <unordered_map>
 
@@ -95,7 +96,7 @@ public:
     /**
      * @brief Returns the Vulkan image view.
      */
-    VkImageView getImageView() const { return m_imageView; }
+    VkImageView getImageView() const { return m_image->getView(); }
 
     /**
      * @brief Returns the Vulkan sampler.
@@ -122,17 +123,14 @@ private:
     };
 
     // Texture Vulkan objects
-    VkImage m_image = VK_NULL_HANDLE;
-    VkImageView m_imageView = VK_NULL_HANDLE;
-    VkDeviceMemory m_deviceMemory = VK_NULL_HANDLE;
+    std::unique_ptr<vk::VulkanImage> m_image;
     VkSampler m_sampler = VK_NULL_HANDLE;
 
     void doCreate(const unsigned char* texels);
+    
     void createImage();
     void copyBufferToImage(const vk::VulkanBufferWrapper& buffer);
     void createSampler();
-
-    void transitionToLayout(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout);
 
     void clearResource();
 };

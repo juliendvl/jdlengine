@@ -92,8 +92,8 @@ void VulkanBufferWrapper::allocateMemory(MemoryProperty memoryProperties)
 // --- VulkanBuffer CLASS ---
 
 VulkanBuffer::VulkanBuffer(uint64_t size, BufferUsage usages)
-    : m_stagingBuffer(size, BufferUsage::eTransferSrc, MemoryProperty::eHostCoherent | MemoryProperty::eHostVisible)
-    , m_deviceBuffer(size, usages | BufferUsage::eTransferDst, MemoryProperty::eDeviceLocal)
+    : m_stagingBuffer(size, BufferUsage::eBufferTransferSrc, MemoryProperty::eHostCoherent | MemoryProperty::eHostVisible)
+    , m_deviceBuffer(size, usages | BufferUsage::eBufferTransferDst, MemoryProperty::eDeviceLocal)
 {}
 
 void VulkanBuffer::setData(const void* data, uint64_t size, uint64_t offset)

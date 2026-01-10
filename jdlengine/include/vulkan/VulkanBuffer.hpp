@@ -4,6 +4,8 @@
 
 #include "utils/NonCopyable.hpp"
 
+#include "MemoryProperty.hpp"
+
 
 namespace jdl
 {
@@ -12,11 +14,11 @@ namespace vk
 
 enum BufferUsage
 {
-    eTransferSrc = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-    eTransferDst = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-    eUniformBuffer = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-    eIndexBuffer = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-    eVertexBuffer = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+    eBufferTransferSrc  = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+    eBufferTransferDst  = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+    eUniformBuffer      = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+    eIndexBuffer        = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+    eVertexBuffer       = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 };
 
 inline BufferUsage operator&(BufferUsage a, BufferUsage b) { return (BufferUsage)((int)a & (int)b); }
@@ -29,29 +31,6 @@ inline BufferUsage& operator&=(BufferUsage& a, BufferUsage b)
 }
 
 inline BufferUsage& operator|=(BufferUsage& a, BufferUsage b)
-{
-    a = a | b;
-    return a;
-}
-
-
-enum MemoryProperty
-{
-    eDeviceLocal = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-    eHostCoherent = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-    eHostVisible = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-};
-
-inline MemoryProperty operator&(MemoryProperty a, MemoryProperty b) { return (MemoryProperty)((int)a & (int)b); }
-inline MemoryProperty operator|(MemoryProperty a, MemoryProperty b) { return (MemoryProperty)((int)a | (int)b); }
-
-inline MemoryProperty& operator&=(MemoryProperty& a, MemoryProperty b)
-{
-    a = a & b;
-    return a;
-}
-
-inline MemoryProperty& operator|=(MemoryProperty& a, MemoryProperty b)
 {
     a = a | b;
     return a;

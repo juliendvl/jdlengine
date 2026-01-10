@@ -10,8 +10,7 @@
 #include "VulkanBuffer.hpp"
 #include "VulkanCommandBuffer.hpp"
 
-// TODO To be removed!
-#include "resource/Mesh.hpp"
+#include <array>
 
 
 namespace jdl
@@ -95,8 +94,8 @@ private:
     // Index of the currently rendered image
     uint32_t m_currentFrame = 0;
 
-    // Background color
-    VkClearValue m_backgroundColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+    // Clear values (background color + depth)
+    std::array<VkClearValue, 2> m_clearValues;
 
     // Rendered scene
     std::shared_ptr<scene::Scene> m_scene = nullptr;

@@ -4,6 +4,8 @@
 
 #include "utils/NonCopyable.hpp"
 
+#include "VulkanImage.hpp"
+
 
 namespace jdl
 {
@@ -93,6 +95,11 @@ public:
 	}
 
 	/**
+	 * @brief Returns the depth buffer image.
+	 */
+	const VulkanImage& getDepthBuffer() const { return *m_depthBuffer; }
+
+	/**
 	 * @brief Retrieves and returns an available image from the swap chain.
 	 * @param outImageIndex Output image index.
 	 * @param semaphore Signal semaphore (optional).
@@ -133,8 +140,13 @@ private:
 	// Framebuffers
 	std::vector<VkFramebuffer> m_framebuffers;
 
+	// Depth buffer
+	std::unique_ptr<VulkanImage> m_depthBuffer;
+
 	void createSwapChain();
 	void createImageViews();
+	void createDepthBuffer();
+
 	void getSurfaceFormat(VkPhysicalDevice phyDevice, VkSurfaceKHR surface);
 	void getPresentMode(VkPhysicalDevice phyDevice, VkSurfaceKHR surface);
 };

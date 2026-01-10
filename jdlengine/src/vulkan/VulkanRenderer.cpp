@@ -21,6 +21,10 @@ VulkanRenderer::VulkanRenderer()
     VulkanContext::Init();
     m_device = VulkanContext::GetDevice().get();
 
+    // Init the clear values
+    m_clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+    m_clearValues[1].depthStencil = {1.0f, 0};
+
     createCommandBuffers();
     createSynchronizationObjects();
     createUniformBuffers();
@@ -230,8 +234,8 @@ void VulkanRenderer::recordCommandBuffer(VulkanCommandBuffer& commandBuffer, uin
         renderPassInfo.framebuffer = swapChain.getFramebuffer(imageIndex);
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = extent;
-        renderPassInfo.clearValueCount = 1;
-        renderPassInfo.pClearValues = &m_backgroundColor;
+        renderPassInfo.clearValueCount = 2;
+        renderPassInfo.pClearValues = m_clearValues.data();
 
         vkCmdBeginRenderPass(bufferHandle, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 

@@ -58,13 +58,15 @@ public:
 	 * @param waitStages		For each wait semaphore, the pipeline stage on which it must wait.
 	 * @param signalSemaphores	The semaphores to signal.
 	 * @param fence				The fence to signal.
+	 * @param wait				Wait for the end of the command buffer execution (default = false).
 	 */
 	void submit(
 		VkQueue queue,
 		const std::vector<VkSemaphore>& waitSemaphores = {},
 		const std::vector<VkPipelineStageFlags>& waitStages = {},
 		const std::vector<VkSemaphore>& signalSemaphores = {},
-		VkFence fence = VK_NULL_HANDLE
+		VkFence fence = VK_NULL_HANDLE,
+		bool wait = false
 	);
 
 	/**

@@ -34,19 +34,22 @@ public:
             core::Vertex({-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
             core::Vertex({0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}),
             core::Vertex({0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}),
-            core::Vertex({-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f})
+            core::Vertex({-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}),
+            core::Vertex({-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
+            core::Vertex({0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}),
+            core::Vertex({0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}),
+            core::Vertex({-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f})
         });
-        mesh->addIndices({0, 1, 2, 0, 2, 3});
+        mesh->addIndices({0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7});
         mesh->setMaterial(material);
 
         auto node = scene::CreateNode<scene::MeshNode>("NODE", nullptr);
         node->setMesh(mesh);
 
-        // math::SRTMatrix transform;
-        // transform.scale = glm::vec3(0.5f);
-        // transform.translation = glm::vec3(0.5f, 0.5f, 0.0f);
-        // transform.setRotation(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
-        // node->setWorldTransform(transform);
+        math::SRTMatrix transform;
+        transform.translation = glm::vec3(0.5f, 0.5f, 0.0f);
+        transform.setRotation(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
+        node->setWorldTransform(transform);
 
         auto scene = std::make_shared<scene::Scene>("SCENE");
         scene->setRootNode(node);

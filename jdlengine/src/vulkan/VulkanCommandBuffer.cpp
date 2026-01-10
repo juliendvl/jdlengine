@@ -77,9 +77,9 @@ void VulkanCommandBuffer::submit(
 	const std::vector<VkSemaphore>& waitSemaphores,
 	const std::vector<VkPipelineStageFlags>& waitStages,
 	const std::vector<VkSemaphore>& signalSemaphores,
-	VkFence fence
-)
-{
+	VkFence fence,
+	bool wait
+) {
 	if (m_commandBuffer == VK_NULL_HANDLE)
 	{
 		JDL_ERROR("The command buffer has not been allocated");
@@ -97,6 +97,9 @@ void VulkanCommandBuffer::submit(
 	submitInfo.pSignalSemaphores = signalSemaphores.data();
 
 	VK_CALL(vkQueueSubmit(queue, 1, &submitInfo, fence));
+	if (wait) {
+		VK_CALL(vkQueueWaitIdle(queue));
+	}
 }
 
 void VulkanCommandBuffer::destroy()

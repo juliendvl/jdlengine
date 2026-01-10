@@ -47,7 +47,7 @@ void Texture::doCreate(const unsigned char* texels)
     // Create and fill the staging resource (buffer)
     vk::VulkanBufferWrapper stagingBuffer(
         size,
-        vk::BufferUsage::eTransferSrc,
+        vk::BufferUsage::eBufferTransferSrc,
         vk::MemoryProperty::eHostCoherent | vk::MemoryProperty::eHostVisible
     );
     stagingBuffer.setData(texels);
@@ -56,73 +56,17 @@ void Texture::doCreate(const unsigned char* texels)
     createImage();
     // Copy the staging buffer content to the image
     copyBufferToImage(stagingBuffer);
-
-    // Create the image view
-    m_imageView = vk::VulkanUtils::CreateImageView(
-        m_device,
-        m_image,
-        VK_FORMAT_R8G8B8A8_SRGB,
-        VK_IMAGE_ASPECT_COLOR_BIT
-    );
-
     // Create the sampler
     createSampler();
 }
 
 void Texture::createImage()
 {
-    VkPhysicalDevice phyDevice = vk::VulkanContext::GetDevice().getPhysicalDevice();
-
-    // Create the image
-    VkImageCreateInfo imageInfo{};
-    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = static_cast<uint32_t>(m_width);
-    imageInfo.extent.height = static_cast<uint32_t>(m_height);
-    imageInfo.extent.depth = 1;
-    imageInfo.mipLevels = 1;
-    imageInfo.arrayLayers = 1;
-    imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-
-    VK_CALL(vkCreateImage(m_device, &imageInfo, nullptr, &m_image));
-
-    // Allocate the memory for the image
-    VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(m_device, m_image, &memRequirements);
-
-    VkPhysicalDeviceMemoryProperties deviceProperties;
-    vkGetPhysicalDeviceMemoryProperties(phyDevice, &deviceProperties);
-
-    // Find a suitable memory type
-    uint32_t memoryType = UINT32_MAX;
-    for (uint32_t i = 0; i < deviceProperties.memoryTypeCount; ++i)
-    {
-        if (!(memRequirements.memoryTypeBits & (1 << i))) {
-            continue;
-        }
-        else if (!(deviceProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) {
-            continue;
-        }
-
-        memoryType = i;
-        break;
-    }
-    if (memoryType == UINT32_MAX) {
-        JDL_FATAL("Failed to find a suitable memory type");
-    }
-
-    VkMemoryAllocateInfo allocInfo {};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = memoryType;
-
-    VK_CALL(vkAllocateMemory(m_device, &allocInfo, nullptr, &m_deviceMemory));
-    VK_CALL(vkBindImageMemory(m_device, m_image, m_deviceMemory, 0));
+    m_image = std::make_unique<vk::VulkanImage>(
+        static_cast<uint32_t>(m_width),
+        static_cast<uint32_t>(m_height),
+        vk::ImageUsage::eImageTransferDst | vk::ImageUsage::eSampled
+    );
 }
 
 void Texture::copyBufferToImage(const vk::VulkanBufferWrapper& buffer)
@@ -136,7 +80,12 @@ void Texture::copyBufferToImage(const vk::VulkanBufferWrapper& buffer)
     {
         VkCommandBuffer bufferHandle = commandBuffer.get();
 
-        transitionToLayout(bufferHandle, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        vk::VulkanUtils::TransitionImageLayout(
+            bufferHandle,
+            m_image->get(),
+            m_image->getFormat(),
+            VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+        );
 
         VkBufferImageCopy region {};
         region.bufferOffset = 0;
@@ -152,20 +101,20 @@ void Texture::copyBufferToImage(const vk::VulkanBufferWrapper& buffer)
         vkCmdCopyBufferToImage(
             bufferHandle,
             buffer.get(),
-            m_image,
+            m_image->get(),
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             1, &region
         );
 
-        transitionToLayout(
+        vk::VulkanUtils::TransitionImageLayout(
             bufferHandle,
+            m_image->get(),
+            m_image->getFormat(),
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         );
     }
     commandBuffer.end();
-    commandBuffer.submit(queue);
-
-    VK_CALL(vkQueueWaitIdle(queue));
+    commandBuffer.submit(queue, {}, {}, {}, VK_NULL_HANDLE, true);
     commandBuffer.destroy();
 }
 
@@ -191,59 +140,12 @@ void Texture::createSampler()
     VK_CALL(vkCreateSampler(m_device, &samplerInfo, nullptr, &m_sampler));
 }
 
-void Texture::transitionToLayout(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout)
-{
-    VkPipelineStageFlags sourceStage;
-    VkPipelineStageFlags destinationStage;
-
-    VkImageMemoryBarrier barrier {};
-    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    barrier.oldLayout = oldLayout;
-    barrier.newLayout = newLayout;
-    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.image = m_image;
-    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = 1;
-    barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount = 1;
-
-    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-    {
-        barrier.srcAccessMask = 0;
-        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    }
-    else
-    {
-        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    }
-
-    vkCmdPipelineBarrier(
-        commandBuffer,
-        sourceStage, destinationStage,
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &barrier
-    );
-}
-
 void Texture::clearResource()
 {
-    if (m_image != VK_NULL_HANDLE)
+    if (m_image)
     {
         vkDestroySampler(m_device, m_sampler, nullptr);
-        vkFreeMemory(m_device, m_deviceMemory, nullptr);
-        vkDestroyImageView(m_device, m_imageView, nullptr);
-        vkDestroyImage(m_device, m_image, nullptr);
+        m_image.reset();
     }
 }
 

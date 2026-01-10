@@ -1,4 +1,6 @@
 #include "vulkan/VulkanSwapChain.hpp"
+
+#include "vulkan/VulkanCommandBuffer.hpp"
 #include "vulkan/VulkanContext.hpp"
 #include "vulkan/VulkanDevice.hpp"
 #include "vulkan/VulkanUtils.hpp"
@@ -19,10 +21,12 @@ VulkanSwapChain::VulkanSwapChain()
 
 	createSwapChain();
 	createImageViews();
+	createDepthBuffer();
 }
 
 VulkanSwapChain::~VulkanSwapChain()
 {
+	m_depthBuffer.reset();
 	for (VkFramebuffer framebuffer : m_framebuffers) {
 		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
 	}
@@ -41,12 +45,12 @@ void VulkanSwapChain::createFramebuffers(VkRenderPass renderPass)
 
 	for (auto i = 0; i < m_views.size(); ++i)
 	{
-		VkImageView attachments[] = { m_views[i] };
+		VkImageView attachments[] = { m_views[i], m_depthBuffer->getView() };
 
 		VkFramebufferCreateInfo framebufferInfo {};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = renderPass;
-		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.attachmentCount = 2;
 		framebufferInfo.pAttachments = attachments;
 		framebufferInfo.width = m_extent.width;
 		framebufferInfo.height = m_extent.height;
@@ -164,6 +168,31 @@ void VulkanSwapChain::createImageViews()
 			VK_IMAGE_ASPECT_COLOR_BIT
 		));
 	}
+}
+
+void VulkanSwapChain::createDepthBuffer()
+{
+	VkCommandPool commandPool = VulkanContext::GetDevice().getCommandPool();
+	VkQueue queue = VulkanContext::GetDevice().getGraphicsQueue();
+
+	// Create the depth buffer image
+	m_depthBuffer = std::make_unique<VulkanImage>(m_extent.width, m_extent.height, ImageUsage::eDepthStencil);
+
+	// Transition the image layout
+	VulkanCommandBuffer commandBuffer;
+	commandBuffer.allocate(commandPool);
+	commandBuffer.begin();
+	{
+		VulkanUtils::TransitionImageLayout(
+			commandBuffer.get(),
+			m_depthBuffer->get(),
+			m_depthBuffer->getFormat(),
+			VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+		);
+	}
+	commandBuffer.end();
+    commandBuffer.submit(queue, {}, {}, {}, VK_NULL_HANDLE, true);
+    commandBuffer.destroy();
 }
 
 void VulkanSwapChain::getSurfaceFormat(VkPhysicalDevice phyDevice, VkSurfaceKHR surface)
