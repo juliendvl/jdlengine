@@ -12,13 +12,7 @@ class JDLEngine : public core::Application
 public:
 	JDLEngine(const char* name, int width, int height)
 		: core::Application(name, width, height)
-	{
-		JDL_TRACE("Message");
-		JDL_DEBUG("Message");
-		JDL_INFO("Message");
-		JDL_WARN("Message");
-		JDL_ERROR("Message");
-	}
+	{}
 };
 
 

@@ -17,11 +17,22 @@ Application::Application(const char* name, int width, int height)
 	}
 	IApplication = this;
 	IName = name;
+
+	m_window = std::make_unique<Window>(name, width, height);
 }
 
-Application::~Application() {}
+Application::~Application()
+{
+	m_window.reset();
+}
 
-void Application::run() {}
+void Application::run()
+{
+	while (m_window->isRunning())
+	{
+		m_window->pollEvents();
+	}
+}
 
 } // namespace core
 } // namespace jdl
