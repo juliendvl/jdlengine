@@ -20,6 +20,11 @@ set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 file(GLOB CORE_SRC ${INC_DIR}/core/*.hpp ${SRC_DIR}/core/*.cpp)
 file(GLOB UTILS_SRC ${INC_DIR}/utils/*.hpp ${SRC_DIR}/utils/*.cpp)
 
+# Necessary to compile spdlog with MSVC
+if (MSVC)
+	add_compile_options("/utf-8")
+endif()
+
 add_executable(
 	${APP_NAME}
 	${SRC_DIR}/Main.cpp
@@ -30,3 +35,6 @@ target_include_directories(${APP_NAME} PUBLIC ${INC_DIR})
 
 # Setup pch.hpp as precompiled header
 target_precompile_headers(${APP_NAME} PRIVATE ${INC_DIR}/pch.hpp)
+
+# spdlog
+target_include_directories(${APP_NAME} PUBLIC ${VENDOR_DIR}/spdlog/include)
