@@ -1,0 +1,8 @@
+# CMake build directories
+[Bb]uild/
+[Dd]ebug/
+[Oo]ut/
+[Rr]elease/
+
+# Visual Studio directories
+.vs/
