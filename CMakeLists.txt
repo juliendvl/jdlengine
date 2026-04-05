@@ -16,7 +16,17 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(INC_DIR ${CMAKE_SOURCE_DIR}/include)
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 
+# Source files
+file(GLOB CORE_SRC ${INC_DIR}/core/*.hpp ${SRC_DIR}/core/*.cpp)
+file(GLOB UTILS_SRC ${INC_DIR}/utils/*.hpp ${SRC_DIR}/utils/*.cpp)
+
 add_executable(
 	${APP_NAME}
 	${SRC_DIR}/Main.cpp
+	${CORE_SRC}
+	${UTILS_SRC}
 )
+target_include_directories(${APP_NAME} PUBLIC ${INC_DIR})
+
+# Setup pch.hpp as precompiled header
+target_precompile_headers(${APP_NAME} PRIVATE ${INC_DIR}/pch.hpp)
