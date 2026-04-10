@@ -66,6 +66,14 @@ bool Window::isRunning() const
 	return status == GLFW_FALSE;
 }
 
+std::vector<const char*> Window::GetRequiredInstanceExtensions()
+{
+	uint32_t nbExtensions = 0;
+	const char** extensions = glfwGetRequiredInstanceExtensions(&nbExtensions);
+
+	return std::vector<const char*>{extensions, extensions + nbExtensions};
+}
+
 
 } // namespace core
 } // namespace jdl

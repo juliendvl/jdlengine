@@ -4,6 +4,8 @@
 
 #include "utils/NonCopyable.hpp"
 
+#include "vk/VulkanRenderer.hpp"
+
 
 namespace jdl
 {
@@ -37,6 +39,13 @@ public:
 	static Window& GetWindow() { return *IApplication->m_window; }
 
 	/**
+	 * @brief Returns the application renderer.
+	 */
+	static vk::VulkanRenderer& GetRenderer() {
+		return *IApplication->m_renderer;
+	}
+
+	/**
 	 * @brief Runs the application.
 	 */
 	void run();
@@ -46,6 +55,7 @@ private:
 	static const char* IName;
 
 	std::unique_ptr<Window> m_window;
+	std::unique_ptr<vk::VulkanRenderer> m_renderer;
 };
 
 } // namespace core

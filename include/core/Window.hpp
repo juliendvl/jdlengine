@@ -54,6 +54,12 @@ public:
 	 */
 	void waitEvents() const { glfwWaitEvents(); }
 
+	/**
+	 * @brief Returns the Vulkan instance extensions which are required to
+	 * work with the window.
+	 */
+	static std::vector<const char*> GetRequiredInstanceExtensions();
+
 private:
 	static Window* IWindow;
 

@@ -19,6 +19,7 @@ set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 # Source files
 file(GLOB CORE_SRC ${INC_DIR}/core/*.hpp ${SRC_DIR}/core/*.cpp)
 file(GLOB UTILS_SRC ${INC_DIR}/utils/*.hpp ${SRC_DIR}/utils/*.cpp)
+file(GLOB VK_SRC ${INC_DIR}/vk/*.hpp ${SRC_DIR}/vk/*.cpp)
 
 # Necessary to compile spdlog with MSVC
 if (MSVC)
@@ -30,6 +31,7 @@ add_executable(
 	${SRC_DIR}/Main.cpp
 	${CORE_SRC}
 	${UTILS_SRC}
+	${VK_SRC}
 )
 target_include_directories(${APP_NAME} PUBLIC ${INC_DIR})
 
@@ -47,3 +49,7 @@ set(GLFW_INSTALL OFF CACHE BOOL "Generate installation target")
 add_subdirectory(${VENDOR_DIR}/glfw)
 target_include_directories(${APP_NAME} PUBLIC ${VENDOR_DIR}/glfw/include)
 target_link_libraries(${APP_NAME} PRIVATE glfw)
+
+# Vulkan
+find_package(Vulkan REQUIRED)
+target_link_libraries(${APP_NAME} PRIVATE Vulkan::Vulkan)
