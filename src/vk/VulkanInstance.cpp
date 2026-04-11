@@ -10,18 +10,141 @@ namespace jdl
 namespace vk
 {
 
+// --- VALIDATION LAYERS ---
+
+static const std::vector<const char*> sValidationLayers {
+    "VK_LAYER_KHRONOS_validation"
+};
+
+#ifndef NDEBUG
+static constexpr bool sUseValidationLayers = true;
+#else
+static constexpr bool sUseValidationLayers = false;
+#endif // !NDEBUG
+
+static void s_CheckValidationLayersSupport()
+{
+    uint32_t nbLayers = 0;
+    VK_CALL(vkEnumerateInstanceLayerProperties(&nbLayers, nullptr));
+
+    std::vector<VkLayerProperties> layers(nbLayers);
+    VK_CALL(vkEnumerateInstanceLayerProperties(
+        &nbLayers, layers.data()
+    ));
+
+    for (const char* requiredLayer : sValidationLayers)
+    {
+        bool layerFound = false;
+        
+        for (const auto& layer : layers)
+        {
+            if (strcmp(layer.layerName, requiredLayer) == 0)
+            {
+                layerFound = true;
+                break;
+            }
+        }
+        if (!layerFound) {
+            JDL_FATAL("Layer {} is not supported", requiredLayer);
+        }
+    }
+}
+
+static VKAPI_ATTR VkBool32 VKAPI_CALL s_DebugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+    VkDebugUtilsMessageTypeFlagsEXT type,
+    const VkDebugUtilsMessengerCallbackDataEXT* data,
+    void* userData
+) {
+    switch (severity)
+    {
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+            JDL_DEBUG(data->pMessage);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+            JDL_INFO(data->pMessage);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+            JDL_WARN(data->pMessage);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+            JDL_ERROR(data->pMessage);
+            break;
+        default:
+            break;
+    }
+
+    return VK_FALSE;
+}
+
+static VkDebugUtilsMessengerCreateInfoEXT s_DebugMessengerCreateInfo()
+{
+    VkDebugUtilsMessengerCreateInfoEXT createInfo {};
+    createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+        | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+        | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+        | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+        | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    createInfo.pfnUserCallback = s_DebugCallback;
+
+    return createInfo;
+}
+
+static VkResult s_CreateDebugMessenger(
+    VkInstance instance,
+    const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+    const VkAllocationCallbacks* pAllocator,
+    VkDebugUtilsMessengerEXT* pDebugMessenger
+) {
+    auto fn = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+        instance,
+        "vkCreateDebugUtilsMessengerEXT"
+    );
+    if (fn != nullptr) {
+        return fn(instance, pCreateInfo, pAllocator, pDebugMessenger);
+    }
+    else {
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+}
+
+static void s_DestroyDebugMessenger(
+    VkInstance instance,
+    VkDebugUtilsMessengerEXT debugMessenger,
+    const VkAllocationCallbacks* pAllocator
+) {
+    auto fn = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+        instance,
+        "vkDestroyDebugUtilsMessengerEXT"
+    );
+    if (fn != nullptr) {
+        fn(instance, debugMessenger, pAllocator);
+    }
+}
+
+
+// --- VulkanInstance CLASS ---
+
 VulkanInstance::VulkanInstance()
 {
 	createInstance();
+    createDebugMessenger();
 }
 
 VulkanInstance::~VulkanInstance()
 {
+    if (m_debugMessenger != VK_NULL_HANDLE) {
+        s_DestroyDebugMessenger(m_instance, m_debugMessenger, nullptr);
+    }
 	vkDestroyInstance(m_instance, nullptr);
 }
 
 void VulkanInstance::createInstance()
 {
+    auto debugMessengerInfo = s_DebugMessengerCreateInfo();
+
     VkApplicationInfo appInfo {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = core::Application::GetName();
@@ -31,15 +154,39 @@ void VulkanInstance::createInstance()
     appInfo.apiVersion = VK_API_VERSION_1_4;
 
     auto extensions = core::Application::GetWindow().GetRequiredInstanceExtensions();
+    if (sUseValidationLayers) {
+        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    }
 
     VkInstanceCreateInfo createInfo {};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(
+        extensions.size()
+    );
     createInfo.ppEnabledExtensionNames = extensions.data();
-    createInfo.enabledLayerCount = 0;
+
+    if (sUseValidationLayers)
+    {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(sValidationLayers.size());
+        createInfo.ppEnabledLayerNames = sValidationLayers.data();
+        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugMessengerInfo;
+    }
+    else {
+        createInfo.enabledLayerCount = 0;
+    }
 
     VK_CALL(vkCreateInstance(&createInfo, nullptr, &m_instance));
+}
+
+void VulkanInstance::createDebugMessenger()
+{
+    if (!sUseValidationLayers) {
+        return;
+    }
+
+    auto createInfo = s_DebugMessengerCreateInfo();
+    VK_CALL(s_CreateDebugMessenger(m_instance, &createInfo, nullptr, &m_debugMessenger));
 }
 
 } // namespace vk

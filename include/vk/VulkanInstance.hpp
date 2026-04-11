@@ -21,8 +21,10 @@ public:
 
 private:
 	VK_ATTR(VkInstance, m_instance);
+	VK_ATTR(VkDebugUtilsMessengerEXT, m_debugMessenger);
 
 	void createInstance();
+	void createDebugMessenger();
 };
 
 } // namespace vk
