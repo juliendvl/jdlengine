@@ -1,5 +1,6 @@
 #pragma once
 
+#include "VulkanDevice.hpp"
 #include "VulkanInstance.hpp"
 
 #include "utils/NonCopyable.hpp"
@@ -28,10 +29,16 @@ public:
 	 */
 	static VulkanInstance& GetInstance() { return *IContext.m_instance; }
 
+	/**
+	 * @brief Returns the Vulkan device.
+	 */
+	static VulkanDevice& GetDevice() { return *IContext.m_device; }
+
 private:
 	static VulkanContext IContext;
 
 	std::unique_ptr<VulkanInstance> m_instance;
+	std::unique_ptr<VulkanDevice> m_device;
 
 	void doInit();
 	void doDestroy();
