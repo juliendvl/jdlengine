@@ -2,6 +2,7 @@
 
 #include "VulkanDevice.hpp"
 #include "VulkanInstance.hpp"
+#include "VulkanSwapChain.hpp"
 
 #include "utils/NonCopyable.hpp"
 
@@ -41,6 +42,11 @@ public:
 	 */
 	static VulkanDevice& GetDevice() { return *IContext.m_device; }
 
+	/**
+	 * @brief Returns the Vulkan swap chain.
+	 */
+	static VulkanSwapChain& GetSwapChain() { return *IContext.m_swapChain; }
+
 private:
 	static VulkanContext IContext;
 
@@ -48,6 +54,7 @@ private:
 
 	std::unique_ptr<VulkanInstance> m_instance;
 	std::unique_ptr<VulkanDevice> m_device;
+	std::unique_ptr<VulkanSwapChain> m_swapChain;
 
 	void doInit();
 	void doDestroy();

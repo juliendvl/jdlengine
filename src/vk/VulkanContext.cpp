@@ -19,6 +19,7 @@ void VulkanContext::doInit()
 
 	m_windowSurface = core::Application::GetWindow().createWindowSurface();
 	m_device = std::make_unique<VulkanDevice>();
+	m_swapChain = std::make_unique<VulkanSwapChain>();
 }
 
 void VulkanContext::doDestroy()
@@ -26,6 +27,8 @@ void VulkanContext::doDestroy()
 	if (!m_instance) {
 		return;
 	}
+
+	m_swapChain.reset();
 
 	vkDestroySurfaceKHR(m_instance->get(), m_windowSurface, nullptr);
 
