@@ -23,6 +23,7 @@ VulkanDevice::~VulkanDevice()
 void VulkanDevice::selectPhysicalDevice()
 {
 	VkInstance instance = VulkanContext::GetInstance().get();
+	VkSurfaceKHR surface = VulkanContext::GetWindowSurface();
 
 	uint32_t nbDevices = 0;
 	VK_CALL(vkEnumeratePhysicalDevices(instance, &nbDevices, nullptr));
@@ -64,6 +65,13 @@ void VulkanDevice::selectPhysicalDevice()
 			if (queue.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 				queueFamilies.graphics = i;
 			}
+
+			VkBool32 presentSupport;
+			VK_CALL(vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport));
+			if (presentSupport) {
+				queueFamilies.present = i;
+			}
+
 			if (queueFamilies.isComplete())
 			{
 				compatibleDevices.push_back(device);
@@ -141,6 +149,7 @@ void VulkanDevice::createDevice()
 	VK_CALL(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
 
 	vkGetDeviceQueue(m_device, m_queueFamilyIndices.graphics, 0, &m_graphicsQueue);
+	vkGetDeviceQueue(m_device, m_queueFamilyIndices.present, 0, &m_presentQueue);
 }
 
 } // namespace vk

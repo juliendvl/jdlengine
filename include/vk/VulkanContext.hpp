@@ -30,12 +30,21 @@ public:
 	static VulkanInstance& GetInstance() { return *IContext.m_instance; }
 
 	/**
+	 * @brief Returns the Vulkan window surface.
+	 */
+	static VkSurfaceKHR GetWindowSurface() {
+		return IContext.m_windowSurface;
+	}
+
+	/**
 	 * @brief Returns the Vulkan device.
 	 */
 	static VulkanDevice& GetDevice() { return *IContext.m_device; }
 
 private:
 	static VulkanContext IContext;
+
+	VK_ATTR(VkSurfaceKHR, m_windowSurface);
 
 	std::unique_ptr<VulkanInstance> m_instance;
 	std::unique_ptr<VulkanDevice> m_device;

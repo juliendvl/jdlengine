@@ -2,6 +2,8 @@
 
 #include "utils/Logger.hpp"
 
+#include "vk/VulkanContext.hpp"
+
 
 namespace jdl
 {
@@ -72,6 +74,19 @@ std::vector<const char*> Window::GetRequiredInstanceExtensions()
 	const char** extensions = glfwGetRequiredInstanceExtensions(&nbExtensions);
 
 	return std::vector<const char*>{extensions, extensions + nbExtensions};
+}
+
+VkSurfaceKHR Window::createWindowSurface() const
+{
+	VkSurfaceKHR surface = VK_NULL_HANDLE;
+	VK_CALL(glfwCreateWindowSurface(
+		vk::VulkanContext::GetInstance().get(),
+		m_window,
+		nullptr,
+		&surface
+	));
+
+	return surface;
 }
 
 

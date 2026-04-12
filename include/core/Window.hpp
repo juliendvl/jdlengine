@@ -60,6 +60,12 @@ public:
 	 */
 	static std::vector<const char*> GetRequiredInstanceExtensions();
 
+	/**
+	 * @brief Creates and returns the Vulkan window surface representing
+	 * this window.
+	 */
+	VkSurfaceKHR createWindowSurface() const;
+
 private:
 	static Window* IWindow;
 
