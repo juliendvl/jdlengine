@@ -18,6 +18,7 @@ set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 
 # Source files
 file(GLOB CORE_SRC ${INC_DIR}/core/*.hpp ${SRC_DIR}/core/*.cpp)
+file(GLOB RESOURCE_SRC ${INC_DIR}/resource/*.hpp ${SRC_DIR}/resource/*.cpp)
 file(GLOB UTILS_SRC ${INC_DIR}/utils/*.hpp ${SRC_DIR}/utils/*.cpp)
 file(GLOB VK_SRC ${INC_DIR}/vk/*.hpp ${SRC_DIR}/vk/*.cpp)
 
@@ -30,6 +31,7 @@ add_executable(
 	${APP_NAME}
 	${SRC_DIR}/Main.cpp
 	${CORE_SRC}
+	${RESOURCE_SRC}
 	${UTILS_SRC}
 	${VK_SRC}
 )
