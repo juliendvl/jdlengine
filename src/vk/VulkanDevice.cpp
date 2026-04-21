@@ -172,10 +172,16 @@ void VulkanDevice::createDevice()
 	features13.dynamicRendering = true;
 	features13.pNext = &featuresEXT;
 
+	// Device features - Vulkan 1.1
+	VkPhysicalDeviceVulkan11Features features11 {};
+	features11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+	features11.shaderDrawParameters = true;
+	features11.pNext = &features13;
+
 	// Device features - Base
 	VkPhysicalDeviceFeatures2 features {};
 	features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-	features.pNext = &features13;
+	features.pNext = &features11;
 
 	// Device creation
 	// The features must be passed using the pNext field and not the pEnabledFeatures

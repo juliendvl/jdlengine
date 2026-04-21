@@ -6,3 +6,6 @@
 
 # Visual Studio directories
 .vs/
+
+# Vulkan compiled shaders
+*.spv

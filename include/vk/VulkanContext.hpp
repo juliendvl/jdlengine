@@ -57,6 +57,7 @@ private:
 	std::unique_ptr<VulkanSwapChain> m_swapChain;
 
 	void doInit();
+	void createDefaultResources();
 	void doDestroy();
 };
 

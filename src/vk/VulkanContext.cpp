@@ -2,6 +2,9 @@
 
 #include "core/Application.hpp"
 
+#include "resource/ResourceManager.hpp"
+#include "resource/Shader.hpp"
+
 
 namespace jdl
 {
@@ -20,6 +23,8 @@ void VulkanContext::doInit()
 	m_windowSurface = core::Application::GetWindow().createWindowSurface();
 	m_device = std::make_unique<VulkanDevice>();
 	m_swapChain = std::make_unique<VulkanSwapChain>();
+
+	createDefaultResources();
 }
 
 void VulkanContext::doDestroy()
@@ -34,6 +39,14 @@ void VulkanContext::doDestroy()
 
 	m_device.reset();
 	m_instance.reset();
+}
+
+void VulkanContext::createDefaultResources()
+{
+	resource::ResourceManager::Create<resource::Shader>(
+		"DefaultShader",
+		"shaders/default.spv"
+	);
 }
 
 } // namespace vk
