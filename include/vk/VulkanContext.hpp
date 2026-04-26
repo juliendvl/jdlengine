@@ -2,6 +2,7 @@
 
 #include "VulkanDevice.hpp"
 #include "VulkanInstance.hpp"
+#include "VulkanPipeline.hpp"
 #include "VulkanSwapChain.hpp"
 
 #include "utils/NonCopyable.hpp"
@@ -47,6 +48,11 @@ public:
 	 */
 	static VulkanSwapChain& GetSwapChain() { return *IContext.m_swapChain; }
 
+	/**
+	 * @brief Returns the Vulkan pipeline.
+	 */
+	static VulkanPipeline& GetPipeline() { return *IContext.m_pipeline; }
+
 private:
 	static VulkanContext IContext;
 
@@ -55,6 +61,7 @@ private:
 	std::unique_ptr<VulkanInstance> m_instance;
 	std::unique_ptr<VulkanDevice> m_device;
 	std::unique_ptr<VulkanSwapChain> m_swapChain;
+	std::unique_ptr<VulkanPipeline> m_pipeline;
 
 	void doInit();
 	void createDefaultResources();

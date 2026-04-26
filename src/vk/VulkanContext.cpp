@@ -25,6 +25,10 @@ void VulkanContext::doInit()
 	m_swapChain = std::make_unique<VulkanSwapChain>();
 
 	createDefaultResources();
+
+	m_pipeline = std::make_unique<VulkanPipeline>();
+	m_pipeline->setShader(resource::ResourceManager::GetAs<resource::Shader>("DefaultShader"));
+	m_pipeline->create();
 }
 
 void VulkanContext::doDestroy()
@@ -33,6 +37,7 @@ void VulkanContext::doDestroy()
 		return;
 	}
 
+	m_pipeline.reset();
 	m_swapChain.reset();
 
 	vkDestroySurfaceKHR(m_instance->get(), m_windowSurface, nullptr);
