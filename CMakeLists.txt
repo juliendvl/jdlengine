@@ -8,6 +8,7 @@ set(APP_NAME jdlengine)
 
 set(INC_DIR ${CMAKE_SOURCE_DIR}/include)
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(VENDOR_DIR ${CMAKE_SOURCE_DIR}/vendor)
 
 # Use C++20 as standard
 set(CMAKE_CXX_STANDARD 20)
@@ -35,3 +36,7 @@ add_executable(
 target_include_directories(${APP_NAME} PRIVATE ${INC_DIR})
 
 target_precompile_headers(${APP_NAME} PRIVATE ${INC_DIR}/pch.hpp)
+
+# spdlog
+add_subdirectory(${VENDOR_DIR}/spdlog)
+target_include_directories(${APP_NAME} PRIVATE ${VENDOR_DIR}/spdlog/include)
