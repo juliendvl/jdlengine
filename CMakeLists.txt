@@ -4,6 +4,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(JDLEngine VERSION 1.0 LANGUAGES CXX)
 
+set(APP_NAME jdlengine)
+
+set(INC_DIR ${CMAKE_SOURCE_DIR}/include)
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 
 # Use C++20 as standard
@@ -16,8 +19,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
+# Sources definition
+file(GLOB CORE_SRC ${INC_DIR}/core/*.hpp ${SRC_DIR}/core/*.cpp)
+file(GLOB UTILS_SRC ${INC_DIR}/utils/*.hpp ${SRC_DIR}/utils/*.cpp)
+
 add_executable(
-    jdlengine
+    ${APP_NAME}
+    # Engine sources
+    ${CORE_SRC}
+    ${UTILS_SRC}
     # Entry point
     ${SRC_DIR}/main.cpp
 )
+
+target_include_directories(${APP_NAME} PRIVATE ${INC_DIR})
+
+target_precompile_headers(${APP_NAME} PRIVATE ${INC_DIR}/pch.hpp)
