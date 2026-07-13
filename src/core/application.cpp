@@ -20,10 +20,12 @@ Application::Application(const char* name, int width, int height)
     s_Name = name;
 
     m_window = std::make_unique<Window>(name, width, height);
+    m_renderer = std::make_unique<vk::VulkanRenderer>();
 }
 
 Application::~Application()
 {
+    m_renderer.reset();
     m_window.reset();
 }
 
