@@ -2,6 +2,8 @@
 
 #include "non_copyable.hpp"
 
+#include <utility>
+
 #include <spdlog/spdlog.h>
 
 
@@ -40,49 +42,49 @@ public:
      * @brief Logs a message with the TRACE level.
      */
     template<typename... Args>
-    static void Trace(Args&&... args) {
-        s_Logger->trace(std::forward<Args>(args)...);
+    static void Trace(fmt::format_string<Args...> fmt, Args&&... args) {
+        s_Logger->trace(fmt, std::forward<Args>(args)...);
     }
 
     /**
      * @brief Logs a message with the DEBUG level.
      */
     template<typename... Args>
-    static void Debug(Args&&... args) {
-        s_Logger->debug(std::forward<Args>(args)...);
+    static void Debug(fmt::format_string<Args...> fmt, Args&&... args) {
+        s_Logger->debug(fmt, std::forward<Args>(args)...);
     }
 
     /**
      * @brief Logs a message with the INFO level.
      */
     template<typename... Args>
-    static void Info(Args&&... args) {
-        s_Logger->info(std::forward<Args>(args)...);
+    static void Info(fmt::format_string<Args...> fmt, Args&&... args) {
+        s_Logger->info(fmt, std::forward<Args>(args)...);
     }
 
     /**
      * @brief Logs a message with the WARNING level.
      */
     template<typename... Args>
-    static void Warning(Args&&... args) {
-        s_Logger->warn(std::forward<Args>(args)...);
+    static void Warning(fmt::format_string<Args...> fmt, Args&&... args) {
+        s_Logger->warn(fmt, std::forward<Args>(args)...);
     }
 
     /**
      * @brief Logs a message with the ERROR level.
      */
     template<typename... Args>
-    static void Error(Args&&... args) {
-        s_Logger->error(std::forward<Args>(args)...);
+    static void Error(fmt::format_string<Args...> fmt, Args&&... args) {
+        s_Logger->error(fmt, std::forward<Args>(args)...);
     }
 
     /**
      * @brief Logs a message with the FATAL level, and throws an exception.
      */
     template<typename... Args>
-    static void Fatal(Args&&... args)
+    static void Fatal(fmt::format_string<Args...> fmt, Args&&... args)
     {
-        s_Logger->critical(std::forward<Args>(args)...);
+        s_Logger->critical(fmt, std::forward<Args>(args)...);
         throw std::runtime_error("FATAL error raised");
     }
 
