@@ -1,5 +1,7 @@
 #pragma once
 
+#include "window.hpp"
+
 #include "utils/non_copyable.hpp"
 
 
@@ -35,6 +37,11 @@ public:
     static const char* GetName() { return s_Name; }
 
     /**
+     * @brief Returns the application window.
+     */
+    static Window& GetWindow() { return *s_Application->m_window; }
+
+    /**
      * @brief Runs the application.
      */
     void run();
@@ -42,6 +49,8 @@ public:
 private:
     static Application* s_Application;
     static const char* s_Name;
+
+    std::unique_ptr<Window> m_window;
 };
 
 } // namespace core
