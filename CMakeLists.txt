@@ -40,3 +40,11 @@ target_precompile_headers(${APP_NAME} PRIVATE ${INC_DIR}/pch.hpp)
 # spdlog
 add_subdirectory(${VENDOR_DIR}/spdlog)
 target_include_directories(${APP_NAME} PRIVATE ${VENDOR_DIR}/spdlog/include)
+
+# glfw
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "Build the GLFW documentation")
+set(GLFW_INSTALL OFF CACHE BOOL "Generate installation target")
+
+add_subdirectory(${VENDOR_DIR}/glfw)
+target_include_directories(${APP_NAME} PRIVATE ${VENDOR_DIR}/glfw/include)
+target_link_libraries(${APP_NAME} PRIVATE glfw)
