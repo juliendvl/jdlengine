@@ -67,5 +67,13 @@ std::vector<const char*> Window::GetRequiredInstanceExtensions()
     return std::vector<const char*>(extensions, extensions + nb_extensions);
 }
 
+VkSurfaceKHR Window::create_window_surface(VkInstance instance) const
+{
+    VkSurfaceKHR surface = VK_NULL_HANDLE;
+    VK_CALL(glfwCreateWindowSurface(instance, m_window, nullptr, &surface));
+
+    return surface;
+}
+
 } // namespace core
 } // namespace jdl

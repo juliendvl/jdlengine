@@ -13,20 +13,21 @@ namespace vk
 struct QueueFamilyIndices
 {
 	uint32_t graphics = UINT32_MAX;
+	uint32_t present = UINT32_MAX;
 
 	/**
 	 * @brief Returns whether all the required queue family indices have been
 	 * set or not.
 	 */
 	bool is_complete() const {
-		return graphics != UINT32_MAX;
+		return graphics != UINT32_MAX && present != UINT32_MAX;
 	}
 
 	/**
 	 * @brief Returns the unique queue family indices.
 	 */
 	std::set<uint32_t> get_unique_indices() const {
-		return std::set<uint32_t>{graphics};
+		return std::set<uint32_t>{graphics, present};
 	}
 };
 
@@ -65,6 +66,11 @@ public:
 	 */
 	VkQueue get_graphics_queue() const { return m_graphicsQueue; }
 
+	/**
+	 * @brief Returns the present queue handle.
+	 */
+	VkQueue get_present_queue() const { return m_presentQueue; }
+
 private:
 	VK_ATTR(VkPhysicalDevice, m_physicalDevice);
 	VK_ATTR(VkDevice, m_device);
@@ -72,6 +78,7 @@ private:
 	QueueFamilyIndices m_queueFamilyIndices;
 
 	VK_ATTR(VkQueue, m_graphicsQueue);
+	VK_ATTR(VkQueue, m_presentQueue);
 
 	void select_physical_device();
 	void create_device();

@@ -29,6 +29,11 @@ public:
     ~Window();
 
     /**
+     * @brief Returns the Window instance.
+     */
+    static Window& Get() { return *s_Window; }
+
+    /**
      * @brief Returns the window size, in screen coordinates.
      */
     Size get_size() const;
@@ -63,6 +68,17 @@ public:
      * @brief Returns the required Vulkan instance extensions for GLFW.
      */
     static std::vector<const char*> GetRequiredInstanceExtensions();
+
+    /**
+     * @brief Creates and returns the Vulkan surface object allowing to present
+     * images to the GLFW window.
+     * 
+     * @param instance The Vulkan instance
+     * 
+     * @return The Vulkan window surface handle. The object management is the
+     * responsability of the caller.
+     */
+    VkSurfaceKHR create_window_surface(VkInstance instance) const;
 
 private:
     static Window* s_Window;

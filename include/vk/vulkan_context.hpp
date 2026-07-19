@@ -28,6 +28,11 @@ public:
     static VulkanInstance& GetInstance() { return *s_Context.m_instance; }
 
     /**
+     * @brief Returns the Vulkan window surface handle.
+     */
+    static VkSurfaceKHR GetWindowSurface() { return s_Context.m_windowSurface; }
+
+    /**
      * @brief Returns the Vulkan device object.
      */
     static VulkanDevice& GetDevice() { return *s_Context.m_device; }
@@ -38,10 +43,13 @@ private:
     std::unique_ptr<VulkanInstance> m_instance;
     std::unique_ptr<VulkanDevice> m_device;
 
+    VK_ATTR(VkSurfaceKHR, m_windowSurface);
+
     void do_init();
     void do_destroy();
 
     void create_instance();
+    void create_window_surface();
     void create_device();
 };
 

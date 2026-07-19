@@ -32,6 +32,7 @@ std::string VulkanDevice::get_device_name() const
 void VulkanDevice::select_physical_device()
 {
 	VkInstance instance = VulkanContext::GetInstance().get_handle();
+	VkSurfaceKHR surface = VulkanContext::GetWindowSurface();
 
 	uint32_t nb_devices = 0;
 	VK_CALL(vkEnumeratePhysicalDevices(instance, &nb_devices, nullptr));
@@ -63,6 +64,14 @@ void VulkanDevice::select_physical_device()
 		{
 			if (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 				queue_indices.graphics = i;
+			}
+
+			VkBool32 present_supported = VK_FALSE;
+			vkGetPhysicalDeviceSurfaceSupportKHR(
+				device, i, surface, &present_supported
+			);
+			if (present_supported) {
+				queue_indices.present = i;
 			}
 
 			if (queue_indices.is_complete())
@@ -144,6 +153,7 @@ void VulkanDevice::create_device()
 	VK_CALL(vkCreateDevice(m_physicalDevice, &create_info, nullptr, &m_device));
 
 	vkGetDeviceQueue(m_device, m_queueFamilyIndices.graphics, 0, &m_graphicsQueue);
+	vkGetDeviceQueue(m_device, m_queueFamilyIndices.present, 0, &m_presentQueue);
 }
 
 } // namespace vk
