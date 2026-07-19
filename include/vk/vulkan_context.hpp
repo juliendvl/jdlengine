@@ -6,6 +6,7 @@ namespace jdl
 namespace vk
 {
 
+class VulkanDevice;
 class VulkanInstance;
 
 class VulkanContext
@@ -26,15 +27,22 @@ public:
      */
     static VulkanInstance& GetInstance() { return *s_Context.m_instance; }
 
+    /**
+     * @brief Returns the Vulkan device object.
+     */
+    static VulkanDevice& GetDevice() { return *s_Context.m_device; }
+
 private:
     static VulkanContext s_Context;
 
     std::unique_ptr<VulkanInstance> m_instance;
+    std::unique_ptr<VulkanDevice> m_device;
 
     void do_init();
     void do_destroy();
 
     void create_instance();
+    void create_device();
 };
 
 } // namespace vk

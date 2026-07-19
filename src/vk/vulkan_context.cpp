@@ -2,6 +2,7 @@
 
 #include "utils/logger.hpp"
 
+#include "vk/vulkan_device.hpp"
 #include "vk/vulkan_instance.hpp"
 
 
@@ -19,6 +20,7 @@ void VulkanContext::do_init()
     }
 
     create_instance();
+    create_device();
 }
 
 void VulkanContext::do_destroy()
@@ -26,7 +28,8 @@ void VulkanContext::do_destroy()
     if (m_instance == nullptr) {
         return;
     }
-
+    
+    m_device.reset();
     m_instance.reset();
 }
 
@@ -34,6 +37,12 @@ void VulkanContext::create_instance()
 {
     m_instance = std::make_unique<VulkanInstance>();
     JDL_INFO("Vulkan Instance: OK");
+}
+
+void VulkanContext::create_device()
+{
+    m_device = std::make_unique<VulkanDevice>();
+    JDL_INFO("Vulkan Device: OK ({})", m_device->get_device_name());
 }
 
 } // namespace vk
