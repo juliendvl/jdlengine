@@ -34,8 +34,12 @@ add_executable(
     # Entry point
     ${SRC_DIR}/main.cpp
 )
-
 target_include_directories(${APP_NAME} PRIVATE ${INC_DIR})
+
+if (MSVC)
+    # Necessary to compile spdlog
+    target_compile_options(${APP_NAME} PRIVATE "/utf-8")
+endif()
 
 target_precompile_headers(${APP_NAME} PRIVATE ${INC_DIR}/pch.hpp)
 
