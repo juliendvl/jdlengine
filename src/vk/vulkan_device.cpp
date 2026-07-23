@@ -10,6 +10,40 @@ namespace jdl
 namespace vk
 {
 
+// --- DEVICE EXTENSIONS ---
+
+const std::vector<const char*> s_DeviceExtensions {
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
+static bool s_DeviceExtensionsSupported(VkPhysicalDevice device)
+{
+	uint32_t nb_extensions = 0;
+	VK_CALL(
+		vkEnumerateDeviceExtensionProperties(
+			device, nullptr, &nb_extensions, nullptr
+		)
+	);
+
+	std::vector<VkExtensionProperties> extensions(nb_extensions);
+	VK_CALL(
+		vkEnumerateDeviceExtensionProperties(
+			device, nullptr, &nb_extensions, extensions.data()
+		)
+	);
+
+	std::set<std::string> required_extensions {
+		s_DeviceExtensions.begin(), s_DeviceExtensions.end()
+	};
+	for (const auto& extension : extensions) {
+		required_extensions.erase(extension.extensionName);
+	}
+
+	return required_extensions.empty();
+}
+
+// --- VulkanDevice CLASS ---
+
 VulkanDevice::VulkanDevice()
 {
 	select_physical_device();
@@ -49,6 +83,10 @@ void VulkanDevice::select_physical_device()
 
 	for (VkPhysicalDevice device : devices)
 	{
+		if (!s_DeviceExtensionsSupported(device)) {
+			continue;
+		}
+
 		uint32_t nb_queues = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &nb_queues, nullptr);
 
@@ -147,7 +185,8 @@ void VulkanDevice::create_device()
 	create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	create_info.queueCreateInfoCount = VK_SIZE(queue_infos);
 	create_info.pQueueCreateInfos = VK_DATA(queue_infos);
-	create_info.enabledExtensionCount = 0;
+	create_info.enabledExtensionCount = VK_SIZE(s_DeviceExtensions);
+	create_info.ppEnabledExtensionNames = VK_DATA(s_DeviceExtensions);
 	create_info.pNext = &device_features;
 
 	VK_CALL(vkCreateDevice(m_physicalDevice, &create_info, nullptr, &m_device));

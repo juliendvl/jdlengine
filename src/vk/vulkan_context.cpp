@@ -4,9 +4,6 @@
 
 #include "utils/logger.hpp"
 
-#include "vk/vulkan_device.hpp"
-#include "vk/vulkan_instance.hpp"
-
 
 namespace jdl
 {
@@ -24,6 +21,7 @@ void VulkanContext::do_init()
     create_instance();
     create_window_surface();
     create_device();
+    create_swapchain();
 }
 
 void VulkanContext::do_destroy()
@@ -31,6 +29,8 @@ void VulkanContext::do_destroy()
     if (m_instance == nullptr) {
         return;
     }
+
+    m_swapchain.reset();
 
     vkDestroySurfaceKHR(m_instance->get_handle(), m_windowSurface, nullptr);
     
@@ -56,6 +56,12 @@ void VulkanContext::create_device()
 {
     m_device = std::make_unique<VulkanDevice>();
     JDL_INFO("Vulkan Device: OK ({})", m_device->get_device_name());
+}
+
+void VulkanContext::create_swapchain()
+{
+    m_swapchain = std::make_unique<VulkanSwapchain>();
+    JDL_INFO("Vulkan Swapchain: OK");
 }
 
 } // namespace vk

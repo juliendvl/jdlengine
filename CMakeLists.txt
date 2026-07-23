@@ -20,11 +20,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-# Sources definition
-file(GLOB CORE_SRC ${INC_DIR}/core/*.hpp ${SRC_DIR}/core/*.cpp)
-file(GLOB UTILS_SRC ${INC_DIR}/utils/*.hpp ${SRC_DIR}/utils/*.cpp)
-file(GLOB VK_SRC ${INC_DIR}/vk/*.hpp ${SRC_DIR}/vk/*.cpp)
-
 add_executable(
     ${APP_NAME}
     # Engine sources
@@ -34,6 +29,32 @@ add_executable(
     # Entry point
     ${SRC_DIR}/main.cpp
 )
+
+target_sources(
+    ${APP_NAME} PRIVATE
+    # core module
+    ${INC_DIR}/core/application.hpp
+    ${INC_DIR}/core/size.hpp
+    ${INC_DIR}/core/window.hpp
+    ${SRC_DIR}/core/application.cpp
+    ${SRC_DIR}/core/window.cpp
+    # utils module
+    ${INC_DIR}/utils/logger.hpp
+    ${INC_DIR}/utils/non_copyable.hpp
+    ${SRC_DIR}/utils/logger.cpp
+    # vk module
+    ${INC_DIR}/vk/vulkan_context.hpp
+    ${INC_DIR}/vk/vulkan_device.hpp
+    ${INC_DIR}/vk/vulkan_instance.hpp
+    ${INC_DIR}/vk/vulkan_renderer.hpp
+    ${INC_DIR}/vk/vulkan_swapchain.hpp
+    ${SRC_DIR}/vk/vulkan_context.cpp
+    ${SRC_DIR}/vk/vulkan_device.cpp
+    ${SRC_DIR}/vk/vulkan_instance.cpp
+    ${SRC_DIR}/vk/vulkan_renderer.cpp
+    ${SRC_DIR}/vk/vulkan_swapchain.cpp
+)
+
 target_include_directories(${APP_NAME} PRIVATE ${INC_DIR})
 
 if (MSVC)

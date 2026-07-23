@@ -1,13 +1,14 @@
 #pragma once
 
+#include "vulkan_device.hpp"
+#include "vulkan_instance.hpp"
+#include "vulkan_swapchain.hpp"
+
 
 namespace jdl
 {
 namespace vk
 {
-
-class VulkanDevice;
-class VulkanInstance;
 
 class VulkanContext
 {
@@ -37,11 +38,17 @@ public:
      */
     static VulkanDevice& GetDevice() { return *s_Context.m_device; }
 
+    /**
+     * @brief Returns the Vulkan swapchain object.
+     */
+    static VulkanSwapchain& GetSwapchain() { return *s_Context.m_swapchain; }
+
 private:
     static VulkanContext s_Context;
 
     std::unique_ptr<VulkanInstance> m_instance;
     std::unique_ptr<VulkanDevice> m_device;
+    std::unique_ptr<VulkanSwapchain> m_swapchain;
 
     VK_ATTR(VkSurfaceKHR, m_windowSurface);
 
@@ -51,6 +58,7 @@ private:
     void create_instance();
     void create_window_surface();
     void create_device();
+    void create_swapchain();
 };
 
 } // namespace vk
