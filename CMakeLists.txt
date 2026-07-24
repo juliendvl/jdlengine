@@ -34,6 +34,7 @@ target_sources(
     ${APP_NAME} PRIVATE
     # core module
     ${INC_DIR}/core/application.hpp
+    ${INC_DIR}/core/object.hpp
     ${INC_DIR}/core/size.hpp
     ${INC_DIR}/core/window.hpp
     ${SRC_DIR}/core/application.cpp
