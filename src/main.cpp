@@ -2,9 +2,6 @@
 
 #include "core/application.hpp"
 
-#include "resource/resource_manager.hpp"
-#include "resource/shader.hpp"
-
 #include "utils/logger.hpp"
 
 using namespace jdl;
@@ -15,12 +12,7 @@ class Sandbox : public core::Application
 public:
     Sandbox(const char* name, int width, int height)
         : core::Application(name, width, height)
-    {
-        auto shader = resource::ResourceManager::Create<resource::Shader>(
-            "__DEFAULT_SHADER__",
-            "shaders/default.spv"
-        );
-    }
+    {}
 };
 
 

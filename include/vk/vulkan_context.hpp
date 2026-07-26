@@ -2,6 +2,7 @@
 
 #include "vulkan_device.hpp"
 #include "vulkan_instance.hpp"
+#include "vulkan_pipeline.hpp"
 #include "vulkan_swapchain.hpp"
 
 
@@ -43,12 +44,18 @@ public:
      */
     static VulkanSwapchain& GetSwapchain() { return *s_Context.m_swapchain; }
 
+    /**
+     * @brief Returns the Vulkan pipeline object.
+     */
+    static VulkanPipeline& GetPipeline() { return *s_Context.m_pipeline; }
+
 private:
     static VulkanContext s_Context;
 
     std::unique_ptr<VulkanInstance> m_instance;
     std::unique_ptr<VulkanDevice> m_device;
     std::unique_ptr<VulkanSwapchain> m_swapchain;
+    std::unique_ptr<VulkanPipeline> m_pipeline;
 
     VK_ATTR(VkSurfaceKHR, m_windowSurface);
 
@@ -59,6 +66,8 @@ private:
     void create_window_surface();
     void create_device();
     void create_swapchain();
+    void create_default_resources();
+    void create_pipeline();
 };
 
 } // namespace vk

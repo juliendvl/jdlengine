@@ -2,6 +2,9 @@
 
 #include "core/window.hpp"
 
+#include "resource/resource_manager.hpp"
+#include "resource/shader.hpp"
+
 #include "utils/logger.hpp"
 
 
@@ -22,6 +25,8 @@ void VulkanContext::do_init()
     create_window_surface();
     create_device();
     create_swapchain();
+    create_default_resources();
+    create_pipeline();
 }
 
 void VulkanContext::do_destroy()
@@ -30,6 +35,7 @@ void VulkanContext::do_destroy()
         return;
     }
 
+    m_pipeline.reset();
     m_swapchain.reset();
 
     vkDestroySurfaceKHR(m_instance->get_handle(), m_windowSurface, nullptr);
@@ -63,6 +69,30 @@ void VulkanContext::create_swapchain()
     m_swapchain = std::make_unique<VulkanSwapchain>();
     JDL_INFO("Vulkan Swapchain: OK");
 }
+
+void VulkanContext::create_default_resources()
+{
+    // Default shader
+    resource::ResourceManager::Create<resource::Shader>(
+        "__DEFAULT_SHADER__",
+        "shaders/default.spv"
+    );
+}
+
+void VulkanContext::create_pipeline()
+{
+    auto shader = resource::ResourceManager::Get<resource::Shader>(
+        "__DEFAULT_SHADER__"
+    );
+
+    m_pipeline = std::make_unique<VulkanPipeline>();
+    m_pipeline->add_shader(ShaderStage::eVertex, shader);
+    m_pipeline->add_shader(ShaderStage::eFragment, shader);
+    m_pipeline->create();
+
+    JDL_INFO("Vulkan Pipeline: OK");
+}
+
 
 } // namespace vk
 } // namespace jdl

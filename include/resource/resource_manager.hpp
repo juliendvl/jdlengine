@@ -51,7 +51,7 @@ public:
 	static R* Get(const std::string& name)
 	{
 		auto& bucket = Get().get_bucket<R>();
-		return bucket.get(name);
+		return dynamic_cast<R*>(bucket.get(name));
 	}
 
 	/**

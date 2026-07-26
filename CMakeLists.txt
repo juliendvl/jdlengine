@@ -52,11 +52,13 @@ target_sources(
     ${INC_DIR}/vk/vulkan_context.hpp
     ${INC_DIR}/vk/vulkan_device.hpp
     ${INC_DIR}/vk/vulkan_instance.hpp
+    ${INC_DIR}/vk/vulkan_pipeline.hpp
     ${INC_DIR}/vk/vulkan_renderer.hpp
     ${INC_DIR}/vk/vulkan_swapchain.hpp
     ${SRC_DIR}/vk/vulkan_context.cpp
     ${SRC_DIR}/vk/vulkan_device.cpp
     ${SRC_DIR}/vk/vulkan_instance.cpp
+    ${SRC_DIR}/vk/vulkan_pipeline.cpp
     ${SRC_DIR}/vk/vulkan_renderer.cpp
     ${SRC_DIR}/vk/vulkan_swapchain.cpp
 )
