@@ -42,6 +42,8 @@ target_sources(
     # resource module
     ${INC_DIR}/resource/resource.hpp
     ${INC_DIR}/resource/resource_manager.hpp
+    ${INC_DIR}/resource/shader.hpp
+    ${SRC_DIR}/resource/shader.cpp
     # utils module
     ${INC_DIR}/utils/logger.hpp
     ${INC_DIR}/utils/non_copyable.hpp

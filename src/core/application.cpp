@@ -1,5 +1,7 @@
 #include "core/application.hpp"
 
+#include "resource/resource_manager.hpp"
+
 #include "utils/logger.hpp"
 
 
@@ -25,6 +27,8 @@ Application::Application(const char* name, int width, int height)
 
 Application::~Application()
 {
+    resource::ResourceManager::Clear();
+
     m_renderer.reset();
     m_window.reset();
 }
