@@ -39,6 +39,9 @@ target_sources(
     ${INC_DIR}/core/window.hpp
     ${SRC_DIR}/core/application.cpp
     ${SRC_DIR}/core/window.cpp
+    # resource module
+    ${INC_DIR}/resource/resource.hpp
+    ${INC_DIR}/resource/resource_manager.hpp
     # utils module
     ${INC_DIR}/utils/logger.hpp
     ${INC_DIR}/utils/non_copyable.hpp
