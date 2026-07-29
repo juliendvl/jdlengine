@@ -1,6 +1,6 @@
 #include "vk/vulkan_pipeline.hpp"
 
-#include "resource/Shader.hpp"
+#include "resource/shader.hpp"
 
 #include "utils/logger.hpp"
 

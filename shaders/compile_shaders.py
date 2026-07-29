@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import shutil
 import subprocess
 
 
@@ -20,8 +21,13 @@ def get_slang_compiler() -> str:
             raise RuntimeError("Cannot find slangc.exe in the Vulkan SDK directory")
 
         return slang_compiler
+    elif os.name == "posix":
+        slang_compiler: str = shutil.which("slangc")
+        if slang_compiler is None:
+            raise RuntimeError("Cannot find the 'slangc' command")
+        return slang_compiler
     else:
-        raise NotImplementedError("TODO - Script support for Linux")
+        raise NotImplementedError(f"Unsupported platform: {os.name}")
 
 
 def syntax() -> argparse.ArgumentParser:
