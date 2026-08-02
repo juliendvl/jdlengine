@@ -27,13 +27,23 @@ Application::Application(const char* name, int width, int height)
 
 Application::~Application()
 {
+    // Wait for all the running operations to finish before destroying the resources.
+    m_renderer->wait_idle();
+
     resource::ResourceManager::Clear();
 
     m_renderer.reset();
     m_window.reset();
 }
 
-void Application::run() {}
+void Application::run()
+{
+    while (m_window->is_running())
+    {
+        m_window->poll_events();
+        m_renderer->render_frame();
+    }
+}
 
 } // namespace core
 } // namespace jdl

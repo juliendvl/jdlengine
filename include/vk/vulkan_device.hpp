@@ -71,6 +71,16 @@ public:
 	 */
 	VkQueue get_present_queue() const { return m_presentQueue; }
 
+	/**
+	 * @brief Returns the command pool for the graphics queue.
+	 */
+	VkCommandPool get_graphics_command_pool() const { return m_graphicsPool; }
+
+	/**
+	 * @brief Waits for the device to be in idle state.
+	 */
+	void wait_idle() const { vkDeviceWaitIdle(m_device); }
+
 private:
 	VK_ATTR(VkPhysicalDevice, m_physicalDevice);
 	VK_ATTR(VkDevice, m_device);
@@ -80,8 +90,11 @@ private:
 	VK_ATTR(VkQueue, m_graphicsQueue);
 	VK_ATTR(VkQueue, m_presentQueue);
 
+	VK_ATTR(VkCommandPool, m_graphicsPool);
+
 	void select_physical_device();
 	void create_device();
+	void create_command_pool();
 };
 
 } // namespace vk

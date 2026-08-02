@@ -52,6 +52,19 @@ public:
 		return index < m_images.size() ? m_imageViews[index] : VK_NULL_HANDLE;
 	}
 
+	/**
+	 * @brief Retrieves the index of the next presentable image.
+	 * @param out_index Output image index.
+	 * @param semaphore The semaphore to signal at the end of the process.
+	 * @param fence The fence to signal at the end of the process.
+	 * @return The process result code.
+	 */
+	VkResult acquire_image(
+		uint32_t& out_index,
+		VkSemaphore semaphore = VK_NULL_HANDLE,
+		VkFence fence = VK_NULL_HANDLE
+	);
+
 private:
 	VkDevice m_device = VK_NULL_HANDLE;
 	VkSwapchainKHR m_swapchain = VK_NULL_HANDLE;

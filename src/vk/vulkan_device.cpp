@@ -48,10 +48,12 @@ VulkanDevice::VulkanDevice()
 {
 	select_physical_device();
 	create_device();
+	create_command_pool();
 }
 
 VulkanDevice::~VulkanDevice()
 {
+	vkDestroyCommandPool(m_device, m_graphicsPool, nullptr);
 	vkDestroyDevice(m_device, nullptr);
 }
 
@@ -165,6 +167,7 @@ void VulkanDevice::create_device()
 	VkPhysicalDeviceVulkan13Features vulkan13_features {};
 	vulkan13_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
 	vulkan13_features.dynamicRendering = true;
+	vulkan13_features.synchronization2 = true;
 
 	// Vulkan 1.2 features
 	VkPhysicalDeviceVulkan12Features vulkan12_features {};
@@ -193,6 +196,16 @@ void VulkanDevice::create_device()
 
 	vkGetDeviceQueue(m_device, m_queueFamilyIndices.graphics, 0, &m_graphicsQueue);
 	vkGetDeviceQueue(m_device, m_queueFamilyIndices.present, 0, &m_presentQueue);
+}
+
+void VulkanDevice::create_command_pool()
+{
+	VkCommandPoolCreateInfo create_info {
+		.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+		.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+		.queueFamilyIndex = m_queueFamilyIndices.graphics
+	};
+	VK_CALL(vkCreateCommandPool(m_device, &create_info, nullptr, &m_graphicsPool));
 }
 
 } // namespace vk

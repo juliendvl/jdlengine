@@ -28,6 +28,16 @@ VulkanSwapchain::~VulkanSwapchain()
 	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
 }
 
+VkResult VulkanSwapchain::acquire_image(
+	uint32_t& out_index,
+	VkSemaphore semaphore,
+	VkFence fence
+) {
+	return vkAcquireNextImageKHR(
+		m_device, m_swapchain, UINT64_MAX, semaphore, fence, &out_index
+	);
+}
+
 void VulkanSwapchain::create_swapchain()
 {
 	auto physical_device = VulkanContext::GetDevice().get_physical_device();
