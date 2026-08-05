@@ -1,5 +1,8 @@
 #include "core/window.hpp"
 
+#include "core/application.hpp"
+#include "core/events.hpp"
+
 #include "utils/logger.hpp"
 
 
@@ -28,13 +31,14 @@ Window::Window(const char* title, int width, int height)
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     m_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (m_window == nullptr) {
         JDL_FATAL("Failed to create the GLFW window");
     }
     glfwSetWindowUserPointer(m_window, s_Window);
+
+    setup_callbacks();
 }
 
 Window::~Window()
@@ -73,6 +77,26 @@ VkSurfaceKHR Window::create_window_surface(VkInstance instance) const
     VK_CALL(glfwCreateWindowSurface(instance, m_window, nullptr, &surface));
 
     return surface;
+}
+
+void Window::setup_callbacks()
+{
+    // Resize Callback
+    glfwSetWindowSizeCallback(
+        m_window,
+        [](GLFWwindow* window, int width, int height)
+        {
+            // Handle window minimization
+            while (width == 0 || height == 0)
+            {
+                glfwWaitEvents();
+                glfwGetWindowSize(window, &width, &height);
+            }
+
+            ResizeEvent event(width, height);
+            Application::Get().resize_event(event);
+        }
+    );
 }
 
 } // namespace core

@@ -45,6 +45,11 @@ public:
     static VulkanSwapchain& GetSwapchain() { return *s_Context.m_swapchain; }
 
     /**
+     * @brief Recreates the swapchain.
+     */
+    static void RecreateSwapchain();
+
+    /**
      * @brief Returns the Vulkan pipeline object.
      */
     static VulkanPipeline& GetPipeline() { return *s_Context.m_pipeline; }

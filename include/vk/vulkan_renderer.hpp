@@ -2,6 +2,8 @@
 
 #include "vulkan_command_buffer.hpp"
 
+#include "core/events.hpp"
+
 #include "utils/non_copyable.hpp"
 
 
@@ -32,20 +34,31 @@ public:
      */
     void wait_idle() const;
 
+    /**
+     * @brief Resize event handler.
+     * @param event Event data.
+     */
+    void resize_event(const core::ResizeEvent& event);
+
 private:
     VK_ATTR(VkDevice, m_device);
 
     // Background color
     VkClearValue m_clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
 
-    // Synchronization objects
+    // Synchronization objects (one for each in-flight frame)
     std::vector<VkSemaphore> m_imageAcquiredSemaphores;
     std::vector<VkSemaphore> m_renderFinishedSemaphores;
     std::vector<VkFence> m_inFlightFences;
 
+    // Command buffers (one for each in-flight frame)
     std::vector<std::unique_ptr<VulkanCommandBuffer>> m_commandBuffers;
 
+    // Index of the current in-flight frame
     uint32_t m_currentImage = 0;
+
+    // Indicates that the framebuffer has been resized (swapchain is dirty)
+    bool m_framebufferResized = false;
 
     void create_sync_objects();
     void create_command_buffers();

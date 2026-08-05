@@ -84,6 +84,8 @@ private:
     static Window* s_Window;
 
     GLFWwindow* m_window = nullptr;
+
+    void setup_callbacks();
 };
 
 } // namespace core

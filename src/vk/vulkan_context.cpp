@@ -15,6 +15,14 @@ namespace vk
 
 VulkanContext VulkanContext::s_Context;
 
+void VulkanContext::RecreateSwapchain()
+{
+    s_Context.m_device->wait_idle();
+
+    s_Context.m_swapchain.reset();
+    s_Context.m_swapchain = std::make_unique<VulkanSwapchain>();
+}
+
 void VulkanContext::do_init()
 {
     if (m_instance != nullptr) {

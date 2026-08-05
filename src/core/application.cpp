@@ -45,5 +45,10 @@ void Application::run()
     }
 }
 
+void Application::resize_event(const ResizeEvent& event)
+{
+    m_renderer->resize_event(event);
+}
+
 } // namespace core
 } // namespace jdl

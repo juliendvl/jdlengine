@@ -48,10 +48,20 @@ void VulkanRenderer::render_frame()
     VkFence in_flight = m_inFlightFences[m_currentImage];
 
     VK_CALL(vkWaitForFences(m_device, 1, &in_flight, VK_FALSE, UINT64_MAX));
-    VK_CALL(vkResetFences(m_device, 1, &in_flight));
 
     uint32_t image_index;
     VkResult result = swapchain.acquire_image(image_index, image_acquired);
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        VulkanContext::RecreateSwapchain();
+        return;
+    }
+    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        JDL_FATAL("Failed to acquire an image from the swapchain");
+    }
+
+    VK_CALL(vkResetFences(m_device, 1, &in_flight));
 
     // Record the command buffer
     VulkanCommandBuffer* command_buffer = m_commandBuffers[m_currentImage].get();
@@ -81,7 +91,16 @@ void VulkanRenderer::render_frame()
     };
 
     VkQueue present_queue = VulkanContext::GetDevice().get_present_queue();
-    VK_CALL(vkQueuePresentKHR(present_queue, &present_info));
+    result = vkQueuePresentKHR(present_queue, &present_info);
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+        VulkanContext::RecreateSwapchain();
+    }
+    else if (m_framebufferResized)
+    {
+        VulkanContext::RecreateSwapchain();
+        m_framebufferResized = false;
+    }
 
     m_currentImage = (m_currentImage + 1) % m_inFlightFences.size();
 }
@@ -90,6 +109,11 @@ void VulkanRenderer::wait_idle() const
 {
     auto& device = VulkanContext::GetDevice();
     device.wait_idle();
+}
+
+void VulkanRenderer::resize_event(const core::ResizeEvent& event)
+{
+    m_framebufferResized = true;
 }
 
 void VulkanRenderer::create_sync_objects()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "events.hpp"
 #include "window.hpp"
 
 #include "utils/non_copyable.hpp"
@@ -52,6 +53,12 @@ public:
      * @brief Runs the application.
      */
     void run();
+
+    /**
+     * @brief Resize event handler.
+     * @param event Event data.
+     */
+    void resize_event(const ResizeEvent& event);
 
 private:
     static Application* s_Application;
