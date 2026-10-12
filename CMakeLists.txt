@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.21)
 project(JDLEngine LANGUAGES CXX)
 
 # --- Toplevel variables ---
+set(ENGINE_NAME jdlengine)
 set(ENGINE_DIR ${CMAKE_SOURCE_DIR}/jdlengine)
 set(VENDOR_DIR ${CMAKE_SOURCE_DIR}/vendor)
 
@@ -22,7 +23,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(INC_DIR ${ENGINE_DIR}/include)
 set(SRC_DIR ${ENGINE_DIR}/src)
 
+add_library(
+    ${ENGINE_NAME} STATIC
+    # core module
+    ${INC_DIR}/core/application.hpp
+    ${SRC_DIR}/core/application.cpp
+    # utils module
+    ${INC_DIR}/utils/non_copyable.hpp
+)
+target_include_directories(${ENGINE_NAME} PUBLIC ${INC_DIR})
+
 # --- Sandbox application ---
 set(APP_NAME sandbox)
 
 add_executable(${APP_NAME} ${CMAKE_SOURCE_DIR}/sandbox/main.cpp)
+target_link_libraries(${APP_NAME} ${ENGINE_NAME})
