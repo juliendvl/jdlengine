@@ -7,7 +7,7 @@ project(JDLEngine LANGUAGES CXX)
 # --- Toplevel variables ---
 set(ENGINE_NAME jdlengine)
 set(ENGINE_DIR ${CMAKE_SOURCE_DIR}/jdlengine)
-set(VENDOR_DIR ${CMAKE_SOURCE_DIR}/vendor)
+set(VENDOR_DIR ${ENGINE_DIR}/vendor)
 
 # --- Use C++20 as standard ---
 set(CMAKE_CXX_STANDARD 20)
@@ -32,6 +32,10 @@ add_library(
     ${INC_DIR}/utils/non_copyable.hpp
 )
 target_include_directories(${ENGINE_NAME} PUBLIC ${INC_DIR})
+
+# --- Vendor: spdlog ---
+add_subdirectory(${VENDOR_DIR}/spdlog)
+target_link_libraries(${ENGINE_NAME} PUBLIC spdlog::spdlog)
 
 # --- Sandbox application ---
 set(APP_NAME sandbox)
