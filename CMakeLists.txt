@@ -29,7 +29,9 @@ add_library(
     ${INC_DIR}/core/application.hpp
     ${SRC_DIR}/core/application.cpp
     # utils module
+    ${INC_DIR}/utils/logger.hpp
     ${INC_DIR}/utils/non_copyable.hpp
+    ${SRC_DIR}/utils/logger.cpp
 )
 target_include_directories(${ENGINE_NAME} PUBLIC ${INC_DIR})
 

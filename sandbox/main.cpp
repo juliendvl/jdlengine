@@ -2,6 +2,8 @@
 
 #include "core/application.hpp"
 
+#include "utils/logger.hpp"
+
 using namespace jdl;
 
 
@@ -11,7 +13,10 @@ class Sandbox : public core::Application
         Sandbox(const char* name, int width, int height)
             : core::Application(name, width, height)
         {
-            std::cout << "Hello World " << GetName() << "!" << std::endl;
+            JDL_DEBUG("DEBUG Message");
+            JDL_INFO("INFO Message");
+            JDL_WARN("WARN Message");
+            JDL_ERROR("ERROR Message");
         }
 };
 
@@ -20,6 +25,9 @@ int main(int argc, char** argv)
 {
     try
     {
+        utils::Logger::Init();
+        utils::Logger::SetLevel(utils::LogLevel::eDebug);
+
         Sandbox application("JDLEngine", 800, 600);
         application.run();
 

@@ -3,3 +3,6 @@
 [Dd]ebug/
 [Oo]ut/
 [Rr]elease/
+
+# VisualStudio files
+.vs/

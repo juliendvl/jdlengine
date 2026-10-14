@@ -1,5 +1,7 @@
 #include "core/application.hpp"
 
+#include "utils/logger.hpp"
+
 
 namespace jdl
 {
@@ -12,7 +14,7 @@ Application::Application(const char* name, int width, int height)
     : m_name(name)
 {
     if (s_Application != nullptr) {
-
+        JDL_FATAL("The application has already been created");
     }
     s_Application = this;
 }
