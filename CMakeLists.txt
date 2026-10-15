@@ -39,6 +39,14 @@ target_include_directories(${ENGINE_NAME} PUBLIC ${INC_DIR})
 add_subdirectory(${VENDOR_DIR}/spdlog)
 target_link_libraries(${ENGINE_NAME} PUBLIC spdlog::spdlog)
 
+# --- Vendor: glfw ---
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+add_subdirectory(${VENDOR_DIR}/glfw)
+target_link_libraries(${ENGINE_NAME} PRIVATE glfw)
+
 # --- Sandbox application ---
 set(APP_NAME sandbox)
 
