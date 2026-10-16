@@ -1,5 +1,9 @@
 #pragma once
 
+#include <memory>
+
+#include "window.hpp"
+
 #include "utils/non_copyable.hpp"
 
 
@@ -32,7 +36,12 @@ class Application : private NonCopyable<Application>
         /**
          * @brief Returns the application name.
          */
-        const char* GetName() { return s_Application->m_name; }
+        static const char* GetName() { return s_Application->m_name; }
+
+        /**
+         * @brief Returns the application window.
+         */
+        static Window& GetWindow() { return *s_Application->m_window; }
 
         /**
          * @brief Runs the application.
@@ -42,7 +51,10 @@ class Application : private NonCopyable<Application>
     private:
         static Application* s_Application;
 
+        // Application name
         const char* m_name = nullptr;
+        // Application window
+        std::unique_ptr<Window> m_window;
 };
 
 } // namespace core

@@ -27,7 +27,10 @@ add_library(
     ${ENGINE_NAME} STATIC
     # core module
     ${INC_DIR}/core/application.hpp
+    ${INC_DIR}/core/size.hpp
+    ${INC_DIR}/core/window.hpp
     ${SRC_DIR}/core/application.cpp
+    ${SRC_DIR}/core/window.cpp
     # utils module
     ${INC_DIR}/utils/logger.hpp
     ${INC_DIR}/utils/non_copyable.hpp
@@ -45,6 +48,11 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(${VENDOR_DIR}/glfw)
+
+target_include_directories(
+    ${ENGINE_NAME} PUBLIC
+    ${VENDOR_DIR}/glfw/include
+)
 target_link_libraries(${ENGINE_NAME} PRIVATE glfw)
 
 # --- Sandbox application ---

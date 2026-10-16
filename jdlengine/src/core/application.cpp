@@ -17,11 +17,23 @@ Application::Application(const char* name, int width, int height)
         JDL_FATAL("The application has already been created");
     }
     s_Application = this;
+        
+    m_window = std::make_unique<Window>(name, width, height);
+    JDL_INFO("Created application window");
 }
 
-Application::~Application() {}
+Application::~Application()
+{
+    m_window.reset();
+}
 
-void Application::run() {}
+void Application::run()
+{
+    while (m_window->is_running())
+    {
+        m_window->poll_events();
+    }
+}
 
 } // namespace core
 } // namespace jdl
