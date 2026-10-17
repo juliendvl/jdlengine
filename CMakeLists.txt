@@ -35,8 +35,34 @@ add_library(
     ${INC_DIR}/utils/logger.hpp
     ${INC_DIR}/utils/non_copyable.hpp
     ${SRC_DIR}/utils/logger.cpp
+    # vk module
+    ${INC_DIR}/vk/vk_common.hpp
+    ${INC_DIR}/vk/vk_context.hpp
+    ${INC_DIR}/vk/vk_instance.hpp
+    ${INC_DIR}/vk/vk_renderer.hpp
+    ${SRC_DIR}/vk/vk_context.cpp
+    ${SRC_DIR}/vk/vk_instance.cpp
+    ${SRC_DIR}/vk/vk_renderer.cpp
 )
 target_include_directories(${ENGINE_NAME} PUBLIC ${INC_DIR})
+
+# --- Precompiled headers ---
+# Third-party include paths are resolved at generation time, so they can be listed here
+# before the vendor targets are declared.
+target_precompile_headers(
+    ${ENGINE_NAME} PRIVATE
+    # standard library
+    <array>
+    <cstdint>
+    <memory>
+    <optional>
+    <string>
+    <string_view>
+    <vector>
+    # third-party
+    <spdlog/spdlog.h>
+    <vulkan/vulkan.h>
+)
 
 # --- Vendor: spdlog ---
 add_subdirectory(${VENDOR_DIR}/spdlog)
@@ -54,6 +80,12 @@ target_include_directories(
     ${VENDOR_DIR}/glfw/include
 )
 target_link_libraries(${ENGINE_NAME} PRIVATE glfw)
+
+# --- Vulkan SDK ---
+find_package(Vulkan REQUIRED)
+target_link_libraries(${ENGINE_NAME} PUBLIC Vulkan::Vulkan)
+# Makes <GLFW/glfw3.h> include <vulkan/vulkan.h> and expose the Vulkan helpers
+target_compile_definitions(${ENGINE_NAME} PUBLIC GLFW_INCLUDE_VULKAN)
 
 # --- Sandbox application ---
 set(APP_NAME sandbox)

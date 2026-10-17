@@ -20,10 +20,14 @@ Application::Application(const char* name, int width, int height)
         
     m_window = std::make_unique<Window>(name, width, height);
     JDL_INFO("Created application window");
+
+    m_renderer = std::make_unique<vk::Renderer>();
+    JDL_INFO("Created Vulkan renderer");
 }
 
 Application::~Application()
 {
+    m_renderer.reset();
     m_window.reset();
 }
 
@@ -32,6 +36,7 @@ void Application::run()
     while (m_window->is_running())
     {
         m_window->poll_events();
+        m_renderer->draw_frame();
     }
 }
 

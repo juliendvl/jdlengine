@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <GLFW/glfw3.h>
 
 #include "size.hpp"
@@ -55,6 +57,11 @@ public:
 	 * pending events.
 	 */
 	void wait_events() const { glfwWaitEvents(); }
+
+	/**
+	 * @brief Returns the Vulkan instance extensions required by GLFW.
+	 */
+	static std::vector<const char*> GetInstanceExtensions();
 	
 private:
 	static Window* s_Window;

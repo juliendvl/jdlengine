@@ -6,6 +6,8 @@
 
 #include "utils/non_copyable.hpp"
 
+#include "vk/vk_renderer.hpp"
+
 
 namespace jdl
 {
@@ -44,6 +46,11 @@ class Application : private NonCopyable<Application>
         static Window& GetWindow() { return *s_Application->m_window; }
 
         /**
+         * @brief Returns the application renderer.
+         */
+        static vk::Renderer& GetRenderer() { return *s_Application->m_renderer; }
+
+        /**
          * @brief Runs the application.
          */
         void run();
@@ -55,6 +62,8 @@ class Application : private NonCopyable<Application>
         const char* m_name = nullptr;
         // Application window
         std::unique_ptr<Window> m_window;
+        // Application renderer
+        std::unique_ptr<vk::Renderer> m_renderer;
 };
 
 } // namespace core
