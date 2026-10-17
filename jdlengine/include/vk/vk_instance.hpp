@@ -15,12 +15,13 @@ class Instance : private NonCopyable<Instance>
 public:
 	/**
 	 * @brief Creates the Vulkan instance with the extensions required by
-	 * the window.
+	 * the window. In debug builds, also enables the validation layers and
+	 * the debug messenger.
 	 */
 	Instance();
 
 	/**
-	 * @brief Destroys the Vulkan instance.
+	 * @brief Destroys the debug messenger (if any) and the Vulkan instance.
 	 */
 	~Instance();
 
@@ -31,6 +32,8 @@ public:
 
 private:
 	VK_ATTR(VkInstance, m_instance);
+	// Only created in debug builds
+	VK_ATTR(VkDebugUtilsMessengerEXT, m_debug_messenger);
 };
 
 } // namespace vk

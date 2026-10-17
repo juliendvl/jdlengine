@@ -21,7 +21,6 @@ int main(int argc, char** argv)
     try
     {
         utils::Logger::Init();
-        utils::Logger::SetLevel(utils::LogLevel::eDebug);
 
         Sandbox application("JDLEngine", 800, 600);
         application.run();
