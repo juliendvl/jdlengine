@@ -160,6 +160,8 @@ Instance::Instance()
 		));
 		JDL_INFO("Enabled Vulkan validation layers");
 	}
+
+	JDL_INFO("Created Vulkan instance");
 }
 
 Instance::~Instance()

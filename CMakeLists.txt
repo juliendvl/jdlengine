@@ -37,10 +37,12 @@ add_library(
     ${SRC_DIR}/utils/logger.cpp
     # vk module
     ${INC_DIR}/vk/vk_common.hpp
+    ${INC_DIR}/vk/vk_device.hpp
     ${INC_DIR}/vk/vk_context.hpp
     ${INC_DIR}/vk/vk_instance.hpp
     ${INC_DIR}/vk/vk_renderer.hpp
     ${SRC_DIR}/vk/vk_context.cpp
+    ${SRC_DIR}/vk/vk_device.cpp
     ${SRC_DIR}/vk/vk_instance.cpp
     ${SRC_DIR}/vk/vk_renderer.cpp
 )
