@@ -162,10 +162,15 @@ Instance::Instance()
 	}
 
 	JDL_INFO("Created Vulkan instance");
+
+	m_surface = core::Application::GetWindow().create_surface(m_instance);
+	JDL_INFO("Created window surface");
 }
 
 Instance::~Instance()
 {
+	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+
 	if (m_debug_messenger != VK_NULL_HANDLE)
 	{
 		auto destroy_messenger = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(

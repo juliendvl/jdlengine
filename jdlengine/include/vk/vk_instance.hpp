@@ -15,13 +15,14 @@ class Instance : private NonCopyable<Instance>
 public:
 	/**
 	 * @brief Creates the Vulkan instance with the extensions required by
-	 * the window. In debug builds, also enables the validation layers and
-	 * the debug messenger.
+	 * the window, then the window surface. In debug builds, also enables the
+	 * validation layers and the debug messenger.
 	 */
 	Instance();
 
 	/**
-	 * @brief Destroys the debug messenger (if any) and the Vulkan instance.
+	 * @brief Destroys the window surface, the debug messenger (if any) and the
+	 * Vulkan instance.
 	 */
 	~Instance();
 
@@ -30,10 +31,16 @@ public:
 	 */
 	VkInstance handle() const { return m_instance; }
 
+	/**
+	 * @brief Returns the window surface handle.
+	 */
+	VkSurfaceKHR surface() const { return m_surface; }
+
 private:
 	VK_ATTR(VkInstance, m_instance);
 	// Only created in debug builds
 	VK_ATTR(VkDebugUtilsMessengerEXT, m_debug_messenger);
+	VK_ATTR(VkSurfaceKHR, m_surface);
 };
 
 } // namespace vk

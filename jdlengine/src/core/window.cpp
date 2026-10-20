@@ -57,6 +57,18 @@ Size Window::framebuffer_size() const
 	return size;
 }
 
+VkSurfaceKHR Window::create_surface(VkInstance instance) const
+{
+	VkSurfaceKHR surface = VK_NULL_HANDLE;
+
+	VkResult result = glfwCreateWindowSurface(instance, m_window, nullptr, &surface);
+	if (result != VK_SUCCESS) {
+		JDL_FATAL("Failed to create the window surface (VkResult {})",
+			static_cast<int>(result));
+	}
+	return surface;
+}
+
 std::vector<const char*> Window::GetInstanceExtensions()
 {
 	uint32_t nb_extensions;

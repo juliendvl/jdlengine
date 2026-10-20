@@ -34,6 +34,7 @@ std::string Device::device_name() const
 void Device::select_physical_device(const Instance& instance)
 {
 	VkInstance instance_handle = instance.handle();
+	VkSurfaceKHR surface = instance.surface();
 
 	uint32_t nb_devices = 0;
 	VK_CHECK(vkEnumeratePhysicalDevices(instance_handle, &nb_devices, nullptr));
@@ -64,16 +65,30 @@ void Device::select_physical_device(const Instance& instance)
 		QueueFamilyIndices queue_indices;
 		for (uint32_t i = 0; i < nb_queues; ++i)
 		{
-			if (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-				queue_indices.graphics = i;
-			}
-			if (queue_indices.is_complete())
-			{
-				compatible_devices.push_back(device);
-				compatible_queues.push_back(queue_indices);
+			bool graphics = (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0;
 
+			VkBool32 present = VK_FALSE;
+			VK_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &present));
+
+			// A single family supporting both is preferred.
+			if (graphics && present)
+			{
+				queue_indices.graphics = i;
+				queue_indices.present = i;
 				break;
 			}
+			if (graphics && queue_indices.graphics == UINT32_MAX) {
+				queue_indices.graphics = i;
+			}
+			if (present && queue_indices.present == UINT32_MAX) {
+				queue_indices.present = i;
+			}
+		}
+
+		if (queue_indices.is_complete())
+		{
+			compatible_devices.push_back(device);
+			compatible_queues.push_back(queue_indices);
 		}
 	}
 	if (compatible_devices.empty()) {
@@ -144,6 +159,7 @@ void Device::create_device()
 
 	// Retrieve queue handles
 	vkGetDeviceQueue(m_device, m_queueIndices.graphics, 0, &m_graphicsQueue);
+	vkGetDeviceQueue(m_device, m_queueIndices.present, 0, &m_presentQueue);
 }
 
 } // namespace vk

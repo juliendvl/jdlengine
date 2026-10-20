@@ -59,6 +59,13 @@ public:
 	void wait_events() const { glfwWaitEvents(); }
 
 	/**
+	 * @brief Creates a Vulkan surface for the window.
+	 * @param instance The Vulkan instance the surface is created for.
+	 * @return The surface handle, to be destroyed by the caller before the instance.
+	 */
+	VkSurfaceKHR create_surface(VkInstance instance) const;
+
+	/**
 	 * @brief Returns the Vulkan instance extensions required by GLFW.
 	 */
 	static std::vector<const char*> GetInstanceExtensions();

@@ -17,19 +17,20 @@ namespace vk
 struct QueueFamilyIndices
 {
 	uint32_t graphics = UINT32_MAX;
+	uint32_t present = UINT32_MAX;
 
 	/**
 	 * @brief Returns whether all the required queue families have been found.
 	 */
 	bool is_complete() const {
-		return graphics != UINT32_MAX;
+		return graphics != UINT32_MAX && present != UINT32_MAX;
 	}
 
 	/**
 	 * @brief Returns the distinct queue family indices.
 	 */
 	std::set<uint32_t> unique_indices() const {
-		return { graphics };
+		return { graphics, present };
 	}
 };
 
@@ -38,8 +39,9 @@ class Device : private NonCopyable<Device>
 {
 public:
 	/**
-	 * @brief Selects a physical device (a discrete GPU if available) and creates
-	 * the logical device along with its queues.
+	 * @brief Selects a physical device (a discrete GPU if available) able to
+	 * render and present to the window surface, then creates the logical device
+	 * along with its queues.
 	 * @param instance The Vulkan instance used to enumerate physical devices.
 	 */
 	Device(const Instance& instance);
@@ -74,6 +76,11 @@ public:
 	 */
 	VkQueue graphics_queue() const { return m_graphicsQueue; }
 
+	/**
+	 * @brief Returns the presentation queue handle.
+	 */
+	VkQueue present_queue() const { return m_presentQueue; }
+
 private:
 	VK_ATTR(VkPhysicalDevice, m_physicalDevice);
 	VK_ATTR(VkDevice, m_device);
@@ -81,6 +88,7 @@ private:
 	QueueFamilyIndices m_queueIndices;
 
 	VK_ATTR(VkQueue, m_graphicsQueue);
+	VK_ATTR(VkQueue, m_presentQueue);
 
 	void select_physical_device(const Instance& instance);
 	void create_device();
