@@ -41,10 +41,12 @@ add_library(
     ${INC_DIR}/vk/vk_context.hpp
     ${INC_DIR}/vk/vk_instance.hpp
     ${INC_DIR}/vk/vk_renderer.hpp
+    ${INC_DIR}/vk/vk_swapchain.hpp
     ${SRC_DIR}/vk/vk_context.cpp
     ${SRC_DIR}/vk/vk_device.cpp
     ${SRC_DIR}/vk/vk_instance.cpp
     ${SRC_DIR}/vk/vk_renderer.cpp
+    ${SRC_DIR}/vk/vk_swapchain.cpp
 )
 target_include_directories(${ENGINE_NAME} PUBLIC ${INC_DIR})
 

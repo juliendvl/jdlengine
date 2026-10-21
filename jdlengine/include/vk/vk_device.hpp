@@ -40,8 +40,8 @@ class Device : private NonCopyable<Device>
 public:
 	/**
 	 * @brief Selects a physical device (a discrete GPU if available) able to
-	 * render and present to the window surface, then creates the logical device
-	 * along with its queues.
+	 * render and present to the window surface through a swapchain, then creates
+	 * the logical device along with its queues.
 	 * @param instance The Vulkan instance used to enumerate physical devices.
 	 */
 	Device(const Instance& instance);

@@ -1,6 +1,7 @@
 #include "vk/vk_device.hpp"
 
 #include <array>
+#include <cstring>
 
 #include "utils/logger.hpp"
 
@@ -9,6 +10,45 @@ namespace jdl
 {
 namespace vk
 {
+
+namespace
+{
+
+constexpr std::array<const char*, 1> kDeviceExtensions = {
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
+bool CheckDeviceExtensionsSupport(VkPhysicalDevice device)
+{
+	uint32_t nb_extensions = 0;
+	VK_CHECK(vkEnumerateDeviceExtensionProperties(
+		device, nullptr, &nb_extensions, nullptr
+	));
+
+	std::vector<VkExtensionProperties> available_extensions(nb_extensions);
+	VK_CHECK(vkEnumerateDeviceExtensionProperties(
+		device, nullptr, &nb_extensions, VK_DATA(available_extensions)
+	));
+
+	for (const char* extension_name : kDeviceExtensions)
+	{
+		bool found = false;
+		for (const auto& properties : available_extensions)
+		{
+			if (std::strcmp(extension_name, properties.extensionName) == 0)
+			{
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			return false;
+		}
+	}
+	return true;
+}
+
+} // namespace
 
 Device::Device(const Instance& instance)
 {
@@ -51,6 +91,11 @@ void Device::select_physical_device(const Instance& instance)
 
 	for (VkPhysicalDevice device : devices)
 	{
+		// --- Extensions and swapchain support ---
+		if (!CheckDeviceExtensionsSupport(device)) {
+			continue;
+		}
+
 		// --- Queue families support ---
 		uint32_t nb_queues = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &nb_queues, nullptr);
@@ -153,7 +198,8 @@ void Device::create_device()
 		.pNext = &device_features2,
 		.queueCreateInfoCount = VK_SIZE(queue_infos),
 		.pQueueCreateInfos = VK_DATA(queue_infos),
-		.enabledExtensionCount = 0
+		.enabledExtensionCount = VK_SIZE(kDeviceExtensions),
+		.ppEnabledExtensionNames = VK_DATA(kDeviceExtensions)
 	};
 	VK_CHECK(vkCreateDevice(m_physicalDevice, &create_info, nullptr, &m_device));
 
