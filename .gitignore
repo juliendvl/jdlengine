@@ -6,3 +6,6 @@
 
 # VisualStudio files
 .vs/
+
+# Compiled shaders
+*.spv
