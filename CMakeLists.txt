@@ -40,12 +40,14 @@ add_library(
     ${INC_DIR}/vk/vk_device.hpp
     ${INC_DIR}/vk/vk_context.hpp
     ${INC_DIR}/vk/vk_instance.hpp
+    ${INC_DIR}/vk/vk_pipeline.hpp
     ${INC_DIR}/vk/vk_renderer.hpp
     ${INC_DIR}/vk/vk_shader_module.hpp
     ${INC_DIR}/vk/vk_swapchain.hpp
     ${SRC_DIR}/vk/vk_context.cpp
     ${SRC_DIR}/vk/vk_device.cpp
     ${SRC_DIR}/vk/vk_instance.cpp
+    ${SRC_DIR}/vk/vk_pipeline.cpp
     ${SRC_DIR}/vk/vk_renderer.cpp
     ${SRC_DIR}/vk/vk_shader_module.cpp
     ${SRC_DIR}/vk/vk_swapchain.cpp

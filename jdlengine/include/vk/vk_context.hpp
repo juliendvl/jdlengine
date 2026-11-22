@@ -7,6 +7,7 @@
 #include "vk_common.hpp"
 #include "vk_device.hpp"
 #include "vk_instance.hpp"
+#include "vk_pipeline.hpp"
 #include "vk_swapchain.hpp"
 
 
@@ -44,10 +45,16 @@ public:
 	 */
 	Swapchain& swapchain() const { return *m_swapchain; }
 
+	/**
+	 * @brief Returns the Vulkan graphics pipeline.
+	 */
+	Pipeline& pipeline() const { return *m_pipeline; }
+
 private:
 	std::unique_ptr<Instance> m_instance;
 	std::unique_ptr<Device> m_device;
 	std::unique_ptr<Swapchain> m_swapchain;
+	std::unique_ptr<Pipeline> m_pipeline;
 };
 
 } // namespace vk
