@@ -6,7 +6,7 @@ project(JDLEngine LANGUAGES CXX)
 
 # --- Toplevel variables ---
 set(ENGINE_NAME jdlengine)
-set(ENGINE_DIR ${CMAKE_SOURCE_DIR}/jdlengine)
+set(ENGINE_DIR ${PROJECT_SOURCE_DIR}/jdlengine)
 set(VENDOR_DIR ${ENGINE_DIR}/vendor)
 
 # --- Use C++20 as standard ---
@@ -52,6 +52,13 @@ add_library(
 )
 target_include_directories(${ENGINE_NAME} PUBLIC ${INC_DIR})
 
+# --- Compiler warnings (own targets only, not the vendored libraries) ---
+set(JDL_WARNING_FLAGS
+    $<$<CXX_COMPILER_ID:MSVC>:/W4>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
+target_compile_options(${ENGINE_NAME} PRIVATE ${JDL_WARNING_FLAGS})
+
 # --- Precompiled headers ---
 # Third-party include paths are resolved at generation time, so they can be listed here
 # before the vendor targets are declared.
@@ -81,20 +88,18 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(${VENDOR_DIR}/glfw)
 
-target_include_directories(
-    ${ENGINE_NAME} PUBLIC
-    ${VENDOR_DIR}/glfw/include
-)
+# GLFW is private: no public engine header includes it.
 target_link_libraries(${ENGINE_NAME} PRIVATE glfw)
 
 # --- Vulkan SDK ---
 find_package(Vulkan REQUIRED)
 target_link_libraries(${ENGINE_NAME} PUBLIC Vulkan::Vulkan)
 # Makes <GLFW/glfw3.h> include <vulkan/vulkan.h> and expose the Vulkan helpers
-target_compile_definitions(${ENGINE_NAME} PUBLIC GLFW_INCLUDE_VULKAN)
+target_compile_definitions(${ENGINE_NAME} PRIVATE GLFW_INCLUDE_VULKAN)
 
 # --- Sandbox application ---
 set(APP_NAME sandbox)
 
-add_executable(${APP_NAME} ${CMAKE_SOURCE_DIR}/sandbox/main.cpp)
-target_link_libraries(${APP_NAME} ${ENGINE_NAME})
+add_executable(${APP_NAME} ${PROJECT_SOURCE_DIR}/sandbox/main.cpp)
+target_link_libraries(${APP_NAME} PRIVATE ${ENGINE_NAME})
+target_compile_options(${APP_NAME} PRIVATE ${JDL_WARNING_FLAGS})

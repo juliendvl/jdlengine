@@ -35,7 +35,7 @@ struct QueueFamilyIndices
 };
 
 
-class Device : private NonCopyable<Device>
+class Device : private utils::NonCopyable<Device>
 {
 public:
 	/**

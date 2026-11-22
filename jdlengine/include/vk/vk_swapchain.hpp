@@ -20,7 +20,7 @@ class Window;
 namespace vk
 {
 
-class Swapchain : private NonCopyable<Swapchain>
+class Swapchain : private utils::NonCopyable<Swapchain>
 {
 public:
 	/**

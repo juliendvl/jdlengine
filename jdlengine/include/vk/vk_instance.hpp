@@ -15,7 +15,7 @@ class Window;
 namespace vk
 {
 
-class Instance : private NonCopyable<Instance>
+class Instance : private utils::NonCopyable<Instance>
 {
 public:
 	/**

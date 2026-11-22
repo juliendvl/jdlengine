@@ -1,5 +1,8 @@
 #include "core/window.hpp"
 
+// GLFW_INCLUDE_VULKAN (set by CMake) exposes the GLFW Vulkan helpers.
+#include <GLFW/glfw3.h>
+
 #include "utils/logger.hpp"
 
 
@@ -42,6 +45,21 @@ Window::~Window()
 	glfwDestroyWindow(m_window);
 	glfwTerminate();
 	s_Window = nullptr;
+}
+
+bool Window::is_running() const
+{
+	return glfwWindowShouldClose(m_window) == GLFW_FALSE;
+}
+
+void Window::poll_events() const
+{
+	glfwPollEvents();
+}
+
+void Window::wait_events() const
+{
+	glfwWaitEvents();
 }
 
 Size Window::screen_size() const

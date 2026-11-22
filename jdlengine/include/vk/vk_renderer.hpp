@@ -13,7 +13,7 @@ namespace jdl
 namespace vk
 {
 
-class Renderer : private NonCopyable<Renderer>
+class Renderer : private utils::NonCopyable<Renderer>
 {
 public:
 	/**

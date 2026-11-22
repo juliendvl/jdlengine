@@ -13,7 +13,7 @@ namespace jdl
 namespace vk
 {
 
-class ShaderModule : private NonCopyable<ShaderModule>
+class ShaderModule : private utils::NonCopyable<ShaderModule>
 {
 public:
 	/**

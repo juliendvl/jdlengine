@@ -15,7 +15,7 @@ namespace jdl
 namespace vk
 {
 
-class Context : private NonCopyable<Context>
+class Context : private utils::NonCopyable<Context>
 {
 public:
 	/**

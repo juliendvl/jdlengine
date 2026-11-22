@@ -10,15 +10,15 @@ namespace core
 
 Application* Application::s_Application = nullptr;
 
-Application::Application(const char* name, int width, int height)
-    : m_name(name)
+Application::Application(std::string name, int width, int height)
+    : m_name(std::move(name))
 {
     if (s_Application != nullptr) {
         JDL_FATAL("The application has already been created");
     }
     s_Application = this;
 
-    m_window = std::make_unique<Window>(name, width, height);
+    m_window = std::make_unique<Window>(m_name.c_str(), width, height);
     JDL_INFO("Created application window");
 
     m_renderer = std::make_unique<vk::Renderer>(*m_window);
