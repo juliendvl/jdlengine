@@ -41,6 +41,7 @@ Window::~Window()
 {
 	glfwDestroyWindow(m_window);
 	glfwTerminate();
+	s_Window = nullptr;
 }
 
 Size Window::screen_size() const

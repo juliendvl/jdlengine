@@ -1,7 +1,7 @@
 #pragma once
 
+#include <cstdlib>
 #include <memory>
-#include <stdexcept>
 #include <string>
 
 #include <spdlog/spdlog.h>
@@ -54,7 +54,9 @@ public:
     template<typename... Args>
     static void Debug(spdlog::format_string_t<Args...> fmt, Args&&... args)
     {
-        s_Logger->debug(fmt, std::forward<Args>(args)...);
+        if (s_Logger != nullptr) {
+            s_Logger->debug(fmt, std::forward<Args>(args)...);
+        }
     }
 
     /**
@@ -65,7 +67,9 @@ public:
     template<typename... Args>
     static void Info(spdlog::format_string_t<Args...> fmt, Args&&... args)
     {
-        s_Logger->info(fmt, std::forward<Args>(args)...);
+        if (s_Logger != nullptr) {
+            s_Logger->info(fmt, std::forward<Args>(args)...);
+        }
     }
 
     /**
@@ -76,7 +80,9 @@ public:
     template<typename... Args>
     static void Warning(spdlog::format_string_t<Args...> fmt, Args&&... args)
     {
-        s_Logger->warn(fmt, std::forward<Args>(args)...);
+        if (s_Logger != nullptr) {
+            s_Logger->warn(fmt, std::forward<Args>(args)...);
+        }
     }
 
     /**
@@ -87,20 +93,30 @@ public:
     template<typename... Args>
     static void Error(spdlog::format_string_t<Args...> fmt, Args&&... args)
     {
-        s_Logger->error(fmt, std::forward<Args>(args)...);
+        if (s_Logger != nullptr) {
+            s_Logger->error(fmt, std::forward<Args>(args)...);
+        }
     }
 
     /**
-     * @brief Logs a fatal message, then throws.
+     * @brief Logs a fatal message, then terminates the process immediately.
+     *
+     * No destructor is run: the operating system and the driver reclaim every
+     * resource of the process, so callers do not need any cleanup on this path.
+     * std::abort() also lets an attached debugger stop at the failure point.
      * @param fmt The format string.
      * @param args The format arguments.
-     * @throw std::runtime_error Always.
      */
     template<typename... Args>
-    static void Fatal(spdlog::format_string_t<Args...> fmt, Args&&... args)
+    [[noreturn]] static void Fatal(spdlog::format_string_t<Args...> fmt, Args&&... args)
     {
-        s_Logger->critical(fmt, std::forward<Args>(args)...);
-        throw std::runtime_error("FATAL error raised");
+        if (s_Logger != nullptr)
+        {
+            s_Logger->critical(fmt, std::forward<Args>(args)...);
+            // The process ends without unwinding: write the message out now.
+            s_Logger->flush();
+        }
+        std::abort();
     }
 
 private:

@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <array>
 
-#include "core/application.hpp"
 #include "core/window.hpp"
 
 #include "utils/logger.hpp"
@@ -61,7 +60,8 @@ VkPresentModeKHR ChoosePresentMode(VkPhysicalDevice device, VkSurfaceKHR surface
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D ChooseExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+VkExtent2D ChooseExtent(
+	const VkSurfaceCapabilitiesKHR& capabilities, const core::Window& window)
 {
 	// The surface size is imposed by the window manager.
 	if (capabilities.currentExtent.width != UINT32_MAX) {
@@ -69,7 +69,7 @@ VkExtent2D ChooseExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 	}
 
 	// Otherwise, match the window framebuffer size within the supported bounds.
-	core::Size size = core::Application::GetWindow().framebuffer_size();
+	core::Size size = window.framebuffer_size();
 
 	return VkExtent2D {
 		.width = std::clamp(
@@ -87,10 +87,10 @@ VkExtent2D ChooseExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 
 } // namespace
 
-Swapchain::Swapchain(const Instance& instance, const Device& device)
+Swapchain::Swapchain(const Instance& instance, const Device& device, const core::Window& window)
 	: m_device(device.device())
 {
-	create_swapchain(instance.surface(), device);
+	create_swapchain(instance.surface(), device, window);
 	create_image_views();
 
 	JDL_INFO("Created swapchain ({} images, {}x{})",
@@ -123,7 +123,8 @@ std::optional<uint32_t> Swapchain::acquire_next_image(VkSemaphore semaphore) con
 	return image_index;
 }
 
-void Swapchain::create_swapchain(VkSurfaceKHR surface, const Device& device)
+void Swapchain::create_swapchain(
+	VkSurfaceKHR surface, const Device& device, const core::Window& window)
 {
 	VkPhysicalDevice physical_device = device.physical_device();
 
@@ -135,7 +136,7 @@ void Swapchain::create_swapchain(VkSurfaceKHR surface, const Device& device)
 	VkSurfaceFormatKHR surface_format = ChooseSurfaceFormat(physical_device, surface);
 	VkPresentModeKHR present_mode = ChoosePresentMode(physical_device, surface);
 	m_imageFormat = surface_format.format;
-	m_extent = ChooseExtent(capabilities);
+	m_extent = ChooseExtent(capabilities, window);
 
 	// One more image than the minimum, so as not to wait on the driver.
 	// A maximum of 0 means there is no limit.

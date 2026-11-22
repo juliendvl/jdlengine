@@ -12,6 +12,11 @@
 
 namespace jdl
 {
+namespace core
+{
+class Window;
+} // namespace core
+
 namespace vk
 {
 
@@ -23,8 +28,10 @@ public:
 	 * each of its images.
 	 * @param instance The Vulkan instance owning the window surface.
 	 * @param device The device the swapchain is created for.
+	 * @param window The window, used to size the images when the surface does not
+	 * impose an extent.
 	 */
-	Swapchain(const Instance& instance, const Device& device);
+	Swapchain(const Instance& instance, const Device& device, const core::Window& window);
 
 	/**
 	 * @brief Destroys the image views and the swapchain.
@@ -82,7 +89,7 @@ private:
 	std::vector<VkImage> m_images;
 	std::vector<VkImageView> m_imageViews;
 
-	void create_swapchain(VkSurfaceKHR surface, const Device& device);
+	void create_swapchain(VkSurfaceKHR surface, const Device& device, const core::Window& window);
 	void create_image_views();
 };
 

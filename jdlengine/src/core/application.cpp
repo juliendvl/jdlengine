@@ -17,18 +17,20 @@ Application::Application(const char* name, int width, int height)
         JDL_FATAL("The application has already been created");
     }
     s_Application = this;
-        
+
     m_window = std::make_unique<Window>(name, width, height);
     JDL_INFO("Created application window");
 
-    m_renderer = std::make_unique<vk::Renderer>();
+    m_renderer = std::make_unique<vk::Renderer>(*m_window);
     JDL_INFO("Created Vulkan renderer");
 }
 
 Application::~Application()
 {
+    // The renderer uses the window surface: destroy it first.
     m_renderer.reset();
     m_window.reset();
+    s_Application = nullptr;
 }
 
 void Application::run()

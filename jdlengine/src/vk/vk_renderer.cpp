@@ -6,9 +6,9 @@ namespace jdl
 namespace vk
 {
 
-Renderer::Renderer()
+Renderer::Renderer(const core::Window& window)
 {
-	m_context = std::make_unique<Context>();
+	m_context = std::make_unique<Context>(window);
 }
 
 Renderer::~Renderer()

@@ -20,8 +20,9 @@ class Context : private NonCopyable<Context>
 public:
 	/**
 	 * @brief Creates the Vulkan context and its underlying objects.
+	 * @param window The window to render to. It must outlive the context.
 	 */
-	Context();
+	explicit Context(const core::Window& window);
 
 	/**
 	 * @brief Destroys the Vulkan context.

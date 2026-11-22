@@ -6,11 +6,11 @@ namespace jdl
 namespace vk
 {
 
-Context::Context()
+Context::Context(const core::Window& window)
 {
-	m_instance = std::make_unique<Instance>();
+	m_instance = std::make_unique<Instance>(window);
 	m_device = std::make_unique<Device>(*m_instance);
-	m_swapchain = std::make_unique<Swapchain>(*m_instance, *m_device);
+	m_swapchain = std::make_unique<Swapchain>(*m_instance, *m_device, window);
 }
 
 Context::~Context()
