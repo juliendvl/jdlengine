@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cassert>
 #include <memory>
+#include <string>
 
 #include "window.hpp"
 
@@ -14,16 +16,16 @@ namespace jdl
 namespace core
 {
 
-class Application : private NonCopyable<Application>
+class Application : private utils::NonCopyable<Application>
 {
     public:
         /**
          * @brief Creates the application.
-         * @param name The application name.
+         * @param name The application name, copied by the application.
          * @param width The application window initial width.
          * @param height The application window initial height.
          */
-        Application(const char* name, int width, int height);
+        Application(std::string name, int width, int height);
 
         /**
          * @brief Destroys the application.
@@ -31,24 +33,28 @@ class Application : private NonCopyable<Application>
         ~Application();
 
         /**
-         * @brief Returns the application instance.
+         * @brief Returns the application instance, which must exist.
          */
-        static Application& Get() { return *s_Application; }
+        static Application& Get()
+        {
+            assert(s_Application != nullptr && "The application has not been created");
+            return *s_Application;
+        }
 
         /**
          * @brief Returns the application name.
          */
-        static const char* GetName() { return s_Application->m_name; }
+        static const std::string& GetName() { return Get().m_name; }
 
         /**
          * @brief Returns the application window.
          */
-        static Window& GetWindow() { return *s_Application->m_window; }
+        static Window& GetWindow() { return *Get().m_window; }
 
         /**
          * @brief Returns the application renderer.
          */
-        static vk::Renderer& GetRenderer() { return *s_Application->m_renderer; }
+        static vk::Renderer& GetRenderer() { return *Get().m_renderer; }
 
         /**
          * @brief Runs the application.
@@ -59,7 +65,7 @@ class Application : private NonCopyable<Application>
         static Application* s_Application;
 
         // Application name
-        const char* m_name = nullptr;
+        std::string m_name;
         // Application window
         std::unique_ptr<Window> m_window;
         // Application renderer

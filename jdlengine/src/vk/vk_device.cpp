@@ -48,6 +48,46 @@ bool CheckDeviceExtensionsSupport(VkPhysicalDevice device)
 	return true;
 }
 
+bool CheckDeviceFeaturesSupport(VkPhysicalDevice device)
+{
+	// The device is created with Vulkan 1.3 features (see Device::create_device).
+	VkPhysicalDeviceProperties properties;
+	vkGetPhysicalDeviceProperties(device, &properties);
+
+	if (properties.apiVersion < VK_API_VERSION_1_3) {
+		return false;
+	}
+
+	VkPhysicalDeviceVulkan13Features features13 {
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
+	};
+	VkPhysicalDeviceVulkan11Features features11 {
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES,
+		.pNext = &features13,
+	};
+	VkPhysicalDeviceFeatures2 features2 {
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+		.pNext = &features11,
+	};
+	vkGetPhysicalDeviceFeatures2(device, &features2);
+
+	return features13.dynamicRendering == VK_TRUE
+		&& features11.shaderDrawParameters == VK_TRUE;
+}
+
+bool CheckSwapchainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
+{
+	// At least one surface format and one present mode are needed to create a
+	// swapchain for this surface.
+	uint32_t nb_formats = 0;
+	VK_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &nb_formats, nullptr));
+
+	uint32_t nb_modes = 0;
+	VK_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &nb_modes, nullptr));
+
+	return nb_formats > 0 && nb_modes > 0;
+}
+
 } // namespace
 
 Device::Device(const Instance& instance)
@@ -91,8 +131,13 @@ void Device::select_physical_device(const Instance& instance)
 
 	for (VkPhysicalDevice device : devices)
 	{
-		// --- Extensions and swapchain support ---
+		// --- Required extensions ---
 		if (!CheckDeviceExtensionsSupport(device)) {
+			continue;
+		}
+
+		// --- Vulkan 1.3 and required features ---
+		if (!CheckDeviceFeaturesSupport(device)) {
 			continue;
 		}
 
@@ -130,7 +175,9 @@ void Device::select_physical_device(const Instance& instance)
 			}
 		}
 
-		if (queue_indices.is_complete())
+		// --- Swapchain support ---
+		// Only queried once presentation to the surface is known to be supported.
+		if (queue_indices.is_complete() && CheckSwapchainSupport(device, surface))
 		{
 			compatible_devices.push_back(device);
 			compatible_queues.push_back(queue_indices);

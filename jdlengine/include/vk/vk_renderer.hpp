@@ -13,13 +13,14 @@ namespace jdl
 namespace vk
 {
 
-class Renderer : private NonCopyable<Renderer>
+class Renderer : private utils::NonCopyable<Renderer>
 {
 public:
 	/**
 	 * @brief Creates the renderer and its Vulkan context.
+	 * @param window The window to render to. It must outlive the renderer.
 	 */
-	Renderer();
+	explicit Renderer(const core::Window& window);
 
 	/**
 	 * @brief Destroys the renderer.

@@ -2,19 +2,21 @@
 
 #include <vector>
 
-#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 #include "size.hpp"
 
 #include "utils/non_copyable.hpp"
 
+// GLFW stays an implementation detail of the engine: only window.cpp includes it.
+struct GLFWwindow;
 
 namespace jdl
 {
 namespace core
 {
 
-class Window : private NonCopyable<Window>
+class Window : private utils::NonCopyable<Window>
 {
 public:
 	/**
@@ -43,20 +45,18 @@ public:
 	/**
 	 * @brief Returns whether the window has not been requested to close.
 	 */
-	bool is_running() const {
-		return glfwWindowShouldClose(m_window) == GLFW_FALSE;
-	}
+	bool is_running() const;
 
 	/**
 	 * @brief Processes pending events without blocking.
 	 */
-	void poll_events() const { glfwPollEvents(); }
+	void poll_events() const;
 
 	/**
 	 * @brief Blocks until at least one event is available, then processes
 	 * pending events.
 	 */
-	void wait_events() const { glfwWaitEvents(); }
+	void wait_events() const;
 
 	/**
 	 * @brief Creates a Vulkan surface for the window.

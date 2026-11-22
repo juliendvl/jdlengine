@@ -7,18 +7,24 @@
 
 namespace jdl
 {
+namespace core
+{
+class Window;
+} // namespace core
+
 namespace vk
 {
 
-class Instance : private NonCopyable<Instance>
+class Instance : private utils::NonCopyable<Instance>
 {
 public:
 	/**
 	 * @brief Creates the Vulkan instance with the extensions required by
 	 * the window, then the window surface. In debug builds, also enables the
 	 * validation layers and the debug messenger.
+	 * @param window The window to create the surface for.
 	 */
-	Instance();
+	explicit Instance(const core::Window& window);
 
 	/**
 	 * @brief Destroys the window surface, the debug messenger (if any) and the

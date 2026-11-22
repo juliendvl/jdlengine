@@ -4,7 +4,6 @@
 #include <cstring>
 #include <vector>
 
-#include "core/application.hpp"
 #include "core/window.hpp"
 
 #include "utils/logger.hpp"
@@ -107,11 +106,11 @@ VkDebugUtilsMessengerCreateInfoEXT MakeDebugMessengerCreateInfo()
 
 } // namespace
 
-Instance::Instance()
+Instance::Instance(const core::Window& window)
 {
 	VkApplicationInfo app_info {
 		.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-		.pApplicationName = core::Application::GetName(),
+		.pApplicationName = "JDLEngine",
 		.applicationVersion = VK_MAKE_VERSION(1, 0, 0),
 		.pEngineName = "JDLEngine",
 		.engineVersion = VK_MAKE_VERSION(1, 0, 0),
@@ -146,6 +145,7 @@ Instance::Instance()
 	create_info.ppEnabledExtensionNames = VK_DATA(extensions);
 
 	VK_CHECK(vkCreateInstance(&create_info, nullptr, &m_instance));
+	JDL_INFO("Created Vulkan instance");
 
 	if constexpr (kEnableValidationLayers)
 	{
@@ -161,9 +161,7 @@ Instance::Instance()
 		JDL_INFO("Enabled Vulkan validation layers");
 	}
 
-	JDL_INFO("Created Vulkan instance");
-
-	m_surface = core::Application::GetWindow().create_surface(m_instance);
+	m_surface = window.create_surface(m_instance);
 	JDL_INFO("Created window surface");
 }
 

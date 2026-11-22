@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 
 #include "core/application.hpp"
@@ -16,7 +17,7 @@ class Sandbox : public core::Application
 };
 
 
-int main(int argc, char** argv)
+int main()
 {
     try
     {
